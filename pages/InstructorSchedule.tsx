@@ -62,9 +62,14 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
             if (studentFilteredGroups === null) {
                 studentFilteredGroups = matchingGroups;
             } else {
-                // FIX: Explicitly type intermediate variables to prevent `unknown` type inference.
-                const currentGroups: string[] = Array.from(studentFilteredGroups);
-                studentFilteredGroups = new Set(currentGroups.filter(group => matchingGroups.has(group)));
+                // FIX: Re-implemented set intersection to be more explicit about types and avoid potential inference issues.
+                const intersection = new Set<string>();
+                for (const group of studentFilteredGroups) {
+                    if (matchingGroups.has(group)) {
+                        intersection.add(group);
+                    }
+                }
+                studentFilteredGroups = intersection;
             }
         };
     

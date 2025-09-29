@@ -82,9 +82,12 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, students
 
     // FIX: Add explicit return type `LiveStudent[]` to `useMemo` and type annotation for `map` parameter `s` to fix type inference issue.
     const studentsWithLiveInfo = useMemo<LiveStudent[]>(() => {
-        const liveStudentMap = new Map(students.map(s => [s.navaId, s]));
-        return allStudents.map((s): LiveStudent => {
-            const liveInfo = liveStudentMap.get(s.navaId);
+        // FIX: Add explicit type to map parameter 's' to fix type inference issue.
+        const liveStudentMap = new Map(students.map((s: LiveStudent) => [s.navaId, s]));
+        // FIX: Add explicit type to map parameter 's' to fix type inference issue.
+        return allStudents.map((s: AnalyzedStudent): LiveStudent => {
+            // FIX: Add explicit type annotation to liveInfo to resolve 'unknown' type error.
+            const liveInfo: LiveStudent | undefined = liveStudentMap.get(s.navaId);
             return {
                 ...s,
                 status: liveInfo?.status || 'Finished',
