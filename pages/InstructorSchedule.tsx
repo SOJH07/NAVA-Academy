@@ -62,7 +62,9 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
             if (studentFilteredGroups === null) {
                 studentFilteredGroups = matchingGroups;
             } else {
-                studentFilteredGroups = new Set([...studentFilteredGroups].filter(group => matchingGroups.has(group)));
+                // FIX: Explicitly type intermediate variables to prevent `unknown` type inference.
+                const currentGroups: string[] = Array.from(studentFilteredGroups);
+                studentFilteredGroups = new Set(currentGroups.filter(group => matchingGroups.has(group)));
             }
         };
     
@@ -113,7 +115,6 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
             const lowercasedFilter = debouncedSearchTerm.toLowerCase();
             const matchingStudents = allStudents.filter(student =>
               student.fullName.toLowerCase().includes(lowercasedFilter) ||
-              // FIX: Used `toString()` to ensure the search is performed on a string representation of the navaId.
               student.navaId.toString().includes(lowercasedFilter)
             );
             const studentGroups = new Set(matchingStudents.map(s => s.techGroup));

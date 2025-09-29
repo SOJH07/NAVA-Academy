@@ -80,16 +80,17 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, students
 
     const isFiltered = useMemo(() => activeFilterCount > 0 || globalSearchTerm.trim() !== '', [activeFilterCount, globalSearchTerm]);
 
-    const studentsWithLiveInfo = useMemo(() => {
+    // FIX: Add explicit return type `LiveStudent[]` to `useMemo` and type annotation for `map` parameter `s` to fix type inference issue.
+    const studentsWithLiveInfo = useMemo<LiveStudent[]>(() => {
         const liveStudentMap = new Map(students.map(s => [s.navaId, s]));
-        return allStudents.map(s => {
+        return allStudents.map((s): LiveStudent => {
             const liveInfo = liveStudentMap.get(s.navaId);
             return {
                 ...s,
                 status: liveInfo?.status || 'Finished',
                 location: liveInfo?.location || 'N/A',
                 currentPeriod: liveInfo?.currentPeriod || 'N/A',
-            } as LiveStudent;
+            };
         });
     }, [allStudents, students]);
 
@@ -105,7 +106,6 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, students
         
         if (filters.companies.length > 0) studentsToFilter = studentsToFilter.filter(s => filters.companies.includes(s.company));
         if (filters.techTracks.length > 0) studentsToFilter = studentsToFilter.filter(s => filters.techTracks.includes(s.trackName));
-        // FIX: Added a check to ensure `s.aptisScores.overall.cefr` is not undefined before calling `includes`.
         if (filters.aptisCEFRLevels.length > 0) studentsToFilter = studentsToFilter.filter(s => s.aptisScores?.overall.cefr && filters.aptisCEFRLevels.includes(s.aptisScores.overall.cefr));
         if (filters.techGroups.length > 0) studentsToFilter = studentsToFilter.filter(s => filters.techGroups.includes(s.techGroup));
         if (filters.technicalGrades.length > 0) {
@@ -129,7 +129,6 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, students
             const lowercasedFilter = debouncedSearchTerm.toLowerCase();
             studentsToFilter = studentsToFilter.filter(student =>
                 student.fullName.toLowerCase().includes(lowercasedFilter) ||
-                // FIX: Used `toString()` to ensure the search is performed on a string representation of the navaId.
                 student.navaId.toString().includes(lowercasedFilter) ||
                 student.techGroup.toLowerCase().includes(lowercasedFilter)
             );

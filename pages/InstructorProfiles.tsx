@@ -64,11 +64,15 @@ const InstructorProfilesPage: React.FC<InstructorProfilesPageProps> = ({ groupIn
     }, []);
     
     const filteredInstructors = useMemo(() => {
-        const instructors = Object.values(instructorProfiles).filter(p => p.type === 'tech').sort((a,b) => a.name.localeCompare(b.name));
+        // FIX: Add explicit type annotations for parameters in `filter` and `sort` to fix type inference issues.
+        const instructors = Object.values(instructorProfiles)
+            .filter((p: InstructorProfile) => p.type === 'tech')
+            .sort((a: InstructorProfile, b: InstructorProfile) => a.name.localeCompare(b.name));
         if(!searchTerm) return instructors;
         
         const lowercasedSearch = searchTerm.toLowerCase();
-        return instructors.filter(p => p.name.toLowerCase().includes(lowercasedSearch));
+        // FIX: Add explicit type annotation for parameter in `filter`.
+        return instructors.filter((p: InstructorProfile) => p.name.toLowerCase().includes(lowercasedSearch));
     }, [instructorProfiles, searchTerm]);
 
     const handleSelectInstructor = (name: string) => {
@@ -134,7 +138,7 @@ const InstructorProfilesPage: React.FC<InstructorProfilesPageProps> = ({ groupIn
                 ) : (
                     <div className="h-full flex items-center justify-center bg-bg-panel border border-slate-200 rounded-lg shadow-sm">
                         <div className="text-center text-text-muted">
-                             <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-16 w-16 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                             <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-16 w-16 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                             <h3 className="mt-4 text-xl font-bold text-text-primary">Select an Instructor</h3>
                             <p>Choose an instructor from the list to view their profile.</p>
                         </div>

@@ -28,11 +28,14 @@ const OnBreakIcon: React.FC = () => (
 interface StudentDetailCardProps {
     student: LiveStudent;
     isDimmed?: boolean;
+    viewMode?: 'full' | 'kiosk';
 }
 
-const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed }) => {
+const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed, viewMode = 'full' }) => {
     const [isHovered, setIsHovered] = useState(false);
     const { setActivePage, setGlobalSearchTerm, toggleArrayFilter } = useAppStore();
+
+    const isKiosk = viewMode === 'kiosk';
 
     let statusPill;
     switch(student.status) {
@@ -86,11 +89,11 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
 
     return (
         <div 
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            className={`relative bg-bg-panel dark:bg-dark-panel text-text-primary border ${borderColorClass} rounded-xl shadow-md p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-glow-sm hover:border-brand-primary overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+            onMouseEnter={isKiosk ? undefined : () => setIsHovered(true)}
+            onMouseLeave={isKiosk ? undefined : () => setIsHovered(false)}
+            className={`relative bg-bg-panel dark:bg-dark-panel text-text-primary border ${borderColorClass} rounded-xl shadow-md p-4 flex flex-col justify-between transition-all duration-300 ${!isKiosk ? 'hover:shadow-glow-sm hover:border-brand-primary' : ''} overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
         >
-             {isHovered && (
+             {isHovered && !isKiosk && (
                 <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center gap-4 animate-fade-in z-10">
                     <button onClick={handleViewProfile} className="flex items-center gap-2 px-4 py-2 bg-white/90 text-slate-800 font-bold rounded-lg hover:bg-white transition-transform hover:scale-105">
                         <SearchIcon />
@@ -102,15 +105,21 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
                     </button>
                 </div>
             )}
-            <div className={`absolute left-0 top-0 bottom-0 w-2 ${companyColor}`}></div>
-            <div className="pl-4">
+            {!isKiosk && <div className={`absolute left-0 top-0 bottom-0 w-2 ${companyColor}`}></div>}
+            <div className={!isKiosk ? "pl-4" : ""}>
                 <div className="flex justify-between items-start mb-3">
                     <div>
                         <div className="flex items-center gap-2">
                             {statusIndicator}
-                            <h3 className="font-bold text-lg leading-tight text-text-primary dark:text-dark-text-primary">{student.fullName}</h3>
+                             {isKiosk ? (
+                                <h3 className="font-bold text-xl leading-tight text-text-primary dark:text-dark-text-primary">ID: {student.navaId}</h3>
+                            ) : (
+                                <h3 className="font-bold text-lg leading-tight text-text-primary dark:text-dark-text-primary">{student.fullName}</h3>
+                            )}
                         </div>
-                        <p className="text-xs text-text-muted dark:text-dark-text-muted">ID: {student.navaId} | {student.company}</p>
+                         {!isKiosk && (
+                            <p className="text-xs text-text-muted dark:text-dark-text-muted">ID: {student.navaId} | {student.company}</p>
+                        )}
                     </div>
                     {statusPill}
                 </div>
@@ -125,7 +134,7 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
                         <div className="space-y-1 pl-1 text-xs text-text-muted dark:text-dark-text-muted">
                             <p><strong className="font-medium text-text-secondary dark:text-dark-text-primary w-20 inline-block">Track:</strong> {student.trackName}</p>
                             <p><strong className="font-medium text-text-secondary dark:text-dark-text-primary w-20 inline-block">Group:</strong> {student.techGroup}</p>
-                             {student.aptisScores && (
+                             {!isKiosk && student.aptisScores && (
                                 <>
                                  <p className="mt-2 pt-2 border-t border-slate-200/60 dark:border-dark-border">
                                      <strong className="font-medium text-text-secondary dark:text-dark-text-primary w-20 inline-block">Aptis CEFR:</strong> 

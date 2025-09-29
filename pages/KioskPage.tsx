@@ -166,7 +166,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                              {filteredStudents.length > 0 ? (
                                 filteredStudents.map(student => (
                                     <div key={student.navaId.toString()}>
-                                        <StudentDetailCard student={student} />
+                                        <StudentDetailCard student={student} viewMode="kiosk" />
                                     </div>
                                 ))
                              ) : (
