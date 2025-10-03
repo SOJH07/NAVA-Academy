@@ -11,7 +11,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onSwitchToKiosk }
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === '2030') {
+        if (password === '1995') {
             setError('');
             onLoginSuccess();
         } else {

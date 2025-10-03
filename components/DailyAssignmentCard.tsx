@@ -1,5 +1,7 @@
 import React from 'react';
-import type { Assignment, GroupInfo } from '../types';
+import type { Assignment, GroupInfo, FocusedPath } from '../types';
+import useAppStore from '../hooks/useAppStore';
+
 
 interface DailyAssignmentCardProps {
     assignment: Assignment;
@@ -17,6 +19,7 @@ const LocationIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns
 
 
 const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, density, focusedInstructor, setFocusedInstructor, showTooltip, hideTooltip, isLive = false, groupInfo }) => {
+    const { setFocusedPath } = useAppStore();
     
     const track = groupInfo[assignment.group]?.track_name;
     const isIndustrial = track === 'Industrial Tech';
@@ -40,6 +43,10 @@ const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, d
         </div>
     );
 
+    const handlePathClick = (type: 'group' | 'instructor', id: string) => {
+        setFocusedPath({type, id});
+    };
+
     const padding = density === 'comfortable' ? 'p-3' : 'p-2';
 
     return (
@@ -49,7 +56,12 @@ const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, d
             onMouseLeave={hideTooltip}
         >
             {isLive && <div className="absolute top-1.5 right-1.5 text-[10px] font-bold bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-full animate-pulse z-10">LIVE</div>}
-            <h4 className={`font-extrabold ${density === 'comfortable' ? 'text-base' : 'text-sm'} ${styles.text} truncate`}>{assignment.group}</h4>
+            <button 
+                className={`font-extrabold text-left ${density === 'comfortable' ? 'text-base' : 'text-sm'} ${styles.text} truncate hover:underline`}
+                onClick={(e) => { e.stopPropagation(); handlePathClick('group', assignment.group); }}
+            >
+                {assignment.group}
+            </button>
             
             <div className={`flex-grow mt-1 space-y-1 ${density === 'comfortable' ? 'text-sm' : 'text-xs'}`}>
                  <div className="flex items-start gap-1.5 text-text-secondary">
@@ -66,7 +78,7 @@ const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, d
                 {assignment.instructors.map((inst, index) => (
                     <span key={inst}>
                         <button
-                            onClick={(e) => { e.stopPropagation(); setFocusedInstructor(inst); }}
+                            onClick={(e) => { e.stopPropagation(); handlePathClick('instructor', inst); }}
                             className="hover:underline focus:outline-none focus:text-brand-primary disabled:no-underline disabled:cursor-default"
                             disabled={!!focusedInstructor}
                         >

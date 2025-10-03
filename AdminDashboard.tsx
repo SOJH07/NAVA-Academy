@@ -40,23 +40,22 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
        filters, setFilters,
        toggleArrayFilter, toggleSessionTypeFilter,
        clearFilters,
-       // FIX: activeFilterCount is now provided by the store.
-       activeFilterCount
+       activeFilterCount,
+       // FIX: Get simulatedTime from the store to pass to useLiveStatus.
+       simulatedTime
     } = useAppStore();
 
     const dashboardData = useDashboardData();
-    // FIX: Use the useAnalyticsData hook to get fully processed student data.
     const { analyzedStudents } = useAnalyticsData(dashboardData.enhancedStudents);
 
     const liveStatusData = useLiveStatus(
-        // FIX: Pass analyzedStudents to useLiveStatus to match the expected type.
         analyzedStudents,
         dashboardData.dailySchedule,
         dashboardData.groupInfo,
-        dashboardData.processedScheduleData
+        dashboardData.processedScheduleData,
+        simulatedTime
     );
 
-    // FIX: Expanded sessionInfo calculation to include instruction, application, and collaboration counts for KpiOverviewPage.
     const sessionInfo = useMemo(() => {
         const industrialGroupsInSession = new Set<string>();
         const serviceGroupsInSession = new Set<string>();
@@ -105,12 +104,10 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
         switch (activePage) {
             case 'kpiOverview':
                 return <KpiOverviewPage
-                            // FIX: Pass analyzedStudents instead of enhancedStudents.
                             allStudents={analyzedStudents}
                             students={liveStatusData.liveStudents}
                             liveStatusData={liveStatusData}
                             sessionInfo={{
-                                // FIX: Pass the full sessionCounts object.
                                 sessionCounts: sessionInfo.sessionCounts
                             }}
                         />;
@@ -120,7 +117,6 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                         />;
             case 'analytics':
                 return <AnalyticsPage 
-                            // FIX: Pass analyzedStudents instead of enhancedStudents.
                             allStudents={analyzedStudents}
                         />;
              case 'gpaAnalysis':
@@ -129,7 +125,6 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                         />;
             case 'studentFinder':
                 return <StudentFinderPage
-                            // FIX: Pass analyzedStudents prop instead of enhancedStudents.
                             analyzedStudents={analyzedStudents}
                         />;
             case 'instructorSchedule':
@@ -139,7 +134,6 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                             dailySchedule={dashboardData.dailySchedule}
                             currentPeriod={liveStatusData.currentPeriod}
                             now={liveStatusData.now}
-                            // FIX: Pass analyzedStudents instead of enhancedStudents.
                             allStudents={analyzedStudents}
                         />;
             case 'instructorProfiles':

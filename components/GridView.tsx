@@ -125,201 +125,138 @@ const GridView: React.FC<{ events: CalendarEvent[], currentDate: Date, setCurren
             weeks.push(gridDays.slice(i, i + 7));
         }
 
-        const eventsByDate = new Map<string, CalendarEvent[]>();
-        gridDays.forEach(day => {
-             const dateStr = format(day, 'yyyy-MM-dd');
-             const dailyEvents = events.filter(event => isWithinInterval(day, { start: new Date(event.start), end: new Date(event.end) }));
-             if (dailyEvents.length > 0) {
-                 eventsByDate.set(dateStr, dailyEvents);
-             }
-        });
+        const eventsByWeek: ProcessedGridEvent[][] = Array(weeks.length).fill(0).map(() => []);
+        const eventsByDate: Map<string, CalendarEvent[]> = new Map();
+        
+        const sortedEvents = [...events].sort((a,b) => differenceInDays(new Date(b.end), new Date(b.start)) - differenceInDays(new Date(a.end), new Date(a.start)));
+        
+        sortedEvents.forEach((event, eventIndex) => {
+            const eventStart = new Date(event.start);
+            const eventEnd = new Date(event.end);
+            
+            const daysOfEvent = eachDayOfInterval({start: eventStart, end: eventEnd});
+            daysOfEvent.forEach(day => {
+                const dayStr = format(day, 'yyyy-MM-dd');
+                if(!eventsByDate.has(dayStr)) eventsByDate.set(dayStr, []);
+                eventsByDate.get(dayStr)!.push(event);
+            });
 
-        const eventsByWeek = new Map<string, ProcessedGridEvent[]>();
+            for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
+                const week = weeks[weekIndex];
+                const weekStart = week[0];
+                const weekEnd = week[6];
 
-        weeks.forEach((week, weekIndex) => {
-            const weekStart = week[0];
-            const weekEnd = week[6];
-            const weekKey = format(weekStart, 'yyyy-MM-dd');
+                if (isWithinInterval(eventStart, { start: weekStart, end: weekEnd }) || isWithinInterval(weekStart, { start: eventStart, end: eventEnd })) {
+                    const startDayOfWeek = getDay(max([eventStart, weekStart])); // 0 for Sunday
+                    const endDayOfWeek = getDay(min([eventEnd, weekEnd]));
 
-            const weekEvents = events
-                .filter(event => max([new Date(event.start), weekStart]) <= min([new Date(event.end), weekEnd]))
-                .sort((a, b) => {
-                    const diff = differenceInDays(new Date(a.start), new Date(b.start));
-                    if(diff !== 0) return diff;
-                    return differenceInDays(new Date(b.end), new Date(a.end));
-                });
-
-            const lanes: Date[] = [];
-            const processedWeekEvents: ProcessedGridEvent[] = [];
-
-            for (const event of weekEvents) {
-                const eventStart = new Date(event.start);
-                let assignedLane = false;
-                for (let i = 0; i < lanes.length; i++) {
-                    if (eventStart > lanes[i]) {
-                        lanes[i] = new Date(event.end);
-                        
-                        const startCol = getDay(max([eventStart, weekStart])) + 1;
-                        const endCol = getDay(min([new Date(event.end), weekEnd])) + 1;
-                        
-                        processedWeekEvents.push({
-                            ...event,
-                            id: `${event.event}-${event.start}-${weekIndex}-${i}`,
-                            lane: i,
-                            startCol,
-                            span: endCol - startCol + 1,
-                            startsInWeek: isSameDay(eventStart, max([eventStart, weekStart])),
-                            endsInWeek: isSameDay(new Date(event.end), min([new Date(event.end), weekEnd])),
-                        });
-                        assignedLane = true;
-                        break;
-                    }
-                }
-                
-                if (!assignedLane) {
-                    const newLaneIndex = lanes.length;
-                    lanes.push(new Date(event.end));
-                    const startCol = getDay(max([eventStart, weekStart])) + 1;
-                    const endCol = getDay(min([new Date(event.end), weekEnd])) + 1;
+                    const lane = eventsByWeek[weekIndex]
+                        .filter(e => e.startCol <= endDayOfWeek && e.startCol + e.span -1 >= startDayOfWeek)
+                        .reduce((maxLane, e) => Math.max(maxLane, e.lane), -1) + 1;
                     
-                     processedWeekEvents.push({
+                    eventsByWeek[weekIndex].push({
                         ...event,
-                        id: `${event.event}-${event.start}-${weekIndex}-${newLaneIndex}`,
-                        lane: newLaneIndex,
-                        startCol,
-                        span: endCol - startCol + 1,
+                        id: `${event.event}-${event.start}-${weekIndex}-${eventIndex}`,
+                        lane,
+                        startCol: startDayOfWeek,
+                        span: endDayOfWeek - startDayOfWeek + 1,
                         startsInWeek: isSameDay(eventStart, max([eventStart, weekStart])),
-                        endsInWeek: isSameDay(new Date(event.end), min([new Date(event.end), weekEnd])),
+                        endsInWeek: isSameDay(eventEnd, min([eventEnd, weekEnd])),
                     });
                 }
             }
-            eventsByWeek.set(weekKey, processedWeekEvents);
         });
 
         return { weeks, eventsByWeek, eventsByDate };
-    }, [events, currentDate]);
+    }, [currentDate, events]);
     
     const handleEventClick = (event: CalendarEvent, target: HTMLElement) => {
-        setDayPopover(null);
         setSelectedEvent({ event, target });
-    };
-
-    const handleDayPopoverOpen = (date: Date, events: CalendarEvent[], target: HTMLElement) => {
-        handleClosePopovers();
-        setDayPopover({ date, events, target });
+        setDayPopover(null);
     }
     
-    const handleClosePopovers = () => {
-        setSelectedEvent(null); 
+    const handleDayClick = (day: Date, target: HTMLElement) => {
+        const dailyEvents = eventsByDate.get(format(day, 'yyyy-MM-dd')) || [];
+        if (dailyEvents.length > 0) {
+            setDayPopover({ date: day, events: dailyEvents, target });
+            setSelectedEvent(null);
+        }
+    }
+
+    const closePopovers = () => {
+        setSelectedEvent(null);
         setDayPopover(null);
     }
 
-    const changeMonth = (amount: number) => {
-        handleClosePopovers();
-        setCurrentDate(current => addMonths(current, amount));
-    };
+    const maxLanesPerWeek = useMemo(() => {
+        return eventsByWeek.map(weekEvents => {
+            return weekEvents.reduce((max, e) => Math.max(max, e.lane), -1) + 1;
+        });
+    }, [eventsByWeek]);
     
-    const goToToday = () => {
-        handleClosePopovers();
-        setCurrentDate(new Date());
-        setIsPickerOpen(false);
-    };
-
-    const handlePickerSelect = (date: Date) => {
-        handleClosePopovers();
-        setCurrentDate(date);
-        setIsPickerOpen(false);
-    }
-    
-    const eventsLaneOffset = 32;
-    const eventLaneHeight = 28;
-    const MAX_LANES_VISIBLE = 4;
-
     return (
-        <div className="bg-white border border-slate-200 rounded-lg h-full flex flex-col" onClick={handleClosePopovers}>
-            <div className="flex-shrink-0 flex justify-between items-center mb-3 px-2 py-1 relative">
-                <div className="flex items-center gap-1">
-                    <button onClick={() => changeMonth(-1)} className="p-2 rounded-full hover:bg-slate-100 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                    </button>
-                    <button onClick={() => changeMonth(1)} className="p-2 rounded-full hover:bg-slate-100 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                    </button>
+        <div className="flex flex-col h-full" onClick={closePopovers}>
+            {selectedEvent && <EventPopover event={selectedEvent.event} position={selectedEvent.target.getBoundingClientRect()} onClose={closePopovers} />}
+            {dayPopover && <DayPopover date={dayPopover.date} events={dayPopover.events} position={dayPopover.target.getBoundingClientRect()} onClose={closePopovers} onEventClick={handleEventClick} />}
+            <header className="flex-shrink-0 flex justify-between items-center p-4 border-b border-slate-200">
+                <button 
+                    onClick={() => setIsPickerOpen(prev => !prev)} 
+                    className="relative text-2xl font-bold text-text-primary hover:text-brand-primary"
+                >
+                    {format(currentDate, 'MMMM yyyy')}
+                    {isPickerOpen && <MonthYearPicker currentDate={currentDate} onSelect={(d) => { setCurrentDate(d); setIsPickerOpen(false); }} onClose={() => setIsPickerOpen(false)} />}
+                </button>
+                <div className="flex items-center gap-2">
+                    <button onClick={() => setCurrentDate(addMonths(currentDate, -1))} className="p-2 rounded-lg hover:bg-slate-100 text-text-muted">&lt;</button>
+                    <button onClick={() => setCurrentDate(new Date())} className="px-3 py-1.5 text-sm font-semibold border border-slate-300 rounded-lg hover:bg-slate-100">Today</button>
+                    <button onClick={() => setCurrentDate(addMonths(currentDate, 1))} className="p-2 rounded-lg hover:bg-slate-100 text-text-muted">&gt;</button>
                 </div>
-                 <div className="absolute left-1/2 -translate-x-1/2">
-                     <button onClick={() => setIsPickerOpen(p => !p)} className="text-xl font-bold text-text-primary px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors">
-                        {format(currentDate, 'MMMM yyyy')}
-                     </button>
-                      {isPickerOpen && <MonthYearPicker currentDate={currentDate} onSelect={handlePickerSelect} onClose={() => setIsPickerOpen(false)} />}
-                 </div>
-                <button onClick={goToToday} className="px-4 py-2 text-sm font-semibold text-brand-primary bg-brand-primary-light rounded-md hover:bg-indigo-200 transition">Today</button>
-            </div>
-            
-            <div className="grid grid-cols-7 text-center font-semibold text-sm text-text-secondary border-b-2 border-slate-200 flex-shrink-0">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="py-2">{day}</div>
-                ))}
-            </div>
+            </header>
+            <div className="flex-grow min-h-0 overflow-y-auto">
+                <div className="grid grid-cols-7 flex-shrink-0 sticky top-0 bg-white z-10 border-b border-slate-200">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                        <div key={day} className="text-center font-semibold text-sm text-text-secondary p-3">{day}</div>
+                    ))}
+                </div>
+                <div className="grid grid-cols-7 grid-flow-row auto-rows-[minmax(8rem,1fr)]">
+                    {weeks.map((week, weekIndex) => (
+                        week.map((day, dayIndex) => {
+                            const isCurrentMonth = isSameMonth(day, currentDate);
+                            const isTodayMarker = isToday(day);
+                            const dailyEvents = eventsByDate.get(format(day, 'yyyy-MM-dd')) || [];
+                            const weekEvents = eventsByWeek[weekIndex] || [];
+                            const maxLanes = maxLanesPerWeek[weekIndex] || 0;
+                            const displayedEvents = weekEvents.filter(e => e.startCol === dayIndex).slice(0, 3);
+                            const hiddenCount = dailyEvents.length - displayedEvents.length;
 
-            <div className="grid grid-cols-7 flex-grow min-h-0">
-                {weeks.map((week, weekIndex) => {
-                    const weekKey = format(week[0], 'yyyy-MM-dd');
-                    const weekEvents = eventsByWeek.get(weekKey) || [];
-
-                    return (
-                        <div key={weekKey} className="grid grid-cols-7 col-span-7 border-b border-slate-200 last:border-b-0 relative" style={{ gridRow: weekIndex + 1 }}>
-                            {week.map((day, dayIndex) => {
-                                 const dateStr = format(day, 'yyyy-MM-dd');
-                                 const isCurrentMonth = isSameMonth(day, currentDate);
-                                 const isWknd = getDay(day) === 5 || getDay(day) === 6;
-                                 const dailyEvents = eventsByDate.get(dateStr) || [];
-                                 
-                                 const visibleEventsCount = weekEvents.filter(e => e.startCol <= dayIndex + 1 && e.startCol + e.span > dayIndex + 1 && e.lane < MAX_LANES_VISIBLE).length;
-                                 const hiddenEventsCount = dailyEvents.length - visibleEventsCount;
-
-                                 return (
-                                    <div key={dateStr} className={`border-r border-slate-200 last:border-r-0 p-2 relative ${isCurrentMonth ? (isWknd ? 'bg-slate-50/50' : 'bg-white') : 'bg-slate-100/70'}`}>
-                                        <time dateTime={dateStr} className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full ml-auto transition-colors
-                                            ${isToday(day) ? 'bg-brand-primary text-white' : (isCurrentMonth ? 'text-text-secondary' : 'text-slate-400')}`}>
-                                            {format(day, 'd')}
-                                        </time>
-                                         {hiddenEventsCount > 0 && (
-                                            <button onClick={(e) => { e.stopPropagation(); handleDayPopoverOpen(day, dailyEvents, e.currentTarget);}} className="text-xs font-bold text-brand-primary hover:underline mt-1 float-right">
-                                                + {hiddenEventsCount} more
+                            return (
+                                <div key={day.toString()} className="relative p-2 border-r border-b border-slate-200 flex flex-col" style={{gridRow: weekIndex + 1}}>
+                                    <time dateTime={format(day, 'yyyy-MM-dd')} className={`text-sm font-semibold ${isCurrentMonth ? 'text-text-primary' : 'text-slate-400'} ${isTodayMarker ? 'relative z-10 bg-brand-primary text-white rounded-full w-7 h-7 flex items-center justify-center' : ''}`}>
+                                        {format(day, 'd')}
+                                    </time>
+                                    <div className="mt-2 space-y-px" style={{minHeight: `${maxLanes * 22}px`}}>
+                                        {displayedEvents.map(event => (
+                                            <button 
+                                                key={event.id}
+                                                onClick={(e) => {e.stopPropagation(); handleEventClick(event, e.currentTarget)}}
+                                                className={`w-full text-left text-xs font-semibold p-1 rounded transition-transform hover:scale-[1.02] truncate ${event.color} ${event.startsInWeek ? 'rounded-l-md' : 'rounded-l-none'} ${event.endsInWeek ? 'rounded-r-md' : 'rounded-r-none'}`}
+                                                style={{ gridColumn: `${event.startCol + 1} / span ${event.span}`, top: `${event.lane * 22}px`, position: "absolute", left: '0.125rem', width: `calc(${event.span * 100}% - 0.25rem)`}}
+                                            >
+                                               {event.event}
                                             </button>
-                                        )}
+                                        ))}
                                     </div>
-                                 );
-                            })}
-                         
-                            <div className="absolute inset-0 grid grid-cols-7 pointer-events-none">
-                                {weekEvents.filter(e => e.lane < MAX_LANES_VISIBLE).map(event => (
-                                     <button
-                                        key={event.id}
-                                        onClick={(e) => { e.stopPropagation(); handleEventClick(event, e.currentTarget); }}
-                                        className={`pointer-events-auto absolute h-[24px] text-xs font-semibold p-1 overflow-hidden whitespace-nowrap z-10 rounded-md transition-all duration-200 hover:ring-2 hover:ring-offset-1 hover:ring-brand-primary/80
-                                            ${event.color}
-                                            ${event.startsInWeek ? '' : 'rounded-l-none'}
-                                            ${event.endsInWeek ? '' : 'rounded-r-none'}
-                                        `}
-                                        style={{ 
-                                            top: eventsLaneOffset + event.lane * eventLaneHeight, 
-                                            gridColumnStart: event.startCol, 
-                                            gridColumnEnd: `span ${event.span}`,
-                                            width: `calc(100% * ${event.span} - 8px)`,
-                                            left: '4px'
-                                        }}
-                                     >
-                                        <span className="truncate pl-1">{event.event}</span>
-                                     </button>
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
+                                    {hiddenCount > 0 && (
+                                        <button onClick={(e) => {e.stopPropagation(); handleDayClick(day, e.currentTarget)}} className="text-xs font-semibold text-text-muted hover:underline mt-auto pt-1">
+                                            +{hiddenCount} more
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })
+                    ))}
+                </div>
             </div>
-             {selectedEvent && <EventPopover event={selectedEvent.event} position={selectedEvent.target.getBoundingClientRect()} onClose={handleClosePopovers} />}
-             {dayPopover && <DayPopover date={dayPopover.date} events={dayPopover.events} position={dayPopover.target.getBoundingClientRect()} onClose={handleClosePopovers} onEventClick={(e, t) => handleEventClick(e, t)} />}
         </div>
     );
 };

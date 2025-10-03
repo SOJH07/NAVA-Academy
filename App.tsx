@@ -7,7 +7,7 @@ import useUserPreferencesStore from './hooks/useUserPreferencesStore';
 type View = 'login' | 'admin' | 'kiosk';
 
 const App: React.FC = () => {
-    const [view, setView] = useState<View>('login');
+    const [view, setView] = useState<View>('kiosk');
     const { theme } = useUserPreferencesStore();
 
     useEffect(() => {

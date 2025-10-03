@@ -240,7 +240,18 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                 <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
                     <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm flex flex-col p-4 h-full">
                         <div className="flex justify-between items-center mb-4 flex-shrink-0">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Academy Floor Plan</h2>
+                            <div className="flex items-center gap-3">
+                                <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Academy Floor Plan</h2>
+                                 <div className="flex items-center gap-2">
+                                    <span className={`relative flex h-3 w-3 ${liveStatusData.isOperationalHours ? 'animate-pulse' : ''}`}>
+                                        <span className={`absolute inline-flex h-full w-full rounded-full ${liveStatusData.isOperationalHours ? 'bg-green-400' : 'bg-slate-400'} opacity-75`}></span>
+                                        <span className={`relative inline-flex rounded-full h-3 w-3 ${liveStatusData.isOperationalHours ? 'bg-green-500' : 'bg-slate-500'}`}></span>
+                                    </span>
+                                    <span className={`text-xs font-bold uppercase ${liveStatusData.isOperationalHours ? 'text-green-600' : 'text-slate-500'}`}>
+                                        {liveStatusData.isOperationalHours ? 'Live' : 'Off-Hours'}
+                                    </span>
+                                </div>
+                            </div>
                              <div className="flex items-center gap-4">
                                 <HeatmapToggle isVisible={isHeatmapVisible} setIsVisible={setIsHeatmapVisible} />
                                 <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-dark-panel rounded-lg flex-wrap">
@@ -270,6 +281,7 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                                 focusedPath={focusedPath}
                                 onSetFocusedPath={setFocusedPath}
                                 groupStudentCounts={dashboardData.groupStudentCounts.tech}
+                                isOperationalHours={liveStatusData.isOperationalHours}
                             />
                         </div>
                         <FloorPlanLegend />

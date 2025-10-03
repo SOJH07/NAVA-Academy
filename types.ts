@@ -1,10 +1,16 @@
 import type { ReactElement } from 'react';
 
+export interface AcademicRecord {
+  year: string;
+  stage: 'Foundation' | 'Year 2';
+  techGroup: string;
+}
+
 export interface Student {
   navaId: number;
   name: string;
   surname: string;
-  techGroup: string;
+  academicHistory: AcademicRecord[];
   company: 'Ceer' | 'Lucid';
   email: string;
   program: string;
@@ -31,7 +37,7 @@ export interface AptisScores {
   writing: AptisScoreDetail;
 }
 
-export interface StudentGrades {
+export interface FoundationGrades {
     englishUnit1: number | null;
     englishUnit2: number | null;
     navaEnglishAverage: number | null;
@@ -44,6 +50,14 @@ export interface StudentGrades {
     nava006: string | null;
     nava007: string | null;
     nava008: string | null;
+}
+
+export type Year2Grades = Record<string, string | null>;
+
+// FIX: Changed StudentGrades to extend FoundationGrades to flatten the structure,
+// resolving type mismatches in data files and hooks.
+export interface StudentGrades extends FoundationGrades {
+    year2?: Year2Grades;
 }
 
 
@@ -60,6 +74,7 @@ export interface FloorPlanItem {
   type: 'classroom' | 'static' | 'lab' | 'workshop';
   gridColumn: string;
   gridRow: string;
+  capacity?: number;
 }
 
 export interface Page {
@@ -72,6 +87,7 @@ export interface EnhancedStudent extends Student {
   fullName: string;
   trackName: string;
   techScheduleType: string;
+  techGroup: string; // The CURRENT tech group
   aptisScores?: AptisScores;
   grades?: StudentGrades;
 }
@@ -194,3 +210,7 @@ export type LiveOpsFilters = {
     performanceSegments: string[];
     gpaRange: [number, number];
 };
+
+export type FloorId = 'ground' | 'first' | 'second' | 'third' | 'incubator';
+
+export type FocusedPath = { type: 'group' | 'instructor', id: string } | null;

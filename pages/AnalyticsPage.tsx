@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { EnhancedStudent, AnalyzedStudent, StudentGrades } from '../types';
+import type { EnhancedStudent, AnalyzedStudent, FoundationGrades } from '../types';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import useAppStore from '../hooks/useAppStore';
 import { useDebounce } from '../hooks/useDebounce';
@@ -9,7 +9,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, PieC
 import GradeDistributionChart from '../components/GradeDistributionChart';
 
 const COLORS = ['#707F98', '#62B766', '#f59e0b', '#E77373', '#3b82f6'];
-const NAVA_UNITS: (keyof StudentGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
+const NAVA_UNITS: (keyof FoundationGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
 
 const KpiCard: React.FC<{ title: string; value: string | number; }> = ({ title, value }) => (
     <div className="bg-slate-100 dark:bg-dark-panel p-4 rounded-lg text-center shadow-sm border border-slate-200 dark:border-dark-border">
@@ -85,8 +85,10 @@ const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ allStudents }) => {
             studentsToFilter = studentsToFilter.filter(s => {
                 if (!s.grades) return false;
                 return NAVA_UNITS.some(unit => {
+                    // FIX: Removed `.foundation` to access grades from the flattened StudentGrades structure.
                     const grade = s.grades?.[unit];
-                    return grade ? filters.technicalGrades.includes(grade) : false;
+                    // FIX: Added a `typeof` check to ensure `grade` is a string before calling `includes`.
+                    return typeof grade === 'string' ? filters.technicalGrades.includes(grade) : false;
                 });
             });
         }

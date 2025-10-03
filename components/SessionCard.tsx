@@ -1,5 +1,6 @@
 import React from 'react';
-import type { Assignment } from '../types';
+import type { Assignment, FocusedPath } from '../types';
+import useAppStore from '../hooks/useAppStore';
 
 interface SessionCardProps {
     assignment: Assignment;
@@ -12,6 +13,8 @@ interface SessionCardProps {
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({ assignment, density, focusedInstructor, setFocusedInstructor, showTooltip, hideTooltip, isLive = false }) => {
+    const { setFocusedPath } = useAppStore();
+    
     const isTech = assignment.type === 'Technical';
     const styles = {
         bg: isTech ? 'bg-status-tech-light' : 'bg-status-professional-light',
@@ -32,6 +35,11 @@ const SessionCard: React.FC<SessionCardProps> = ({ assignment, density, focusedI
 
     const padding = density === 'comfortable' ? 'p-2' : 'p-1.5';
 
+    const handleGroupClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setFocusedPath({ type: 'group', id: assignment.group });
+    }
+
     return (
         <div 
             className={`relative ${padding} rounded-lg ${styles.bg} ${styles.hoverBg} border-l-4 ${styles.border} transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md ${isDimmed ? 'opacity-30' : ''} ${isLive ? 'ring-2 ring-offset-1 ring-amber-400 shadow-lg' : ''}`}
@@ -39,7 +47,13 @@ const SessionCard: React.FC<SessionCardProps> = ({ assignment, density, focusedI
             onMouseLeave={hideTooltip}
         >
             {isLive && <div className="absolute top-1 right-1 text-[10px] font-bold bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-full animate-pulse z-10">LIVE</div>}
-            <p className={`font-extrabold text-sm ${styles.text} truncate`}>{assignment.group}</p>
+            <button
+                onClick={handleGroupClick}
+                className={`font-extrabold text-sm ${styles.text} truncate hover:underline`}
+                title={`Focus on ${assignment.group}`}
+            >
+                {assignment.group}
+            </button>
             <div className="text-xs text-text-muted truncate">
                 {assignment.instructors.map((inst, index) => (
                     <span key={inst}>

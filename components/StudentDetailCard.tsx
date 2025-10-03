@@ -19,7 +19,7 @@ const InClassIcon: React.FC = () => (
 
 const OnBreakIcon: React.FC = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-status-break flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-label="On Break" role="img">
-    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v1h-2V4a1 1 0 011-1zm5 2a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-2a.5.5 0 01.5-.5h1zM4 5a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V6a1 1 0 00-1-1H4z" clipRule="evenodd" />
+    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v1h-2V4a1 1 0 011-1zm5 2a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-2a.5.5 0 01.5.5h1zM4 5a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V6a1 1 0 00-1-1H4z" clipRule="evenodd" />
     <path d="M5 18a1 1 0 011-1h6a1 1 0 110 2H6a1 1 0 01-1-1z" />
   </svg>
 );
@@ -29,9 +29,10 @@ interface StudentDetailCardProps {
     student: LiveStudent;
     isDimmed?: boolean;
     viewMode?: 'full' | 'kiosk';
+    sessionType?: 'industrial' | 'service' | 'professional';
 }
 
-const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed, viewMode = 'full' }) => {
+const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed, viewMode = 'full', sessionType }) => {
     const [isHovered, setIsHovered] = useState(false);
     const { setActivePage, setGlobalSearchTerm, toggleArrayFilter } = useAppStore();
 
@@ -78,6 +79,13 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
 
     let statusIndicator = null;
     let borderColorClass = 'border-slate-200 dark:border-dark-border';
+    let cardBgClass = 'bg-bg-panel dark:bg-dark-panel';
+
+    if (isKiosk && student.status === 'In Class' && sessionType) {
+        if (sessionType === 'industrial') cardBgClass = 'bg-status-industrial-light dark:bg-status-industrial/20';
+        if (sessionType === 'service') cardBgClass = 'bg-status-tech-light dark:bg-status-tech/20';
+        if (sessionType === 'professional') cardBgClass = 'bg-status-professional-light dark:bg-status-professional/20';
+    }
 
     if (student.status === 'In Class') {
         statusIndicator = <InClassIcon />;
@@ -91,7 +99,7 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
         <div 
             onMouseEnter={isKiosk ? undefined : () => setIsHovered(true)}
             onMouseLeave={isKiosk ? undefined : () => setIsHovered(false)}
-            className={`relative bg-bg-panel dark:bg-dark-panel text-text-primary border ${borderColorClass} rounded-xl shadow-md p-4 flex flex-col justify-between transition-all duration-300 ${!isKiosk ? 'hover:shadow-glow-sm hover:border-brand-primary' : ''} overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+            className={`relative ${cardBgClass} text-text-primary border ${borderColorClass} rounded-xl shadow-md p-4 flex flex-col justify-between transition-all duration-300 ${!isKiosk ? 'hover:shadow-glow-sm hover:border-brand-primary' : ''} overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
         >
              {isHovered && !isKiosk && (
                 <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center gap-4 animate-fade-in z-10">

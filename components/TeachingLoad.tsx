@@ -64,7 +64,6 @@ const LoadSection: React.FC<{
 const TeachingLoad: React.FC<TeachingLoadProps> = ({ loadData, focusedInstructor, setFocusedInstructor }) => {
     
     const techLoad = loadData.filter(d => d.type === 'tech' && d.count > 0).sort((a,b) => b.count - a.count);
-    const professionalLoad = loadData.filter(d => d.type === 'professional' && d.count > 0).sort((a,b) => b.count - a.count);
     const maxLoad = Math.max(...loadData.map(d => d.count), 0);
 
     return (
@@ -74,20 +73,12 @@ const TeachingLoad: React.FC<TeachingLoadProps> = ({ loadData, focusedInstructor
                 <p className="text-sm text-text-muted mt-1">Total teaching periods assigned to each instructor for the selected week. Click an instructor to focus their schedule.</p>
             </div>
             <div className="flex-grow overflow-y-auto p-4 md:p-6">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                 <div className="grid grid-cols-1 gap-x-12 gap-y-8">
                     <LoadSection 
                         title="Technical Instructors" 
                         data={techLoad} 
                         colorClass="text-status-tech" 
                         max={maxLoad} 
-                        focusedInstructor={focusedInstructor}
-                        setFocusedInstructor={setFocusedInstructor}
-                    />
-                    <LoadSection 
-                        title="Professional Development" 
-                        data={professionalLoad} 
-                        colorClass="text-status-professional" 
-                        max={maxLoad}
                         focusedInstructor={focusedInstructor}
                         setFocusedInstructor={setFocusedInstructor}
                     />

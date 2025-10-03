@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { LiveOpsFilters } from '../types';
+import type { LiveOpsFilters, FocusedPath } from '../types';
 
 const INITIAL_FILTERS: LiveOpsFilters = {
     status: 'all',
@@ -47,6 +47,14 @@ interface AppState {
   toggleSessionTypeFilter: (sessionType: 'tech' | 'professional') => void;
   // FIX: Added activeFilterCount to the state.
   activeFilterCount: number;
+
+  // New states for advanced features
+  focusedPath: FocusedPath;
+  setFocusedPath: (path: FocusedPath) => void;
+  isHeatmapVisible: boolean;
+  setIsHeatmapVisible: (isVisible: boolean) => void;
+  simulatedTime: number | null;
+  setSimulatedTime: (time: number | null) => void;
 }
 
 const useAppStore = create<AppState>()(
@@ -59,6 +67,16 @@ const useAppStore = create<AppState>()(
       filters: INITIAL_FILTERS,
       // FIX: Initialize and update activeFilterCount whenever filters change.
       activeFilterCount: 0,
+      
+      // New feature states
+      focusedPath: null,
+      setFocusedPath: (path) => set({ focusedPath: path }),
+      isHeatmapVisible: false,
+      setIsHeatmapVisible: (isVisible) => set({ isHeatmapVisible: isVisible }),
+      simulatedTime: null,
+      setSimulatedTime: (time) => set({ simulatedTime: time }),
+
+
       setFilters: (update) => set((state) => {
         const newFilters = typeof update === 'function' ? update(state.filters) : update;
         return { 
@@ -66,7 +84,14 @@ const useAppStore = create<AppState>()(
             activeFilterCount: calculateActiveFilterCount(newFilters)
         };
       }),
-      clearFilters: () => set({ filters: INITIAL_FILTERS, globalSearchTerm: '', activeFilterCount: 0 }),
+      clearFilters: () => set({ 
+          filters: INITIAL_FILTERS, 
+          globalSearchTerm: '', 
+          activeFilterCount: 0,
+          focusedPath: null,
+          isHeatmapVisible: false,
+          simulatedTime: null,
+      }),
       toggleArrayFilter: (filterType, value) => set(state => {
         const currentFilterValues = state.filters[filterType] as string[];
         const newFilterValues = currentFilterValues.includes(value)
@@ -78,10 +103,12 @@ const useAppStore = create<AppState>()(
             activeFilterCount: calculateActiveFilterCount(newFilters)
         };
       }),
-      toggleSessionTypeFilter: (sessionType) => set(state => {
+      // FIX: Explicitly typed `newSessionType` to prevent TypeScript from widening the type to a generic `string`, ensuring it conforms to `LiveOpsFilters['sessionType']`.
+      toggleSessionTypeFilter: (sessionType: 'tech' | 'professional') => set(state => {
+        const newSessionType: LiveOpsFilters['sessionType'] = state.filters.sessionType === sessionType ? 'all' : sessionType;
         const newFilters = {
             ...state.filters,
-            sessionType: state.filters.sessionType === sessionType ? 'all' : sessionType,
+            sessionType: newSessionType,
         };
         return {
             filters: newFilters,
@@ -96,6 +123,7 @@ const useAppStore = create<AppState>()(
         activePage: state.activePage,
         filters: state.filters,
         globalSearchTerm: state.globalSearchTerm,
+        isHeatmapVisible: state.isHeatmapVisible, // Persist heatmap view preference
       }),
     }
   )

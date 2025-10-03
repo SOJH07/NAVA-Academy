@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { AnalyzedStudent, StudentGrades } from '../types';
+import type { AnalyzedStudent, FoundationGrades } from '../types';
 import useAppStore from '../hooks/useAppStore';
 import { useDebounce } from '../hooks/useDebounce';
 import ChartContainer from '../components/ChartContainer';
@@ -8,7 +8,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 // @ts-ignore
 import { FixedSizeList as List } from 'react-window';
 
-const NAVA_UNITS: (keyof StudentGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
+const NAVA_UNITS: (keyof FoundationGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
 
 const KpiCard: React.FC<{ title: string; value: string | number; }> = ({ title, value }) => (
     <div className="bg-slate-50 dark:bg-dark-panel p-4 rounded-lg text-center shadow-sm border border-slate-200 dark:border-dark-border">
@@ -53,7 +53,8 @@ const GpaAnalysisPage: React.FC<GpaAnalysisPageProps> = ({ allStudents }) => {
         if (filters.aptisCEFRLevels.length > 0) studentsToFilter = studentsToFilter.filter(s => s.aptisScores?.overall.cefr && filters.aptisCEFRLevels.includes(s.aptisScores.overall.cefr));
         if (filters.techGroups.length > 0) studentsToFilter = studentsToFilter.filter(s => filters.techGroups.includes(s.techGroup));
         if (filters.technicalGrades.length > 0) {
-            studentsToFilter = studentsToFilter.filter(s => s.grades && NAVA_UNITS.some(unit => { const grade = s.grades?.[unit]; return grade ? filters.technicalGrades.includes(grade) : false; }));
+            // FIX: Removed `.foundation` to access grades from the flattened StudentGrades structure.
+            studentsToFilter = studentsToFilter.filter(s => s.grades && NAVA_UNITS.some(unit => { const grade = s.grades?.[unit]; return typeof grade === 'string' ? filters.technicalGrades.includes(grade) : false; }));
         }
         if (filters.performanceSegments.length > 0) {
             studentsToFilter = studentsToFilter.filter(s => filters.performanceSegments.includes(s.performanceSegment));

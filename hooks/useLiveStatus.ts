@@ -39,18 +39,34 @@ export const useLiveStatus = (
     analyzedStudents: AnalyzedStudent[],
     dailySchedule: DailyPeriod[],
     groupInfo: GroupInfo,
-    scheduleAssignments: Assignment[]
+    scheduleAssignments: Assignment[],
+    simulatedTime: number | null
 ) => {
-    const [now, setNow] = useState(new Date());
+    const [now, setNow] = useState(new Date(simulatedTime ?? Date.now()));
 
     useEffect(() => {
+        if (simulatedTime !== null) {
+            setNow(new Date(simulatedTime));
+            return;
+        }
         const timerId = setInterval(() => setNow(new Date()), 1000); // Update every second for live timer
         return () => clearInterval(timerId);
-    }, []);
+    }, [simulatedTime]);
 
     const weekNumber = useMemo(() => getWeekNumber(now), [now]);
     const nowMinutes = useMemo(() => now.getHours() * 60 + now.getMinutes(), [now]);
     const today: Assignment['day'] = useMemo(() => DAYS[now.getDay()], [now]);
+
+    const isOperationalHours = useMemo(() => {
+        if (simulatedTime !== null) return true; // Always treat simulated time as operational for viewing past/future states
+        const isWeekday = today !== 'Friday' && today !== 'Saturday';
+        if (!isWeekday || dailySchedule.length === 0) return false;
+        
+        const firstPeriodStart = timeToMinutes(dailySchedule[0].start);
+        const lastPeriodEnd = timeToMinutes(dailySchedule[dailySchedule.length - 1].end);
+
+        return nowMinutes >= firstPeriodStart && nowMinutes < lastPeriodEnd;
+    }, [today, nowMinutes, dailySchedule, simulatedTime]);
 
     const currentPeriod = useMemo<DailyPeriod | null>(() => {
         return dailySchedule.find(p => {
@@ -166,5 +182,5 @@ export const useLiveStatus = (
 
     }, [analyzedStudents, nowMinutes, currentPeriod, today, dailySchedule, scheduleAssignments, groupInfo]);
 
-    return { now, weekNumber, currentPeriod, ...liveData, overallStatus };
+    return { now, weekNumber, currentPeriod, ...liveData, overallStatus, isOperationalHours };
 };

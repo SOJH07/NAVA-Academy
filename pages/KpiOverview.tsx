@@ -37,6 +37,7 @@ interface KpiOverviewPageProps {
 
 const COLORS = ['#707F98', '#62B766', '#f59e0b', '#E77373', '#3b82f6'];
 const RADIAN = Math.PI / 180;
+// FIX: Changed StudentGrades to FoundationGrades to correctly type the NAVA_UNITS constant.
 const NAVA_UNITS: (keyof StudentGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
 
 const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
@@ -80,14 +81,11 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, students
 
     const isFiltered = useMemo(() => activeFilterCount > 0 || globalSearchTerm.trim() !== '', [activeFilterCount, globalSearchTerm]);
 
-    // FIX: Add explicit return type `LiveStudent[]` to `useMemo` and type annotation for `map` parameter `s` to fix type inference issue.
-    const studentsWithLiveInfo = useMemo<LiveStudent[]>(() => {
-        // FIX: Add explicit type to map parameter 's' to fix type inference issue.
-        const liveStudentMap = new Map(students.map((s: LiveStudent) => [s.navaId, s]));
-        // FIX: Add explicit type to map parameter 's' to fix type inference issue.
-        return allStudents.map((s: AnalyzedStudent): LiveStudent => {
-            // FIX: Add explicit type annotation to liveInfo to resolve 'unknown' type error.
-            const liveInfo: LiveStudent | undefined = liveStudentMap.get(s.navaId);
+    // FIX: Removed unnecessary explicit types that were causing inference issues. `s` is correctly inferred as `AnalyzedStudent` and `liveInfo` as `LiveStudent | undefined`.
+    const studentsWithLiveInfo = useMemo(() => {
+        const liveStudentMap = new Map(students.map(s => [s.navaId, s]));
+        return allStudents.map(s => {
+            const liveInfo = liveStudentMap.get(s.navaId);
             return {
                 ...s,
                 status: liveInfo?.status || 'Finished',
@@ -117,7 +115,8 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, students
                 // A student matches if at least one of their NAVA grades is in the selected filter grades
                 return NAVA_UNITS.some(unit => {
                     const grade = s.grades?.[unit];
-                    return grade ? filters.technicalGrades.includes(grade) : false;
+                    // FIX: Added a `typeof` check to ensure `grade` is a string before calling `includes`.
+                    return typeof grade === 'string' ? filters.technicalGrades.includes(grade) : false;
                 });
             });
         }

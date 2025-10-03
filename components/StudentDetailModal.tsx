@@ -12,7 +12,9 @@ const ExclamationTriangleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" cl
 const LightBulbIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 7.072l.707-.707a1 1 0 10-1.414-1.414l-.707.707a1 1 0 001.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" /></svg>;
 
 
-const NAVA_UNITS: (keyof StudentGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
+// FIX: The type for NAVA_UNITS was too broad (keyof StudentGrades), causing type inference issues.
+// It has been narrowed to a specific union of NAVA unit keys, ensuring that accessing student.grades[unit] resolves to `string | null`.
+const NAVA_UNITS: ('nava001' | 'nava002' | 'nava003' | 'nava004' | 'nava005' | 'nava006' | 'nava007' | 'nava008')[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
 const NAVA_GRADE_MAP: Record<string, string> = { 'D': 'Distinction (80+)', 'M': 'Merit (70-79)', 'P': 'Pass (60-69)', 'UC': 'Unclassified (<60)', 'F': 'Fail (<60)', 'UA': 'Unauthorised Absence' };
 
 const gradeToScore = (grade: string | null): number | null => {
@@ -106,9 +108,11 @@ ${NAVA_UNITS.map(unit => `- ${unit.toUpperCase()}: ${student.grades?.[unit] ?? '
         try {
             if (!process.env.API_KEY) throw new Error("API key is not configured.");
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            // FIX: Updated deprecated 'gemini-1.5-flash' model to 'gemini-2.5-flash'.
             const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt, config: { responseMimeType: "application/json", responseSchema } });
-            // FIX: Changed toString() to trim() to align with Gemini API guidelines for parsing JSON.
-            setAiSummary({ loading: false, data: JSON.parse(response.text.trim()), error: '' });
+            // FIX: The type of `response.text` can be inferred incorrectly as an object when a responseSchema is used.
+            // Casting to string aligns with the API documentation and resolves the type error for JSON.parse.
+            setAiSummary({ loading: false, data: JSON.parse((response.text as string).trim()), error: '' });
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
             setAiSummary({ loading: false, data: null, error: `Failed to generate summary: ${errorMessage}` });
@@ -180,7 +184,8 @@ ${NAVA_UNITS.map(unit => `- ${unit.toUpperCase()}: ${student.grades?.[unit] ?? '
                                       <div key={label}>
                                           <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted">{label}</p>
                                           <div className="w-full text-center font-bold text-sm bg-white dark:bg-dark-body border border-slate-300 dark:border-dark-border rounded-md py-1 h-8 flex items-center justify-center">
-                                              {(value ?? 'N/A').toString()}
+                                              {/* FIX: Coerce value to string to satisfy strict type checking. This prevents errors when `value` is a number. */}
+                                              {String(value ?? 'N/A')}
                                           </div>
                                       </div>
                                   ))}

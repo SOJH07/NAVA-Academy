@@ -58,11 +58,10 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
         let studentFilteredGroups: Set<string> | null = null;
     
         const applyStudentFilter = (filterFn: (student: AnalyzedStudent) => boolean) => {
-            const matchingGroups = new Set(allStudents.filter(filterFn).map(s => s.techGroup));
+            const matchingGroups: Set<string> = new Set(allStudents.filter(filterFn).map(s => s.techGroup));
             if (studentFilteredGroups === null) {
                 studentFilteredGroups = matchingGroups;
             } else {
-                // FIX: Re-implemented set intersection to be more explicit about types and avoid potential inference issues.
                 const intersection = new Set<string>();
                 for (const group of studentFilteredGroups) {
                     if (matchingGroups.has(group)) {
@@ -74,7 +73,7 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
         };
     
         if (filters.technicalGrades.length > 0) {
-            applyStudentFilter(s => s.grades && NAVA_UNITS.some(unit => { const grade = s.grades?.[unit]; return grade ? filters.technicalGrades.includes(grade) : false; }));
+            applyStudentFilter(s => s.grades && NAVA_UNITS.some(unit => { const grade = s.grades?.[unit]; return typeof grade === 'string' ? filters.technicalGrades.includes(grade) : false; }));
         }
 
         if (filters.gpaRange[0] > 0 || filters.gpaRange[1] < 4) {

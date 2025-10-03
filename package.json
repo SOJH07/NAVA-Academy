@@ -17,7 +17,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@google/genai": "^1.10.0",
     "date-fns": "^4.1.0",
-    "@dnd-kit/modifiers": "^9.0.0",
     "react-window": "^1.8.10",
     "react-virtualized-auto-sizer": "^1.0.24"
   },

@@ -118,7 +118,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
 
 
     const SessionCard: React.FC<{
-        type: 'industrial' | 'service' | 'professional';
+        type: 'industrial' | 'service';
     }> = ({ type }) => {
         const dataMap = {
             industrial: { 
@@ -142,18 +142,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
                 borderColor: 'border-status-tech/20', 
                 ringColor: 'ring-status-tech',
                 filterType: 'tech'
-            },
-            professional: { 
-                count: sessionInfo.sessionCounts.professional, 
-                groups: sessionInfo.sessionGroups.professional, 
-                icon: <ProfessionalIcon className="h-6 w-6 text-status-professional"/>, 
-                title: 'Professional Development', 
-                lightColor: 'bg-status-professional-light', 
-                darkColor: 'text-status-professional', 
-                borderColor: 'border-status-professional/20', 
-                ringColor: 'ring-status-professional',
-                filterType: 'professional'
-            },
+            }
         };
         const { count, groups, icon, title, lightColor, darkColor, borderColor, ringColor, filterType } = dataMap[type];
         
@@ -300,7 +289,6 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
             <div className={`flex-shrink-0 space-y-3 mb-4 flex transition-all flex-col`}>
                 <SessionCard type="industrial" />
                 <SessionCard type="service" />
-                <SessionCard type="professional" />
             </div>
 
             {/* Daily Schedule */}

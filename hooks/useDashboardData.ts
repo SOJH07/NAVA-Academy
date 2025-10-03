@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { EnhancedStudent } from '../types';
+import type { EnhancedStudent, Student } from '../types';
 import { students, groupInfo, dailySchedule, allFloorLayouts } from '../data/academyData';
 import { processedScheduleData } from '../data/scheduleData';
 import { studentPerformanceData } from '../data/studentPerformanceData';
@@ -8,11 +8,15 @@ export const useDashboardData = () => {
 
   const enhancedStudents = useMemo<EnhancedStudent[]>(() => {
     return students.map(student => {
-      const techInfo = groupInfo[student.techGroup];
+      const currentAcademicRecord = student.academicHistory[student.academicHistory.length - 1];
+      const techGroup = currentAcademicRecord.techGroup;
+
+      const techInfo = groupInfo[techGroup];
       const performance = studentPerformanceData[student.navaId];
 
       return {
         ...student,
+        techGroup,
         fullName: `${student.name} ${student.surname}`,
         trackName: techInfo?.track_name || 'N/A',
         techScheduleType: techInfo?.schedule_type || 'N/A',
@@ -26,8 +30,9 @@ export const useDashboardData = () => {
     const techCounts: Record<string, number> = {};
     
     for (const student of students) {
-        if (student.techGroup) {
-            techCounts[student.techGroup] = (techCounts[student.techGroup] || 0) + 1;
+        const currentGroup = student.academicHistory[student.academicHistory.length - 1]?.techGroup;
+        if (currentGroup) {
+            techCounts[currentGroup] = (techCounts[currentGroup] || 0) + 1;
         }
     }
     return { tech: techCounts };
@@ -36,9 +41,10 @@ export const useDashboardData = () => {
   const groupCompanyMap = useMemo(() => {
     const map: Record<string, Set<string>> = {};
     for (const student of students) {
-        if (student.techGroup) {
-            if (!map[student.techGroup]) map[student.techGroup] = new Set();
-            map[student.techGroup].add(student.company);
+        const currentGroup = student.academicHistory[student.academicHistory.length - 1]?.techGroup;
+        if (currentGroup) {
+            if (!map[currentGroup]) map[currentGroup] = new Set();
+            map[currentGroup].add(student.company);
         }
     }
     // Convert sets to arrays for easier use
@@ -100,7 +106,7 @@ export const useDashboardData = () => {
         .filter((cefr): cefr is string => !!cefr))
     ).sort();
     
-    const allFloorItems = [...allFloorLayouts.second, ...allFloorLayouts.first, ...allFloorLayouts.ground];
+    const allFloorItems = [...allFloorLayouts.third, ...allFloorLayouts.second, ...allFloorLayouts.first, ...allFloorLayouts.ground];
 
     return {
         allCompanies: Array.from(new Set(students.map(s => s.company))).sort(),

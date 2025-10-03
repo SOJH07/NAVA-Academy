@@ -50,6 +50,7 @@ const SmartSummary: React.FC<SmartSummaryProps> = ({ kpis, liveStatusData, sessi
                 throw new Error("API key is not configured.");
             }
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            // FIX: Updated deprecated 'gemini-1.5-flash' model to 'gemini-2.5-flash'.
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: prompt,

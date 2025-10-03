@@ -13,6 +13,7 @@ import InstructorProfilesPage from './InstructorProfiles';
 import AnalyticsPage from './AnalyticsPage';
 import GpaAnalysisPage from './GpaAnalysisPage';
 import LiveStatusSidebar from '../components/LiveStatusSidebar';
+import CurriculumPage from './CurriculumPage';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useLiveStatus } from '../hooks/useLiveStatus';
 import useAppStore from '../hooks/useAppStore';
@@ -26,6 +27,7 @@ const pages: Page[] = [
     { id: 'studentFinder', label: 'Student Finder', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" /></svg> },
     { id: 'instructorSchedule', label: 'Instructor Schedule', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> },
     { id: 'instructorProfiles', label: 'Instructor Profiles', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg> },
+    { id: 'curriculum', label: 'Curriculum', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg> },
     { id: 'facilityManagement', label: 'Facility Management', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-2 0v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" /></svg> },
     { id: 'calendar', label: 'Calendar', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
 ];
@@ -39,38 +41,22 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
        globalSearchTerm, setGlobalSearchTerm,
        filters, setFilters,
        toggleArrayFilter, toggleSessionTypeFilter,
-       clearFilters
+       clearFilters,
+       activeFilterCount,
+       simulatedTime
     } = useAppStore();
 
     const dashboardData = useDashboardData();
     const { analyzedStudents } = useAnalyticsData(dashboardData.enhancedStudents);
 
+    // FIX: Pass the `simulatedTime` argument to the `useLiveStatus` hook to fix missing argument error.
     const liveStatusData = useLiveStatus(
         analyzedStudents,
         dashboardData.dailySchedule,
         dashboardData.groupInfo,
-        dashboardData.processedScheduleData
+        dashboardData.processedScheduleData,
+        simulatedTime
     );
-
-    const activeFilterCount = useMemo(() => {
-        let count = 0;
-        if (filters.gpaRange[0] > 0 || filters.gpaRange[1] < 4) count++;
-        
-        count += Object.values(filters).reduce<number>((acc, filterValue) => {
-            if (Array.isArray(filterValue)) {
-                return acc + filterValue.length;
-            }
-            if (typeof filterValue === 'string' && filterValue !== 'all') {
-                return acc + 1;
-            }
-            return acc;
-        }, 0);
-
-        // Subtract the initial count for gpaRange if it was counted as a non-array
-        if (filters.gpaRange) count--;
-
-        return count;
-    }, [filters]);
 
     const sessionInfo = useMemo(() => {
         const industrialGroupsInSession = new Set<string>();
@@ -156,6 +142,8 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                 return <InstructorProfilesPage 
                             groupInfo={dashboardData.groupInfo}
                         />;
+            case 'curriculum':
+                return <CurriculumPage />;
             case 'facilityManagement':
                 return <FacilityManagementPage />;
             case 'calendar':

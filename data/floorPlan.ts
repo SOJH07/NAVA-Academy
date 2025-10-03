@@ -1,92 +1,151 @@
 import type { FloorPlanItem } from '../types';
 
-export const secondFloorLayout: FloorPlanItem[] = [
-    // Column 1
-    { name: 'C-206', type: 'classroom', gridColumn: '1', gridRow: '1' },
-    { name: 'C-207', type: 'classroom', gridColumn: '1', gridRow: '2' },
-    { name: 'C-208', type: 'classroom', gridColumn: '1', gridRow: '3' },
-    { name: 'C-209', type: 'classroom', gridColumn: '1', gridRow: '4' },
-    { name: 'C-210', type: 'classroom', gridColumn: '1', gridRow: '5' },
-    { name: 'Core', type: 'static', gridColumn: '1', gridRow: '6' },
-    { name: 'TUV Office', type: 'static', gridColumn: '1', gridRow: '7' },
-    { name: 'C-211', type: 'classroom', gridColumn: '1', gridRow: '8' },
-    { name: 'C-212', type: 'classroom', gridColumn: '1', gridRow: '9' },
-    { name: 'C-213', type: 'classroom', gridColumn: '1', gridRow: '10' },
-    { name: 'Computer Lab', type: 'lab', gridColumn: '1', gridRow: '11' },
+export const groundFloorLayout: FloorPlanItem[] = [
+    // Top Left Bank
+    { name: 'WS-07 & 08 EV-Service HVAC System', type: 'lab', gridColumn: '3 / span 2', gridRow: '1 / span 2', capacity: 16 },
+    { name: 'WS-06 EV-INDUSTRIAL Electrical Lab-01', type: 'lab', gridColumn: '5 / span 1', gridRow: '1 / span 2', capacity: 16 },
+    { name: 'WS-05 EV-INDUSTRIAL Electro-mechanical Lab-01', type: 'lab', gridColumn: '6 / span 1', gridRow: '1 / span 2', capacity: 16 },
+    
+    // Bottom Left Bank
+    { name: 'WS-09 & 10 EV-INDUSTRIAL (Smart Mfg)', type: 'lab', gridColumn: '3 / span 2', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'WS-11 EV-INDUSTRIAL Electrical Lab-02', type: 'lab', gridColumn: '5 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'WS-12 EV-INDUSTRIAL Electrical Advance', type: 'lab', gridColumn: '6 / span 1', gridRow: '4 / span 2', capacity: 16 },
 
-    // Column 2
-    { name: 'C-205', type: 'classroom', gridColumn: '2', gridRow: '1' },
-    { name: 'C-204', type: 'classroom', gridColumn: '2', gridRow: '2' },
-    { name: 'C-203', type: 'classroom', gridColumn: '2', gridRow: '3' },
-    { name: 'C-202', type: 'classroom', gridColumn: '2', gridRow: '4' },
-    { name: 'C-201', type: 'classroom', gridColumn: '2', gridRow: '5' },
-    { name: 'Technical Trainers', type: 'static', gridColumn: '2', gridRow: '6' },
-    { name: 'Dean Office', type: 'static', gridColumn: '2', gridRow: '7' },
-    { name: 'C-218', type: 'classroom', gridColumn: '2', gridRow: '8' },
-    { name: 'C-217', type: 'classroom', gridColumn: '2', gridRow: '9' },
-    { name: 'C-216', type: 'classroom', gridColumn: '2', gridRow: '10' },
-    { name: 'C-215', type: 'classroom', gridColumn: '2', gridRow: '11' },
+    // Center Area
+    { name: 'Waiting Lobby', type: 'static', gridColumn: '7 / span 1', gridRow: '1 / span 2' },
+    { name: 'Main Reception Lobby', type: 'static', gridColumn: '5 / span 5', gridRow: '3 / span 1' },
+    { name: 'Mechanical Room', type: 'static', gridColumn: '10 / span 1', gridRow: '1 / span 2' },
+    { name: 'Admin Office - 1', type: 'static', gridColumn: '10 / span 1', gridRow: '4 / span 2' },
+
+    // Top Right Bank
+    { name: 'WS-04 EV-INDUSTRIAL Pneumatic Lab-01', type: 'lab', gridColumn: '11 / span 1', gridRow: '1 / span 2', capacity: 16 },
+    { name: 'WS-03 EV-INDUSTRIAL PLC Lab-01', type: 'lab', gridColumn: '12 / span 1', gridRow: '1 / span 2', capacity: 16 },
+    { name: 'Recreational Room', type: 'static', gridColumn: '13 / span 1', gridRow: '1 / span 1' },
+    { name: 'Temporary Dining Hall-01', type: 'static', gridColumn: '13 / span 1', gridRow: '2 / span 1' },
+    { name: 'Store Room', type: 'static', gridColumn: '14 / span 1', gridRow: '1 / span 1' },
+    { name: 'Temporary Dining Hall-02', type: 'static', gridColumn: '14 / span 1', gridRow: '2 / span 1' },
+    { name: 'Store Room Top', type: 'static', gridColumn: '15 / span 1', gridRow: '1 / span 1' },
+    
+    // Bottom Right Bank
+    { name: 'WS-13 EV-INDUSTRIAL Pneumatic Lab-02', type: 'lab', gridColumn: '11 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'WS-14 EV-INDUSTRIAL PLC Lab-02', type: 'lab', gridColumn: '12 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'Recreational Room 2', type: 'static', gridColumn: '13 / span 1', gridRow: '4 / span 2' },
+    { name: 'Store Room Bottom', type: 'static', gridColumn: '15 / span 1', gridRow: '4 / span 2' },
 ];
 
 export const firstFloorLayout: FloorPlanItem[] = [
-    // Column 1
-    { name: 'C-106', type: 'classroom', gridColumn: '1', gridRow: '1' },
-    { name: 'C-107', type: 'classroom', gridColumn: '1', gridRow: '2' },
-    { name: 'C-108', type: 'classroom', gridColumn: '1', gridRow: '3' },
-    { name: 'C-109', type: 'classroom', gridColumn: '1', gridRow: '4' },
-    { name: 'C-110', type: 'classroom', gridColumn: '1', gridRow: '5' },
-    { name: 'Office', type: 'static', gridColumn: '1', gridRow: '6' },
-    { name: 'Office', type: 'static', gridColumn: '1', gridRow: '7' },
-    { name: 'C-111', type: 'classroom', gridColumn: '1', gridRow: '8' },
-    { name: 'C-112', type: 'classroom', gridColumn: '1', gridRow: '9' },
-    { name: 'C-113', type: 'classroom', gridColumn: '1', gridRow: '10' },
-    { name: 'C-114', type: 'classroom', gridColumn: '1', gridRow: '11' },
+    // Top Left Bank
+    { name: 'Room 1.12 Computer Lab', type: 'lab', gridColumn: '2 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Lab-03 High Voltage L2/L3', type: 'lab', gridColumn: '3 / span 1', gridRow: '1 / span 2', capacity: 16 },
+    { name: 'Lab-01 Basic Electrical', type: 'lab', gridColumn: '4 / span 1', gridRow: '1 / span 2', capacity: 16 },
+    
+    // Bottom Left Bank
+    { name: 'Lab-05 Lighting System', type: 'lab', gridColumn: '2 / span 2', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'Lab-04 Advance Electronics', type: 'lab', gridColumn: '4 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'Lab-02 Elec & HV Basics', type: 'lab', gridColumn: '5 / span 1', gridRow: '4 / span 2', capacity: 16 },
 
-    // Column 2
-    { name: 'C-105', type: 'classroom', gridColumn: '2', gridRow: '1' },
-    { name: 'C-104', type: 'classroom', gridColumn: '2', gridRow: '2' },
-    { name: 'C-103', type: 'classroom', gridColumn: '2', gridRow: '3' },
-    { name: 'C-102', type: 'classroom', gridColumn: '2', gridRow: '4' },
-    { name: 'C-101', type: 'classroom', gridColumn: '2', gridRow: '5' },
-    { name: 'Office', type: 'static', gridColumn: '2', gridRow: '6' },
-    { name: 'Office', type: 'static', gridColumn: '2', gridRow: '7' },
-    { name: 'C-118', type: 'classroom', gridColumn: '2', gridRow: '8' },
-    { name: 'C-117', type: 'classroom', gridColumn: '2', gridRow: '9' },
-    { name: 'C-116', type: 'classroom', gridColumn: '2', gridRow: '10' },
-    { name: 'C-115', type: 'classroom', gridColumn: '2', gridRow: '11' },
+    // Center Area
+    { name: 'Cafeteria', type: 'static', gridColumn: '6 / span 2', gridRow: '1 / span 1' },
+    { name: 'Library', type: 'static', gridColumn: '6 / span 1', gridRow: '2 / span 1' },
+    { name: 'Classroom L-116', type: 'classroom', gridColumn: '5 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Cubical 102', type: 'static', gridColumn: '6 / span 1', gridRow: '4 / span 1' },
+    { name: 'Cubical 101', type: 'static', gridColumn: '6 / span 1', gridRow: '5 / span 1' },
+    { name: 'Staff Room', type: 'static', gridColumn: '7 / span 1', gridRow: '5 / span 1' },
+    { name: 'Meeting Room', type: 'static', gridColumn: '7 / span 1', gridRow: '4 / span 1' },
+    { name: 'Prayer Area', type: 'static', gridColumn: '10 / span 1', gridRow: '1 / span 2' },
+
+    // Top Right Bank
+    { name: 'Lab-06 HV L3', type: 'lab', gridColumn: '11 / span 1', gridRow: '1 / span 2', capacity: 16 },
+    { name: 'Classroom R-107', type: 'classroom', gridColumn: '12 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom R-106', type: 'classroom', gridColumn: '13 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'ROOM 1.05 Hydraulics Lab', type: 'lab', gridColumn: '14 / span 1', gridRow: '1 / span 2', capacity: 16 },
+
+    // Bottom Right Bank
+    { name: 'ROOM 1.01 Robotics Lab-I', type: 'lab', gridColumn: '11 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'ROOM 1.02 Robotics Lab-II', type: 'lab', gridColumn: '12 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'ROOM 1.03 HVAC Lab', type: 'lab', gridColumn: '13 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'ROOM 1.04 Mechanical Lab', type: 'lab', gridColumn: '14 / span 1', gridRow: '4 / span 2', capacity: 16 },
 ];
 
-export const groundFloorLayout: FloorPlanItem[] = [
-    // Column 1
-    { name: 'WS-0.5', type: 'workshop', gridColumn: '1', gridRow: '1' },
-    { name: 'WS-G01', type: 'workshop', gridColumn: '1', gridRow: '2' },
-    { name: 'WS-G03', type: 'workshop', gridColumn: '1', gridRow: '3' },
-    { name: 'WS-G05', type: 'workshop', gridColumn: '1', gridRow: '4' },
-    { name: 'WS-G07', type: 'workshop', gridColumn: '1', gridRow: '5' },
-    { name: 'Reception', type: 'static', gridColumn: '1', gridRow: '6' },
-    { name: 'Security', type: 'static', gridColumn: '1', gridRow: '7' },
-    { name: 'WS-G09', type: 'workshop', gridColumn: '1', gridRow: '8' },
-    { name: 'WS-G11', type: 'workshop', gridColumn: '1', gridRow: '9' },
-    { name: 'WS-G13', type: 'workshop', gridColumn: '1', gridRow: '10' },
-    { name: 'Maintenance', type: 'static', gridColumn: '1', gridRow: '11' },
+export const secondFloorLayout: FloorPlanItem[] = [
+    // Top Left Bank
+    { name: 'Room 2.14 Computer Lab-II', type: 'lab', gridColumn: '2 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom L-213', type: 'classroom', gridColumn: '4 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom L-212', type: 'classroom', gridColumn: '5 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    // Bottom Left Bank
+    { name: 'EV Service Theory Class DPST-01', type: 'classroom', gridColumn: '2 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'EV Service Theory Class DPST-02', type: 'classroom', gridColumn: '3 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'EV Service Theory Class DPST-03', type: 'classroom', gridColumn: '4 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'EV Service Theory Class DPST-04', type: 'classroom', gridColumn: '5 / span 1', gridRow: '4 / span 2', capacity: 20 },
 
-    // Column 2
-    { name: 'WS-0.6', type: 'workshop', gridColumn: '2', gridRow: '1' },
-    { name: 'WS-G02', type: 'workshop', gridColumn: '2', gridRow: '2' },
-    { name: 'WS-G04', type: 'workshop', gridColumn: '2', gridRow: '3' },
-    { name: 'WS-G06', type: 'workshop', gridColumn: '2', gridRow: '4' },
-    { name: 'WS-G08', type: 'workshop', gridColumn: '2', gridRow: '5' },
-    { name: 'First Aid', type: 'static', gridColumn: '2', gridRow: '6' },
-    { name: 'IT Office', type: 'static', gridColumn: '2', gridRow: '7' },
-    { name: 'WS-G10', type: 'workshop', gridColumn: '2', gridRow: '8' },
-    { name: 'WS-G12', type: 'workshop', gridColumn: '2', gridRow: '9' },
-    { name: 'WS-G14', type: 'workshop', gridColumn: '2', gridRow: '10' },
-    { name: 'Storage', type: 'static', gridColumn: '2', gridRow: '11' },
+    // Center
+    { name: 'Cafeteria', type: 'static', gridColumn: '6 / span 2', gridRow: '1 / span 2' },
+    { name: 'Classroom R-210', type: 'classroom', gridColumn: '9 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom L-219', type: 'classroom', gridColumn: '6 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'Staff Room C-202', type: 'static', gridColumn: '7 / span 1', gridRow: '4 / span 2' },
+
+    // Top Right Bank
+    { name: 'EV Industry Theory Class DPIT-09', type: 'classroom', gridColumn: '10 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'EV Industry Theory Class DPIT-08', type: 'classroom', gridColumn: '11 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'EV Industry Theory Class DPIT-07', type: 'classroom', gridColumn: '12 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'EV Industry Theory Class DPIT-06', type: 'classroom', gridColumn: '13 / span 1', gridRow: '1 / span 2', capacity: 20 },
+
+    // Bottom Right Bank
+    { name: 'EV Industry Theory Class DPIT-01', type: 'classroom', gridColumn: '9 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'EV Industry Theory Class DPIT-02', type: 'classroom', gridColumn: '10 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'EV Industry Theory Class DPIT-03', type: 'classroom', gridColumn: '11 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'EV Industry Theory Class DPIT-04', type: 'classroom', gridColumn: '12 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'EV Industry Theory Class DPIT-05', type: 'classroom', gridColumn: '13 / span 1', gridRow: '4 / span 2', capacity: 20 },
 ];
 
+export const thirdFloorLayout: FloorPlanItem[] = [
+    // Top Left Bank
+    { name: 'Classroom L-214', type: 'classroom', gridColumn: '2 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom L-213', type: 'classroom', gridColumn: '3 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom L-212', type: 'classroom', gridColumn: '4 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom L-311', type: 'classroom', gridColumn: '5 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    // Bottom Left Bank
+    { name: 'Classroom L-215', type: 'classroom', gridColumn: '2 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'Classroom L-216', type: 'classroom', gridColumn: '3 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'Classroom L-217', type: 'classroom', gridColumn: '4 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'Classroom L-218', type: 'classroom', gridColumn: '5 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    
+    // Center
+    { name: 'Cafeteria', type: 'static', gridColumn: '6 / span 2', gridRow: '1 / span 2' },
+    { name: 'Classroom L-219', type: 'classroom', gridColumn: '6 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'Staff Room C-303', type: 'static', gridColumn: '8 / span 1', gridRow: '4 / span 2' },
+
+    // Top Right Bank
+    { name: 'Classroom R-210', type: 'classroom', gridColumn: '9 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom R-209', type: 'classroom', gridColumn: '10 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom R-308', type: 'classroom', gridColumn: '11 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom R-307', type: 'classroom', gridColumn: '12 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    { name: 'Classroom R-306', type: 'classroom', gridColumn: '13 / span 1', gridRow: '1 / span 2', capacity: 20 },
+    
+    // Bottom Right Bank
+    { name: 'Temporary Electrical Lab-01', type: 'lab', gridColumn: '9 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'Temporary Electrical Lab-02', type: 'lab', gridColumn: '10 / span 1', gridRow: '4 / span 2', capacity: 16 },
+    { name: 'Classroom R-303', type: 'classroom', gridColumn: '11 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'Classroom R-304', type: 'classroom', gridColumn: '12 / span 1', gridRow: '4 / span 2', capacity: 20 },
+    { name: 'Classroom R-305', type: 'classroom', gridColumn: '13 / span 1', gridRow: '4 / span 2', capacity: 20 },
+];
+
+export const incubatorLayout: FloorPlanItem[] = [
+    { name: 'INCUBATOR 10: Electro-Mechanical', type: 'workshop', gridColumn: '1 / span 2', gridRow: '1 / span 6', capacity: 20 },
+    { name: 'INCUBATOR 9: Automation/Robotics', type: 'workshop', gridColumn: '3 / span 2', gridRow: '1 / span 6', capacity: 20 },
+    { name: 'INCUBATOR 8: Glass Repair & Body Paint', type: 'workshop', gridColumn: '5 / span 2', gridRow: '1 / span 6', capacity: 20 },
+    { name: 'INCUBATOR 7: High Voltage & Diagnostics', type: 'workshop', gridColumn: '7 / span 1', gridRow: '1 / span 6', capacity: 12 },
+    { name: 'INCUBATOR 6: High Voltage DGUV', type: 'workshop', gridColumn: '8 / span 1', gridRow: '1 / span 6', capacity: 12 },
+    { name: 'INCUBATOR 5: Break, Steering Wheel', type: 'workshop', gridColumn: '9 / span 2', gridRow: '1 / span 6', capacity: 16 },
+    { name: 'INCUBATOR 4: Tires, Breaks, Wheels', type: 'workshop', gridColumn: '11 / span 2', gridRow: '1 / span 6', capacity: 16 },
+    { name: 'INCUBATOR 3: Accessories, Lighting', type: 'workshop', gridColumn: '13 / span 2', gridRow: '1 / span 6', capacity: 16 },
+    { name: 'INCUBATOR 2 & 1', type: 'workshop', gridColumn: '15 / span 1', gridRow: '1 / span 6', capacity: 16 },
+];
 
 export const allFloorLayouts = {
+    third: thirdFloorLayout,
     second: secondFloorLayout,
     first: firstFloorLayout,
     ground: groundFloorLayout,
+    incubator: incubatorLayout
 };
