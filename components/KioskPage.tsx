@@ -16,6 +16,8 @@ import ClassroomStatusModal from '../components/ClassroomStatusModal';
 import KioskHeader from '../components/KioskHeader';
 import KioskWelcomeScreen from '../components/KioskWelcomeScreen';
 import useAppStore from '../hooks/useAppStore';
+// FIX: Import 'FloorPlanLegend' component to resolve 'Cannot find name' error.
+import FloorPlanLegend from '../components/FloorPlanLegend';
 
 interface KioskPageProps {
     onExitKiosk: () => void;
@@ -272,7 +274,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                                 groupAssignments={dailyAssignments.filter(a => a.group === selectedGroup)}
                                 currentPeriodName={liveStatusData.currentPeriod?.name ?? null}
                                 groupInfo={dashboardData.groupInfo}
-                                // FIX: Pass the 'language' prop to the GroupDailyScheduleCard component.
                                 language={language}
                             />
                         ) : (isSearching || selectedClassroom) ? (

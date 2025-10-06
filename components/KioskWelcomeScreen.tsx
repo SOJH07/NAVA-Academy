@@ -51,7 +51,7 @@ const KioskWelcomeScreen: React.FC<KioskWelcomeScreenProps> = ({ onEnter, now })
     const { greeting, subheading } = useMemo(() => getDynamicContent(now), [now]);
 
     return (
-        <div className="w-full h-full flex flex-col p-4 md:p-8 kiosk-welcome-bg overflow-y-auto">
+        <div className="w-full h-full flex flex-col p-4 md:p-8 kiosk-welcome-bg overflow-hidden">
             <div className="w-full max-w-5xl m-auto text-center animate-fade-in">
                 <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-text-primary tracking-tighter drop-shadow-md">{greeting}</h1>
                 <p className="text-lg sm:text-xl lg:text-2xl font-medium text-text-secondary mt-4 max-w-3xl mx-auto leading-relaxed">{subheading}</p>

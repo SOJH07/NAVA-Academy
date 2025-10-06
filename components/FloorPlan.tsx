@@ -12,7 +12,7 @@ const schematicNameToId = (name: string): string => {
     const prefix = match[1];
     const number = match[2];
     if (prefix === 'WS') {
-        return `WS${parseInt(number, 10)}`;
+        return `WS-${parseInt(number, 10)}`;
     }
     return number;
 };

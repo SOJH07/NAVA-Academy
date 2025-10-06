@@ -4,7 +4,6 @@ import { useLiveStatus } from '../hooks/useLiveStatus';
 import useClassroomStore from '../hooks/useClassroomStore';
 import FloorPlan from '../components/FloorPlan';
 import StudentDetailCard from '../components/StudentDetailCard';
-// FIX: Renamed LiveStatusTimeline to PeriodTimeline and updated the import path to correct a module resolution error.
 import PeriodTimeline from '../components/PeriodTimeline';
 import { allFloorLayouts } from '../data/floorPlan';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
@@ -14,9 +13,7 @@ import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import DailySummaryPanel from '../components/DailySummaryPanel';
 import ClassroomStatusModal from '../components/ClassroomStatusModal';
 import KioskHeader from '../components/KioskHeader';
-import KioskWelcomeScreen from '../components/KioskWelcomeScreen';
 import useAppStore from '../hooks/useAppStore';
-// FIX: Import 'FloorPlanLegend' component to resolve 'Cannot find name' error.
 import FloorPlanLegend from '../components/FloorPlanLegend';
 
 interface KioskPageProps {
@@ -54,14 +51,13 @@ const schematicNameToId = (name: string): string => {
     const prefix = match[1];
     const number = match[2];
     if (prefix === 'WS') {
-        return `WS${parseInt(number, 10)}`;
+        return `WS-${parseInt(number, 10)}`;
     }
     return number;
 };
 
 
 const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
-    const [showWelcome, setShowWelcome] = useState(true);
     const [language, setLanguage] = useState<'en' | 'ar'>('en');
 
     const dashboardData = useDashboardData();
@@ -122,7 +118,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
             const floor = getFloorFromClassroomName(currentLiveClass.classroom);
             if (floor) {
                 const schematicId = scheduleCodeToId(currentLiveClass.classroom);
-                // FIX: The type of `item` was inferred as `unknown` due to limitations with `Object.values` and `flat()`. Explicitly casting to `FloorPlanItem[]` resolves the error.
                 let floorPlanItem = (Object.values(allFloorLayouts).flat() as FloorPlanItem[]).find(item => schematicNameToId(item.name) === schematicId);
                 if (floorPlanItem) {
                     setActiveFloor(floor);
@@ -177,7 +172,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     }, [liveStatusData.liveStudents, searchTerm, isSearching, selectedClassroom, dailyAssignments, liveStatusData.currentPeriod]);
 
     return (
-        <div className="min-h-screen w-screen bg-kiosk-bg flex flex-col p-6 lg:p-8 gap-6 font-sans relative">
+        <div className="h-screen w-screen bg-kiosk-bg flex flex-col p-6 lg:p-8 gap-6 font-sans relative">
             <ClassroomStatusModal
                 isOpen={!!selectedClassroom}
                 onClose={() => { setSelectedClassroom(null); setPopoverTarget(null); }}
@@ -187,9 +182,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                 classroomState={classroomState}
                 isManagable={false}
             />
-            <div className={`absolute inset-0 z-50 transition-all duration-700 ease-in-out ${!showWelcome ? 'opacity-0 -translate-x-full pointer-events-none' : 'opacity-100 translate-x-0'}`}>
-                <KioskWelcomeScreen onEnter={() => setShowWelcome(false)} now={liveStatusData.now} />
-            </div>
 
             <KioskHeader
                 onExitKiosk={onExitKiosk}
