@@ -18,10 +18,9 @@ const Sidebar: React.FC<SidebarProps> = ({ pages, activePage, setActivePage, onL
       <div className={`mb-8 flex items-center gap-3 ${isSidebarCollapsed ? 'justify-center' : ''}`}>
          <div className="flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.25278C12 6.25278 15.0163 3 19.5 3C22.5 3 24 4.5 24 7.5C24 10.5 22.5 12 19.5 12C15.0163 12 12 8.74722 12 8.74722" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.25278C12 6.25278 8.98375 3 4.5 3C1.5 3 0 4.5 0 7.5C0 10.5 1.5 12 4.5 12C8.98375 12 12 8.74722 12 8.74722" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.74722V21" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21H16.5" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.5,10 C6.5,7 10,7 12,10 C14,13 17.5,13 17.5,10 C17.5,7 14,7 12,10 C10,13 6.5,13 6.5,10Z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 11.5V18" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 18H15" />
             </svg>
          </div>
          <h1 className={`text-xl font-bold text-white whitespace-nowrap transition-opacity ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100 delay-100'}`}>NAVA Academy</h1>

@@ -75,6 +75,7 @@ export interface FloorPlanItem {
   gridColumn: string;
   gridRow: string;
   capacity?: number;
+  category?: 'ev-service' | 'ev-industrial' | 'facilities' | 'admin' | 'other';
 }
 
 export interface Page {
@@ -121,14 +122,20 @@ export interface LiveStudent extends AnalyzedStudent {
 export interface OccupancyData {
     [key: string]: {
         group: string;
-        type: 'industrial' | 'service' | 'professional';
+        trackType: 'industrial' | 'service' | 'professional';
+        instructors: string[];
+        sessionType: 'theory' | 'practical';
+        topic: string;
     } | undefined
 }
 
 export interface LiveClass {
     group: string;
-    type: 'industrial' | 'service' | 'professional';
+    trackType: 'industrial' | 'service' | 'professional';
     classroom: string;
+    instructors: string[];
+    sessionType: 'theory' | 'practical';
+    topic: string;
 }
 
 export interface GroupSchedule {
@@ -214,3 +221,24 @@ export type LiveOpsFilters = {
 export type FloorId = 'ground' | 'first' | 'second' | 'third' | 'incubator';
 
 export type FocusedPath = { type: 'group' | 'instructor', id: string } | null;
+
+export interface PacingEvent {
+  group: string;
+  unitCode: string;
+  unitName: string;
+  startWeek: number;
+  duration: number; // in weeks
+  type?: 'unit' | 'assessment' | 'review';
+  progress?: number;
+  deliveryType?: 'theory' | 'practical';
+  unitNo?: string;
+  level?: string;
+  startDate?: string;
+  endDate?: string;
+  hours?: number;
+  days?: number;
+  assessments?: {
+    theoretical?: string;
+    performance?: string;
+  };
+}

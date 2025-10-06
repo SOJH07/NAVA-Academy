@@ -28,7 +28,7 @@ const Tooltip: React.FC<{ content: React.ReactNode, position: { x: number, y: nu
     );
 };
 
-interface InstructorSchedulePageProps {
+interface InstructorScheduleTabProps {
     groupInfo: GroupInfo;
     groupCompanyMap: Record<string, string[]>;
     dailySchedule: DailyPeriod[];
@@ -37,7 +37,7 @@ interface InstructorSchedulePageProps {
     allStudents: AnalyzedStudent[];
 }
 
-const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) => {
+const InstructorScheduleTab: React.FC<InstructorScheduleTabProps> = (props) => {
     const { groupInfo, groupCompanyMap, dailySchedule, currentPeriod, now, allStudents } = props;
     const { filters, globalSearchTerm } = useAppStore();
     const debouncedSearchTerm = useDebounce(globalSearchTerm, 300);
@@ -142,23 +142,23 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
 
 
     const teachingLoad = useMemo(() => {
-        const counts: { [key: string]: { count: number; type: 'tech' | 'professional' } } = {};
-    
-        const relevantInstructors = new Set<string>([...allInstructors.tech, ...allInstructors.professional]);
+        const counts: { [key: string]: { tech: number; pd: number; type: 'tech' | 'professional' } } = {};
+        const allInst = [...allInstructors.tech, ...allInstructors.professional];
 
-        relevantInstructors.forEach(instructor => {
+        allInst.forEach(instructor => {
             const assignmentsForInstructor = filteredAssignments.filter(a => a.instructors.includes(instructor));
             if (assignmentsForInstructor.length > 0) {
-                const type = assignmentsForInstructor[0].type === 'Technical' ? 'tech' : 'professional';
-                counts[instructor] = { count: assignmentsForInstructor.length, type };
+                const techPeriods = assignmentsForInstructor.filter(a => a.type === 'Technical').length;
+                const pdPeriods = assignmentsForInstructor.filter(a => a.type === 'Professional Development').length;
+                const type = allInstructors.tech.includes(instructor) ? 'tech' : 'professional';
+                counts[instructor] = { tech: techPeriods, pd: pdPeriods, type };
             }
         });
 
         return Object.entries(counts).map(([instructor, data]) => ({
             instructor,
-            count: data.count,
-            type: data.type
-        }));
+            ...data
+        })).sort((a,b) => (b.tech + b.pd) - (a.tech + a.pd));
     }, [filteredAssignments]);
 
     const showTooltip = (content: React.ReactNode, e: React.MouseEvent) => setTooltipState({ content, position: { x: e.clientX, y: e.clientY } });
@@ -214,6 +214,7 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
                             setFocusedInstructor={setFocusedInstructor}
                             showTooltip={showTooltip}
                             hideTooltip={hideTooltip}
+                            groupInfo={groupInfo}
                         />;
         }
     }
@@ -257,4 +258,4 @@ const InstructorSchedulePage: React.FC<InstructorSchedulePageProps> = (props) =>
     );
 };
 
-export default InstructorSchedulePage;
+export default InstructorScheduleTab;

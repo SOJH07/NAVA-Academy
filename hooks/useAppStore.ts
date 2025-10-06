@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { LiveOpsFilters, FocusedPath } from '../types';
 
-const INITIAL_FILTERS: LiveOpsFilters = {
+export const INITIAL_FILTERS: LiveOpsFilters = {
     status: 'all',
     companies: [],
     techTracks: [],
@@ -73,7 +73,7 @@ const useAppStore = create<AppState>()(
       setFocusedPath: (path) => set({ focusedPath: path }),
       isHeatmapVisible: false,
       setIsHeatmapVisible: (isVisible) => set({ isHeatmapVisible: isVisible }),
-      simulatedTime: null,
+      simulatedTime: new Date('2025-10-05T10:30:00').getTime(),
       setSimulatedTime: (time) => set({ simulatedTime: time }),
 
 

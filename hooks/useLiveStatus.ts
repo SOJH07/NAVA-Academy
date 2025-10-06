@@ -1,31 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { AnalyzedStudent, DailyPeriod, GroupInfo, LiveStudent, OccupancyData, LiveClass, Assignment } from '../types';
-
-/**
- * Calculates the academy week number based on a fixed anchor date.
- * This ensures the week number is consistent regardless of client timezone.
- * @param d The current date.
- * @returns The academy-specific week number.
- */
-const getWeekNumber = (d: Date): number => {
-    // Anchor date for week calculation, set to a Sunday. Calibrated so that Sep 7, 2025 is in Week 43.
-    const academyStartDate = new Date(Date.UTC(2024, 10, 17)); // November is month 10 (0-indexed)
-    const currentDate = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-
-    // If the current date is before the start date, default to Week 1.
-    if (currentDate < academyStartDate) {
-        return 1;
-    }
-    
-    // Calculate the difference in days from the start date.
-    const diffTime = currentDate.getTime() - academyStartDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    // The week number is 1 (for the first week) + the number of full weeks that have passed.
-    const weekNumber = Math.floor(diffDays / 7) + 1;
-
-    return weekNumber;
-};
+import { getWeekNumber } from '../utils/date';
+import { getISOWeek } from 'date-fns';
 
 
 const timeToMinutes = (time: string): number => {
@@ -45,17 +21,61 @@ export const useLiveStatus = (
     const [now, setNow] = useState(new Date(simulatedTime ?? Date.now()));
 
     useEffect(() => {
+        let timerId: number;
+
         if (simulatedTime !== null) {
-            setNow(new Date(simulatedTime));
-            return;
+            const simulatedDate = new Date(simulatedTime);
+
+            const updateToLiveTime = () => {
+                const liveTime = new Date(); // The actual current time
+                const combinedDate = new Date(
+                    simulatedDate.getFullYear(),
+                    simulatedDate.getMonth(),
+                    simulatedDate.getDate(),
+                    liveTime.getHours(),
+                    liveTime.getMinutes(),
+                    liveTime.getSeconds()
+                );
+                setNow(combinedDate);
+            };
+            
+            updateToLiveTime();
+            timerId = window.setInterval(updateToLiveTime, 1000);
+        } else {
+            // Fallback to fully live if no simulation is set at all.
+            timerId = window.setInterval(() => setNow(new Date()), 1000);
         }
-        const timerId = setInterval(() => setNow(new Date()), 1000); // Update every second for live timer
+
         return () => clearInterval(timerId);
     }, [simulatedTime]);
 
+    const { saudiHour, saudiMinute, saudiDayName } = useMemo(() => {
+        const options: Intl.DateTimeFormatOptions = {
+            timeZone: 'Asia/Riyadh',
+            hour: 'numeric',
+            minute: 'numeric',
+            weekday: 'long',
+            hour12: false,
+        };
+        const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+
+        const getPart = (type: Intl.DateTimeFormatPartTypes) => parts.find(p => p.type === type)?.value;
+        
+        const hourStr = getPart('hour');
+        const hour = hourStr === '24' ? 0 : parseInt(hourStr || '0', 10);
+
+        return {
+            saudiHour: hour,
+            saudiMinute: parseInt(getPart('minute') || '0', 10),
+            saudiDayName: getPart('weekday') as Assignment['day'],
+        };
+    }, [now]);
+    
     const weekNumber = useMemo(() => getWeekNumber(now), [now]);
-    const nowMinutes = useMemo(() => now.getHours() * 60 + now.getMinutes(), [now]);
-    const today: Assignment['day'] = useMemo(() => DAYS[now.getDay()], [now]);
+    const calendarWeekNumber = useMemo(() => getISOWeek(now), [now]);
+    const nowMinutes = useMemo(() => saudiHour * 60 + saudiMinute, [saudiHour, saudiMinute]);
+    const today: Assignment['day'] = useMemo(() => saudiDayName, [saudiDayName]);
+
 
     const isOperationalHours = useMemo(() => {
         if (simulatedTime !== null) return true; // Always treat simulated time as operational for viewing past/future states
@@ -155,23 +175,34 @@ export const useLiveStatus = (
 
             for (const assignment of activeAssignments) {
                 const trackName = groupInfo[assignment.group]?.track_name;
-                let sessionType: LiveClass['type'] = 'professional';
+                let trackType: LiveClass['trackType'] = 'professional';
                 if (assignment.type === 'Technical') {
-                    sessionType = trackName === 'Industrial Tech' ? 'industrial' : 'service';
+                    trackType = trackName === 'Industrial Tech' ? 'industrial' : 'service';
                 }
+                
+                // Heuristic to determine session type based on location
+                const sessionType: LiveClass['sessionType'] = 
+                    assignment.classroom.startsWith('2.') || assignment.classroom.startsWith('3.') 
+                    ? 'theory' : 'practical';
 
                 if (!addedGroups.has(assignment.group)) {
                     liveClasses.push({
                         group: assignment.group,
-                        type: sessionType,
-                        classroom: assignment.classroom
+                        trackType: trackType,
+                        classroom: assignment.classroom,
+                        instructors: assignment.instructors,
+                        sessionType: sessionType,
+                        topic: assignment.topic
                     });
                     addedGroups.add(assignment.group);
                 }
                 
                 occupancy[assignment.classroom] = {
                     group: assignment.group,
-                    type: sessionType,
+                    trackType: trackType,
+                    instructors: assignment.instructors,
+                    sessionType: sessionType,
+                    topic: assignment.topic,
                 };
             }
         }
@@ -182,5 +213,5 @@ export const useLiveStatus = (
 
     }, [analyzedStudents, nowMinutes, currentPeriod, today, dailySchedule, scheduleAssignments, groupInfo]);
 
-    return { now, weekNumber, currentPeriod, ...liveData, overallStatus, isOperationalHours };
+    return { now, weekNumber, calendarWeekNumber, currentPeriod, ...liveData, overallStatus, isOperationalHours };
 };

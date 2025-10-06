@@ -114,10 +114,10 @@ const HeatmapToggle: React.FC<{ isVisible: boolean, setIsVisible: (v: boolean) =
 
 const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData }) => {
     const [selectedClassroom, setSelectedClassroom] = useState<string | null>(null);
+    const [popoverTarget, setPopoverTarget] = useState<HTMLElement | null>(null);
     const { classrooms: classroomState, setOutOfService, setAvailable } = useClassroomStore();
     const [activeFloor, setActiveFloor] = useState<FloorId>('ground');
     
-    // FIX: Retrieve necessary state variables from useAppStore for advanced features.
     const { 
         filters, globalSearchTerm, 
         focusedPath, setFocusedPath, 
@@ -133,7 +133,6 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
     const today: Assignment['day'] = useMemo(() => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][liveStatusData.now.getDay()] as Assignment['day'], [liveStatusData.now]);
     const dailyAssignments = useMemo(() => dashboardData.processedScheduleData.filter(a => a.day === today), [dashboardData.processedScheduleData, today]);
 
-    // FIX: Added logic to calculate room usage for the heatmap view.
     const roomUsage = useMemo(() => {
         const counts: {[key: string]: number} = {};
         dashboardData.processedScheduleData.forEach(assignment => {
@@ -162,9 +161,9 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
              const activeGroups = new Set(liveStatusData.liveClasses
                 .filter(lc => {
                     if (filters.sessionType === 'tech') {
-                        return lc.type === 'industrial' || lc.type === 'service';
+                        return lc.trackType === 'industrial' || lc.trackType === 'service';
                     }
-                    return lc.type === filters.sessionType;
+                    return lc.trackType === filters.sessionType;
                 })
                 .map(lc => lc.group));
             studentsToFilter = studentsToFilter.filter(s => activeGroups.has(s.techGroup));
@@ -217,20 +216,34 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
         );
     };
 
-    const handleClassroomClick = (name: string) => {
-        setSelectedClassroom(name);
+    const handleClassroomClick = (name: string, target: HTMLElement) => {
+        if (selectedClassroom === name) {
+            setSelectedClassroom(null);
+            setPopoverTarget(null);
+        } else {
+            setSelectedClassroom(name);
+            setPopoverTarget(target);
+        }
     };
+
+    const closePopover = () => {
+        setSelectedClassroom(null);
+        setPopoverTarget(null);
+    }
 
     return (
         <>
+            {/* FIX: Add missing targetRect and isManagable props, and update handlers. */}
             <ClassroomStatusModal
                 isOpen={!!selectedClassroom}
-                onClose={() => setSelectedClassroom(null)}
+                onClose={closePopover}
+                targetRect={popoverTarget?.getBoundingClientRect() ?? null}
                 classroomName={selectedClassroom}
                 liveOccupancy={liveStatusData.occupancy}
                 classroomState={classroomState}
                 setOutOfService={setOutOfService}
                 setAvailable={setAvailable}
+                isManagable={true}
             />
             <div className="flex flex-col gap-6 h-full">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-shrink-0">
@@ -240,18 +253,7 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                 <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
                     <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm flex flex-col p-4 h-full">
                         <div className="flex justify-between items-center mb-4 flex-shrink-0">
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Academy Floor Plan</h2>
-                                 <div className="flex items-center gap-2">
-                                    <span className={`relative flex h-3 w-3 ${liveStatusData.isOperationalHours ? 'animate-pulse' : ''}`}>
-                                        <span className={`absolute inline-flex h-full w-full rounded-full ${liveStatusData.isOperationalHours ? 'bg-green-400' : 'bg-slate-400'} opacity-75`}></span>
-                                        <span className={`relative inline-flex rounded-full h-3 w-3 ${liveStatusData.isOperationalHours ? 'bg-green-500' : 'bg-slate-500'}`}></span>
-                                    </span>
-                                    <span className={`text-xs font-bold uppercase ${liveStatusData.isOperationalHours ? 'text-green-600' : 'text-slate-500'}`}>
-                                        {liveStatusData.isOperationalHours ? 'Live' : 'Off-Hours'}
-                                    </span>
-                                </div>
-                            </div>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Academy Floor Plan</h2>
                              <div className="flex items-center gap-4">
                                 <HeatmapToggle isVisible={isHeatmapVisible} setIsVisible={setIsHeatmapVisible} />
                                 <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-dark-panel rounded-lg flex-wrap">
@@ -264,7 +266,6 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                             </div>
                         </div>
                         <div className="flex-grow flex items-center justify-center overflow-auto">
-                             {/* FIX: Added all missing props to the FloorPlan component to satisfy its type definition. */}
                              <FloorPlan 
                                 floor={activeFloor}
                                 layout={activeFloorLayout} 

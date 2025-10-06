@@ -66,11 +66,12 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
         const collaborationGroups = new Set<string>();
 
         liveStatusData.liveClasses.forEach(liveClass => {
-            const { classroom, group, type } = liveClass;
+            // FIX: Destructured 'trackType' instead of 'type' from 'liveClass' to resolve property access error.
+            const { classroom, group, trackType } = liveClass;
 
-            if (type === 'industrial') industrialGroupsInSession.add(group);
-            else if (type === 'service') serviceGroupsInSession.add(group);
-            else if (type === 'professional') professionalGroupsInSession.add(group);
+            if (trackType === 'industrial') industrialGroupsInSession.add(group);
+            else if (trackType === 'service') serviceGroupsInSession.add(group);
+            else if (trackType === 'professional') professionalGroupsInSession.add(group);
 
             if (classroom.startsWith('2.')) {
                 instructionGroups.add(group);

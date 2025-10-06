@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-// FIX: Added Assignment, DailyPeriod, and FloorId to types import.
 import type { LiveStudent, FoundationGrades, Assignment, DailyPeriod, FloorId } from '../types';
 import FloorPlan from '../components/FloorPlan';
 import FloorPlanLegend from '../components/FloorPlanLegend';
@@ -11,11 +10,12 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import useAppStore from '../hooks/useAppStore';
 import { useDebounce } from '../hooks/useDebounce';
-import { useLiveStatus } from '../hooks/useLiveStatus';
 import LiveStatusSummary from '../components/LiveStatusSummary';
 import ClassroomStatusModal from '../components/ClassroomStatusModal';
-// FIX: Added useDashboardData to fetch schedule data.
 import { useDashboardData } from '../hooks/useDashboardData';
+
+// FIX: Import 'useLiveStatus' hook to resolve 'Cannot find name' error.
+import { useLiveStatus } from '../hooks/useLiveStatus';
 
 interface LiveOperationsPageProps {
   liveStatusData: ReturnType<typeof useLiveStatus>;
@@ -114,10 +114,10 @@ const HeatmapToggle: React.FC<{ isVisible: boolean, setIsVisible: (v: boolean) =
 
 const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData }) => {
     const [selectedClassroom, setSelectedClassroom] = useState<string | null>(null);
+    const [popoverTarget, setPopoverTarget] = useState<HTMLElement | null>(null);
     const { classrooms: classroomState, setOutOfService, setAvailable } = useClassroomStore();
-    const [activeFloor, setActiveFloor] = useState<FloorId>('ground');
+    const [activeFloor, setActiveFloor] = useState<FloorId>('second');
     
-    // FIX: Retrieve necessary state variables from useAppStore for advanced features.
     const { 
         filters, globalSearchTerm, 
         focusedPath, setFocusedPath, 
@@ -133,12 +133,10 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
     const today: Assignment['day'] = useMemo(() => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][liveStatusData.now.getDay()] as Assignment['day'], [liveStatusData.now]);
     const dailyAssignments = useMemo(() => dashboardData.processedScheduleData.filter(a => a.day === today), [dashboardData.processedScheduleData, today]);
 
-    // FIX: Added logic to calculate room usage for the heatmap view.
     const roomUsage = useMemo(() => {
         const counts: {[key: string]: number} = {};
         dashboardData.processedScheduleData.forEach(assignment => {
             const allItems = Object.values(allFloorLayouts).flat();
-            // This mapping is based on group name being part of the room name, which is fragile but matches the data structure.
             const item = allItems.find(i => i.name.includes(assignment.group));
             if (item) {
                 counts[item.name] = (counts[item.name] || 0) + 1;
@@ -162,9 +160,9 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
              const activeGroups = new Set(liveStatusData.liveClasses
                 .filter(lc => {
                     if (filters.sessionType === 'tech') {
-                        return lc.type === 'industrial' || lc.type === 'service';
+                        return lc.trackType === 'industrial' || lc.trackType === 'service';
                     }
-                    return lc.type === filters.sessionType;
+                    return lc.trackType === filters.sessionType;
                 })
                 .map(lc => lc.group));
             studentsToFilter = studentsToFilter.filter(s => activeGroups.has(s.techGroup));
@@ -217,20 +215,33 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
         );
     };
 
-    const handleClassroomClick = (name: string) => {
-        setSelectedClassroom(name);
+    const handleClassroomClick = (name: string, target: HTMLElement) => {
+        if (selectedClassroom === name) {
+            setSelectedClassroom(null);
+            setPopoverTarget(null);
+        } else {
+            setSelectedClassroom(name);
+            setPopoverTarget(target);
+        }
     };
+
+    const closePopover = () => {
+        setSelectedClassroom(null);
+        setPopoverTarget(null);
+    }
 
     return (
         <>
             <ClassroomStatusModal
                 isOpen={!!selectedClassroom}
-                onClose={() => setSelectedClassroom(null)}
+                onClose={closePopover}
+                targetRect={popoverTarget?.getBoundingClientRect() ?? null}
                 classroomName={selectedClassroom}
                 liveOccupancy={liveStatusData.occupancy}
                 classroomState={classroomState}
                 setOutOfService={setOutOfService}
                 setAvailable={setAvailable}
+                isManagable={true}
             />
             <div className="flex flex-col gap-6 h-full">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-shrink-0">
@@ -253,7 +264,6 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                             </div>
                         </div>
                         <div className="flex-grow flex items-center justify-center overflow-auto">
-                             {/* FIX: Added all missing props to the FloorPlan component to satisfy its type definition. */}
                              <FloorPlan 
                                 floor={activeFloor}
                                 layout={activeFloorLayout} 
@@ -270,6 +280,7 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                                 focusedPath={focusedPath}
                                 onSetFocusedPath={setFocusedPath}
                                 groupStudentCounts={dashboardData.groupStudentCounts.tech}
+                                isOperationalHours={liveStatusData.isOperationalHours}
                             />
                         </div>
                         <FloorPlanLegend />

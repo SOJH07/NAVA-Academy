@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nava Student Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@400;500;700&family=Tajawal:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@400;500;700&family=Tajawal:wght@400;500;700&family=Noto+Kufi+Arabic:wght@400;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -27,6 +27,26 @@
         }
         .text-wrap-balance {
             text-wrap: balance;
+        }
+        @keyframes animated-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animated-gradient-bg {
+            background: linear-gradient(-45deg, #E9EEF0, #ffffff, #EBF5EC, #EFF2F5);
+            background-size: 400% 400%;
+            animation: animated-gradient 15s ease infinite;
+        }
+        .dark .animated-gradient-bg {
+            background: linear-gradient(-45deg, #1E361E, #2A4B2A, #1E361E, #345834);
+            background-size: 400% 400%;
+            animation: animated-gradient 15s ease infinite;
+        }
+        .kiosk-welcome-bg {
+            background: linear-gradient(-45deg, #f0f7f0, #ffffff, #e8f3e8, #f5fcf5);
+            background-size: 400% 400%;
+            animation: animated-gradient 15s ease infinite;
         }
     </style>
     <script>
@@ -52,10 +72,22 @@
           theme: {
             extend: {
               colors: {
+                kiosk: {
+                  bg: '#F8F9FA',
+                  panel: '#FFFFFF',
+                  border: '#E9ECEF',
+                  primary: '#006D77',      // Dark Teal
+                  secondary: '#E29578',    // Terracotta/Amber for highlights
+                  text: {
+                    title: '#1B263B',
+                    body: '#415A77',
+                    muted: '#778DA9',
+                  }
+                },
                 brand: {
-                  primary: '#62B766', // Electric Green
-                  'primary-light': '#EBF5EC',
-                  'primary-dark': '#4F9B52',
+                  primary: '#6EAC70', // Softer Green
+                  'primary-light': '#E8F3E8',
+                  'primary-dark': '#58895A',
                   secondary: '#707F98', // Slate Gray
                   'secondary-light': '#EFF2F5',
                   ceer: '#707F98', // Mapped to Slate Gray
@@ -78,10 +110,13 @@
                 'dark-text-primary': '#E9EEF0',
                 'dark-text-secondary': '#B5D5BB',
                 'dark-text-muted': '#707F98',
-                'classroom-active': {
-                  bg: '#eefbf3',
-                  text: '#065f46',
-                  border: '#a7f3d0'
+                'classroom-live': {
+                  bg: '#dcfce7', // green-100
+                  text: '#166534', // green-800
+                  border: '#4ade80', // green-400
+                  'dark-bg': 'rgba(34, 197, 94, 0.15)',
+                  'dark-border': '#4ade80',
+                  'dark-text': '#bbf7d0',
                 },
                 'classroom-idle': {
                   bg: '#f8fafc',
@@ -131,16 +166,37 @@
                     upcoming: '#A0A8B8',
                     'upcoming-light': '#EFF2F5',
                 },
+                'fp-ev-service': {
+                  bg: '#A0522D',
+                  text: '#FFFFFF',
+                },
+                'fp-ev-industrial': {
+                  bg: '#1E40AF',
+                  text: '#FFFFFF',
+                },
+                'fp-facilities': {
+                  bg: '#16a34a',
+                  text: '#FFFFFF',
+                },
+                'fp-admin': {
+                  bg: '#64748b',
+                  text: '#FFFFFF',
+                },
+                'fp-other': {
+                  bg: '#f8fafc',
+                  text: '#475569',
+                  border: '#e2e8f0',
+                },
               },
               fontFamily: {
                 sans: ['Inter', 'sans-serif'],
                 roboto: ['Roboto', 'sans-serif'],
                 tajawal: ['Tajawal', 'sans-serif'],
-                bukra: ['"29LT Bukra"', 'sans-serif'],
+                kufi: ['"Noto Kufi Arabic"', 'sans-serif'],
               },
               boxShadow: {
-                'glow-sm': '0 0 8px 0px rgba(98, 183, 102, 0.6)',
-                'glow-md': '0 0 15px 2px rgba(98, 183, 102, 0.6)',
+                'glow-sm': '0 0 8px 0px rgba(110, 172, 112, 0.6)',
+                'glow-md': '0 0 15px 2px rgba(110, 172, 112, 0.6)',
               },
               keyframes: {
                 'fade-in': {
@@ -148,8 +204,8 @@
                   '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
                 'glow': {
-                  '0%, 100%': { boxShadow: '0 0 8px 0px rgba(98, 183, 102, 0.4)' },
-                  '50%': { boxShadow: '0 0 15px 2px rgba(98, 183, 102, 0.7)' },
+                  '0%, 100%': { boxShadow: '0 0 8px 0px rgba(110, 172, 112, 0.4)' },
+                  '50%': { boxShadow: '0 0 15px 2px rgba(110, 172, 112, 0.7)' },
                 }
               },
               animation: {

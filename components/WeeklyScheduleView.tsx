@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import type { Assignment, DailyPeriod } from '../types';
+import type { Assignment, DailyPeriod, GroupInfo } from '../types';
 import SessionCard from './SessionCard';
 
 const DAYS: Assignment['day'][] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
@@ -18,9 +18,10 @@ interface WeeklyScheduleViewProps {
     setFocusedInstructor: (instructor: string | null) => void;
     showTooltip: (content: React.ReactNode, e: React.MouseEvent) => void;
     hideTooltip: () => void;
+    groupInfo: GroupInfo;
 }
 
-const WeeklyScheduleView: React.FC<WeeklyScheduleViewProps> = ({ assignments, onDayClick, density, selectedDay, liveToday, currentPeriod, focusedInstructor, setFocusedInstructor, showTooltip, hideTooltip }) => {
+const WeeklyScheduleView: React.FC<WeeklyScheduleViewProps> = ({ assignments, onDayClick, density, selectedDay, liveToday, currentPeriod, focusedInstructor, setFocusedInstructor, showTooltip, hideTooltip, groupInfo }) => {
     
     const [expandedCells, setExpandedCells] = useState<Record<string, boolean>>({});
 
@@ -89,12 +90,12 @@ const WeeklyScheduleView: React.FC<WeeklyScheduleViewProps> = ({ assignments, on
                                             <div className={`absolute top-2 right-2 text-xs font-bold select-none ${isLivePeriod ? 'text-amber-600 animate-pulse' : 'text-slate-300'}`}>{period}</div>
                                             <div className="pt-4 flex flex-col gap-1.5">
                                                 {techAssignments.length > 0 && <h4 className="text-xs font-bold text-status-tech mb-1 mt-2">Technical</h4>}
-                                                {visibleTech.map(a => <SessionCard key={a.id.toString()} assignment={a} isLive={isLiveCell} density={density} focusedInstructor={focusedInstructor} setFocusedInstructor={setFocusedInstructor} showTooltip={showTooltip} hideTooltip={hideTooltip} />)}
+                                                {visibleTech.map(a => <SessionCard key={a.id.toString()} assignment={a} isLive={isLiveCell} density={density} focusedInstructor={focusedInstructor} setFocusedInstructor={setFocusedInstructor} showTooltip={showTooltip} hideTooltip={hideTooltip} groupInfo={groupInfo} />)}
                                                 
                                                 {professionalAssignments.length > 0 && techAssignments.length > 0 && <hr className="my-2 border-slate-200/80" />}
 
                                                 {professionalAssignments.length > 0 && <h4 className="text-xs font-bold text-status-professional mb-1">Professional Development</h4>}
-                                                {visibleProfessional.map(a => <SessionCard key={a.id.toString()} assignment={a} isLive={isLiveCell} density={density} focusedInstructor={focusedInstructor} setFocusedInstructor={setFocusedInstructor} showTooltip={showTooltip} hideTooltip={hideTooltip} />)}
+                                                {visibleProfessional.map(a => <SessionCard key={a.id.toString()} assignment={a} isLive={isLiveCell} density={density} focusedInstructor={focusedInstructor} setFocusedInstructor={setFocusedInstructor} showTooltip={showTooltip} hideTooltip={hideTooltip} groupInfo={groupInfo} />)}
                                                 
                                                 {hiddenCount > 0 && !isExpanded && (
                                                     <button onClick={() => handleToggleExpand(cellKey)} className="text-sm font-bold text-brand-primary hover:underline mt-2 text-left">
