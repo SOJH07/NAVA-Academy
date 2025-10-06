@@ -279,7 +279,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
                 <div className="flex justify-between items-center">
                     <h2 className={`text-xl font-bold text-text-primary whitespace-nowrap transition-opacity`}>Live Status</h2>
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap transition-opacity bg-brand-primary-light text-brand-primary`}>
-                        Week {liveStatusData.calendarWeekNumber}
+                        Week {liveStatusData.weekNumber}
                     </span>
                 </div>
                 <p className={`text-sm font-medium text-text-muted whitespace-nowrap transition-opacity`}>{formatTime(now)}</p>

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { AnalyzedStudent, DailyPeriod, GroupInfo, LiveStudent, OccupancyData, LiveClass, Assignment } from '../types';
-import { getWeekNumber } from '../utils/date';
 import { getISOWeek } from 'date-fns';
 
 
@@ -71,8 +70,7 @@ export const useLiveStatus = (
         };
     }, [now]);
     
-    const weekNumber = useMemo(() => getWeekNumber(now), [now]);
-    const calendarWeekNumber = useMemo(() => getISOWeek(now), [now]);
+    const weekNumber = useMemo(() => getISOWeek(now), [now]);
     const nowMinutes = useMemo(() => saudiHour * 60 + saudiMinute, [saudiHour, saudiMinute]);
     const today: Assignment['day'] = useMemo(() => saudiDayName, [saudiDayName]);
 
@@ -213,5 +211,5 @@ export const useLiveStatus = (
 
     }, [analyzedStudents, nowMinutes, currentPeriod, today, dailySchedule, scheduleAssignments, groupInfo]);
 
-    return { now, weekNumber, calendarWeekNumber, currentPeriod, ...liveData, overallStatus, isOperationalHours };
+    return { now, weekNumber, currentPeriod, ...liveData, overallStatus, isOperationalHours };
 };

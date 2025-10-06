@@ -127,7 +127,7 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                             allStudents={analyzedStudents}
                         />;
             case 'curriculumAndPacing':
-                return <CurriculumAndPacingPage weekNumber={liveStatusData.calendarWeekNumber} />;
+                return <CurriculumAndPacingPage weekNumber={liveStatusData.weekNumber} />;
             case 'facilityManagement':
                 return <FacilityManagementPage />;
             case 'calendar':

@@ -199,14 +199,14 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                 language={language}
                 setLanguage={setLanguage}
                 now={liveStatusData.now}
-                weekNumber={liveStatusData.calendarWeekNumber}
+                weekNumber={liveStatusData.weekNumber}
             />
             
             <LiveStatusTimeline 
                 dailySchedule={dashboardData.dailySchedule}
                 currentPeriod={liveStatusData.currentPeriod}
                 now={liveStatusData.now}
-                weekNumber={liveStatusData.calendarWeekNumber}
+                weekNumber={liveStatusData.weekNumber}
             />
             
             <main className="flex-grow grid grid-cols-12 gap-8 min-h-0">
