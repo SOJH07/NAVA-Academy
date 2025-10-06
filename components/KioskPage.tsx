@@ -3,6 +3,7 @@ import { useDashboardData } from '../hooks/useDashboardData';
 import { useLiveStatus } from '../hooks/useLiveStatus';
 import useClassroomStore from '../hooks/useClassroomStore';
 import FloorPlan from '../components/FloorPlan';
+import FloorPlanLegend from '../components/FloorPlanLegend';
 import StudentDetailCard from '../components/StudentDetailCard';
 // FIX: Renamed LiveStatusTimeline to PeriodTimeline and updated the import path to correct a module resolution error.
 import PeriodTimeline from '../components/PeriodTimeline';
@@ -41,6 +42,11 @@ const getFloorFromClassroomName = (classroomName: string): FloorId | null => {
     if (classroomName.startsWith('3.')) return 'third';
     return null;
 }
+
+const parseGroupName = (name: string): string | null => {
+    const match = name.match(/(DP(IT|ST)-\d{2})/);
+    return match ? match[0] : null;
+};
 
 const scheduleCodeToId = (code: string): string => {
     return code.replace('0.', '').replace('.', '');
@@ -174,6 +180,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
         return students;
     }, [liveStatusData.liveStudents, searchTerm, isSearching, selectedClassroom, dailyAssignments, liveStatusData.currentPeriod]);
 
+
     return (
         <div className="min-h-screen w-screen bg-kiosk-bg flex flex-col p-6 lg:p-8 gap-6 font-sans relative">
             <ClassroomStatusModal
@@ -189,7 +196,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                 <KioskWelcomeScreen onEnter={() => setShowWelcome(false)} now={liveStatusData.now} />
             </div>
 
-            {/* FIX: Pass now and weekNumber to KioskHeader and remove redundant time display. */}
             <KioskHeader
                 onExitKiosk={onExitKiosk}
                 language={language}
@@ -249,6 +255,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             cardHeightClass="h-36"
                         />
                     </div>
+                    <FloorPlanLegend />
                 </div>
                 
                 <div className="col-span-12 lg:col-span-4 bg-kiosk-panel rounded-2xl shadow-xl flex flex-col p-6 min-h-0">

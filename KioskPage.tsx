@@ -5,7 +5,8 @@ import useClassroomStore from './hooks/useClassroomStore';
 import FloorPlan from './components/FloorPlan';
 import FloorPlanLegend from './components/FloorPlanLegend';
 import StudentDetailCard from './components/StudentDetailCard';
-import LiveStatusTimeline from './components/LiveStatusTimeline';
+// FIX: The component 'LiveStatusTimeline' was not found. It has been replaced with 'PeriodTimeline' to correctly display the daily schedule timeline.
+import PeriodTimeline from './components/PeriodTimeline';
 import { allFloorLayouts } from './data/floorPlan';
 import { useAnalyticsData } from './hooks/useAnalyticsData';
 // FIX: Added missing import for Assignment type.
@@ -54,7 +55,8 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const today: Assignment['day'] = useMemo(() => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][liveStatusData.now.getDay()] as Assignment['day'], [liveStatusData.now]);
     const dailyAssignments = useMemo(() => dashboardData.processedScheduleData.filter(a => a.day === today), [dashboardData.processedScheduleData, today]);
 
-    const handleClassroomClick = (classroomName: string) => {
+    // FIX: Updated the handler signature to match the 'onClassroomClick' prop type in the 'FloorPlan' component, which expects an HTML element as the second argument.
+    const handleClassroomClick = (classroomName: string, target: HTMLElement) => {
         setSearchTerm('');
         setSelectedClassroom(prev => prev === classroomName ? null : classroomName);
     };
@@ -112,11 +114,10 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
             </header>
             
             <div className="flex-shrink-0">
-                <LiveStatusTimeline 
+                <PeriodTimeline 
                     dailySchedule={dashboardData.dailySchedule}
                     currentPeriod={liveStatusData.currentPeriod}
                     now={liveStatusData.now}
-                    weekNumber={liveStatusData.weekNumber}
                 />
             </div>
             

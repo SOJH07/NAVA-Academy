@@ -1,54 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface KioskHeaderProps {
     onExitKiosk: () => void;
     language: 'en' | 'ar';
     setLanguage: (lang: 'en' | 'ar') => void;
+    // FIX: Add 'now' and 'weekNumber' props to support displaying time and week in the header.
     now: Date;
     weekNumber: number;
 }
 
 const KioskHeader: React.FC<KioskHeaderProps> = ({ onExitKiosk, language, setLanguage, now, weekNumber }) => {
-
-    const gregorianDate = new Intl.DateTimeFormat(language === 'ar' ? 'ar-SA' : 'en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+    const formatTime = (date: Date) => new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
         timeZone: 'Asia/Riyadh',
-    }).format(now);
-
-    const hijriDate = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: 'Asia/Riyadh',
-    }).format(now);
+    }).format(date);
 
     return (
         <header className="flex-shrink-0 flex justify-between items-center">
-            <div className="flex items-center gap-5">
-                <div className="w-20 h-20 bg-kiosk-primary rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.25278C12 6.25278 15.0163 3 19.5 3C22.5 3 24 4.5 24 7.5C24 10.5 22.5 12 19.5 12C15.0163 12 12 8.74722 12 8.74722" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.25278C12 6.25278 8.98375 3 4.5 3C1.5 3 0 4.5 0 7.5C0 10.5 1.5 12 4.5 12C8.98375 12 12 8.74722 12 8.74722" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.74722V21" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21H16.5" />
-                    </svg>
-                </div>
-                <div>
-                    <h1 className="text-4xl font-black text-kiosk-text-title tracking-tight" lang="en">NAVA Academy Kiosk</h1>
-                    <p className={`text-lg text-kiosk-text-body font-medium ${language === 'ar' ? 'font-kufi' : ''}`}>
-                       {language === 'ar' ? 'عرض العمليات المباشرة' : 'Live Operations Display'}
-                    </p>
-                </div>
+            <div>
+                <h1 className="text-4xl font-black text-kiosk-text-title tracking-tight" lang="en">NAVA Academy Kiosk</h1>
+                <p className={`text-lg text-kiosk-text-body font-medium ${language === 'ar' ? 'font-kufi' : ''}`}>
+                   {language === 'ar' ? `الأسبوع ${weekNumber} | عرض العمليات المباشرة` : `Week ${weekNumber} | Live Operations Display`}
+                </p>
             </div>
 
             <div className="flex items-center gap-6">
-                <div className={`text-right ${language === 'ar' ? 'font-kufi' : ''}`}>
-                    <p className="font-bold text-lg text-kiosk-text-title">{gregorianDate}</p>
-                    <p className="font-semibold text-kiosk-text-body" dir="rtl">{hijriDate}</p>
-                    <p className="font-semibold text-sm text-kiosk-text-muted">Week {weekNumber}</p>
+                <div className="text-right">
+                    <p className="font-black text-4xl text-kiosk-text-title tabular-nums drop-shadow-md">
+                        {formatTime(now)}
+                    </p>
                 </div>
                 <div className="flex items-center gap-1 p-1 bg-kiosk-border rounded-xl">
                     <button 
