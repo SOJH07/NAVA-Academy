@@ -17,7 +17,7 @@ interface GroupWeeklyScheduleCardProps {
   language: 'en' | 'ar';
 }
 
-const SessionPill: React.FC<{ assignment: Assignment, isLive: boolean, language: 'en' | 'ar' }> = ({ assignment, isLive, language }) => {
+const SessionCell: React.FC<{ assignment: Assignment, isLive: boolean, language: 'en' | 'ar' }> = ({ assignment, isLive, language }) => {
     const getLocationType = (classroom: string) => {
         if (classroom.startsWith('WS-') || classroom.startsWith('0.')) return 'workshop';
         if (classroom.startsWith('1.')) return 'lab';
@@ -30,42 +30,23 @@ const SessionPill: React.FC<{ assignment: Assignment, isLive: boolean, language:
 
     const colorClasses = React.useMemo(() => {
         switch(locationType) {
-            case 'workshop':
-                return {
-                    bg: 'bg-orange-100 dark:bg-orange-900/40',
-                    border: 'border-orange-500',
-                    liveRing: 'ring-orange-500',
-                    icon: <PracticalIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                };
-            case 'lab':
-                return {
-                    bg: 'bg-purple-100 dark:bg-purple-900/40',
-                    border: 'border-purple-500',
-                    liveRing: 'ring-purple-500',
-                    icon: <PracticalIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                };
-            case 'classroom':
-            default:
-                 return {
-                    bg: 'bg-blue-100 dark:bg-blue-900/40',
-                    border: 'border-blue-500',
-                    liveRing: 'ring-blue-500',
-                    icon: <TheoryIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                };
+            case 'workshop': return { bg: 'bg-orange-100', border: 'border-orange-500', liveRing: 'ring-orange-500', icon: <PracticalIcon className="h-4 w-4 text-orange-600" /> };
+            case 'lab': return { bg: 'bg-purple-100', border: 'border-purple-500', liveRing: 'ring-purple-500', icon: <PracticalIcon className="h-4 w-4 text-purple-600" /> };
+            default: return { bg: 'bg-blue-100', border: 'border-blue-500', liveRing: 'ring-blue-500', icon: <TheoryIcon className="h-4 w-4 text-blue-600" /> };
         }
     }, [locationType]);
 
     return (
-        <div className={`relative h-full w-full p-2 rounded-lg border-l-4 flex flex-col justify-between ${colorClasses.bg} ${colorClasses.border} ${isLive ? `ring-2 ${colorClasses.liveRing}` : ''}`}>
+        <div className={`relative h-full w-full p-2 rounded-lg border-l-4 flex flex-col ${colorClasses.bg} ${colorClasses.border} ${isLive ? `ring-2 ${colorClasses.liveRing}` : ''}`}>
             {isPractical && <div className="absolute inset-0 bg-repeat bg-center opacity-40" style={{backgroundImage: `url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M-2 10L10 -2M-2 2L2 -2M6 10L10 6' stroke='%23000' stroke-width='1' stroke-opacity='0.1'/%3E%3C/svg%3E")`}}></div>}
-            <div className="relative z-1">
+            <div className="relative z-1 flex-grow">
                 <div className="flex justify-between items-start">
-                    <p className="font-bold text-kiosk-text-title text-xs leading-tight line-clamp-2">{assignment.topic}</p>
-                    {isLive && <span className="text-white text-[10px] font-bold bg-kiosk-secondary px-1.5 py-0.5 rounded-full flex-shrink-0">{language === 'ar' ? 'الآن' : 'LIVE'}</span>}
+                    <p className="font-bold text-kiosk-text-title text-xs leading-tight line-clamp-3">{assignment.topic}</p>
+                    {isLive && <span className="text-white text-[9px] font-bold bg-kiosk-secondary px-1.5 py-0.5 rounded-full flex-shrink-0">{language === 'ar' ? 'الآن' : 'LIVE'}</span>}
                 </div>
                 <p className="text-[11px] text-kiosk-text-muted mt-1">{assignment.instructors.join(', ')}</p>
             </div>
-             <div className="relative z-1 flex items-center justify-between text-[11px] font-semibold text-kiosk-text-body mt-auto pt-1 border-t border-current border-opacity-10">
+             <div className="relative z-1 flex items-center justify-between text-xs font-semibold text-kiosk-text-body mt-2 pt-1 border-t border-current border-opacity-20">
                 <span>{assignment.classroom.startsWith('WS-') ? assignment.classroom : `C-${assignment.classroom.replace('.', '')}`}</span>
                 {colorClasses.icon}
             </div>
@@ -88,34 +69,36 @@ const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ group
   
   return (
     <div className="flex flex-col h-full animate-fade-in">
-      <div className="p-4 border-b border-kiosk-border flex-shrink-0">
-        <h3 className={`text-2xl font-bold text-kiosk-text-title ${language === 'ar' ? 'font-kufi text-right' : ''}`}>{language === 'ar' ? `جدول الأسبوع: ${group}` : `Weekly Schedule: ${group}`}</h3>
-        <p className={`font-semibold text-base ${isIndustrial ? 'text-status-industrial' : 'text-status-tech'} ${language === 'ar' ? 'text-right' : ''}`}>{track}</p>
+      <div className="p-3 border-b border-kiosk-border flex-shrink-0">
+        <h3 className={`text-xl font-bold text-kiosk-text-title ${language === 'ar' ? 'font-kufi text-right' : ''}`}>{language === 'ar' ? `جدول الأسبوع: ${group}` : `Weekly Schedule: ${group}`}</h3>
+        <p className={`font-semibold text-sm ${isIndustrial ? 'text-status-industrial' : 'text-status-tech'} ${language === 'ar' ? 'text-right' : ''}`}>{track}</p>
       </div>
-      <div className="flex-grow overflow-y-auto p-4 -mr-3 pr-3">
-        <div className="grid grid-cols-[4rem_repeat(5,1fr)] gap-2">
+      <div className="flex-grow">
+        <div className="grid grid-cols-[auto_repeat(5,1fr)] grid-rows-[auto_repeat(7,minmax(0,1fr))] gap-1 h-full">
             {/* Header Row */}
-            <div></div>
-            {DAYS.map(day => (
-                <div key={day} className={`text-center font-bold pb-2 ${day === todayName ? 'text-kiosk-primary' : 'text-kiosk-text-muted'}`}>
-                    <p>{language === 'ar' ? ARABIC_DAYS[day] : day.substring(0,3)}</p>
-                </div>
-            ))}
+            <div className="row-start-1 col-start-2 col-span-5 grid grid-cols-5 gap-1">
+                {DAYS.map(day => (
+                    <div key={day} className={`text-center font-bold pb-1 text-xs row-span-1 ${day === todayName ? 'text-kiosk-primary' : 'text-kiosk-text-muted'}`}>
+                        <p>{language === 'ar' ? ARABIC_DAYS[day] : day.substring(0,3)}</p>
+                    </div>
+                ))}
+            </div>
 
             {/* Schedule Rows */}
-            {periods.map(period => {
+            {periods.map((period, index) => {
                 const isLiveRow = currentPeriodName === period.name;
+                const rowStartClass = `row-start-${index + 2}`;
                 return (
                     <React.Fragment key={period.name}>
-                        <div className={`flex items-center justify-center text-center text-xs font-bold ${isLiveRow ? 'text-kiosk-secondary' : 'text-kiosk-text-muted'}`}>
+                        <div style={{gridRow: index + 2, gridColumn: 1}} className={`flex items-center justify-center text-center text-[10px] font-bold ${isLiveRow ? 'text-kiosk-secondary' : 'text-kiosk-text-muted'}`}>
                             {period.name}
                         </div>
-                        {DAYS.map(day => {
+                        {DAYS.map((day, dayIndex) => {
                             const assignment = scheduleMap.get(`${day}-${period.name}`);
                             const isLiveCell = isLiveRow && day === todayName;
                             return (
-                                <div key={day} className={`h-28 p-1 rounded-md transition-colors ${isLiveCell ? 'bg-kiosk-secondary/10' : ''}`}>
-                                    {assignment && <SessionPill assignment={assignment} isLive={isLiveCell} language={language} />}
+                                <div key={day} style={{gridRow: index + 2, gridColumn: dayIndex + 2}} className={`p-0.5 flex rounded-md transition-colors ${isLiveCell ? 'bg-kiosk-secondary/10' : ''}`}>
+                                    {assignment && <SessionCell assignment={assignment} isLive={isLiveCell} language={language} />}
                                 </div>
                             );
                         })}

@@ -141,9 +141,9 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
                     <div>
                         <div className="flex items-center gap-2">
                             {statusIndicator}
-                            <h3 className="font-bold text-lg leading-tight text-kiosk-text-title">{student.fullName}</h3>
+                            <h3 className="font-bold text-lg leading-tight text-kiosk-text-title">{isKiosk ? 'Trainee' : student.fullName}</h3>
                         </div>
-                         <p className="text-xs text-kiosk-text-muted">ID: {student.navaId} | {student.company}</p>
+                         <p className="text-xs text-kiosk-text-muted">ID: {student.navaId}{!isKiosk && ` | ${student.company}`}</p>
                     </div>
                     {statusPill}
                 </div>

@@ -14,7 +14,10 @@ import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import DailySummaryPanel from '../components/DailySummaryPanel';
 import ClassroomStatusModal from '../components/ClassroomStatusModal';
 import KioskHeader from '../components/KioskHeader';
+import KioskWelcomeScreen from '../components/KioskWelcomeScreen';
 import useAppStore from '../hooks/useAppStore';
+// FIX: Import 'FloorPlanLegend' component to resolve 'Cannot find name' error.
+import FloorPlanLegend from '../components/FloorPlanLegend';
 
 interface KioskPageProps {
     onExitKiosk: () => void;
@@ -58,6 +61,7 @@ const schematicNameToId = (name: string): string => {
 
 
 const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
+    const [showWelcome, setShowWelcome] = useState(true);
     const [language, setLanguage] = useState<'en' | 'ar'>('en');
 
     const dashboardData = useDashboardData();
@@ -183,6 +187,9 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                 classroomState={classroomState}
                 isManagable={false}
             />
+            <div className={`absolute inset-0 z-50 transition-all duration-700 ease-in-out ${!showWelcome ? 'opacity-0 -translate-x-full pointer-events-none' : 'opacity-100 translate-x-0'}`}>
+                <KioskWelcomeScreen onEnter={() => setShowWelcome(false)} now={liveStatusData.now} />
+            </div>
 
             <KioskHeader
                 onExitKiosk={onExitKiosk}
@@ -243,6 +250,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             cardHeightClass="h-36"
                         />
                     </div>
+                    <FloorPlanLegend />
                 </div>
                 
                 <div className="col-span-12 lg:col-span-4 bg-kiosk-panel rounded-2xl shadow-xl flex flex-col p-6 min-h-0">
