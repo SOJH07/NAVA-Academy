@@ -8,7 +8,7 @@ import StudentDetailCard from '../components/StudentDetailCard';
 import PeriodTimeline from '../components/PeriodTimeline';
 import { allFloorLayouts } from '../data/floorPlan';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
-import GroupDailyScheduleCard from '../components/GroupDailyScheduleCard';
+import GroupWeeklyScheduleCard from '../components/GroupDailyScheduleCard';
 import type { Assignment, FloorId, FloorPlanItem } from '../types';
 import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import DailySummaryPanel from '../components/DailySummaryPanel';
@@ -260,12 +260,13 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
 
                     <div className="flex-grow overflow-y-auto -mr-3 pr-3 space-y-3">
                         {selectedGroup ? (
-                            <GroupDailyScheduleCard
+                            <GroupWeeklyScheduleCard
                                 group={selectedGroup}
                                 dailySchedule={dashboardData.dailySchedule}
-                                groupAssignments={dailyAssignments.filter(a => a.group === selectedGroup)}
+                                groupAssignments={dashboardData.processedScheduleData.filter(a => a.group === selectedGroup)}
                                 currentPeriodName={liveStatusData.currentPeriod?.name ?? null}
                                 groupInfo={dashboardData.groupInfo}
+                                language={language}
                             />
                         ) : (isSearching || selectedClassroom) ? (
                              <>
