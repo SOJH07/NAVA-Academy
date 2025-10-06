@@ -14,7 +14,6 @@ import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import DailySummaryPanel from '../components/DailySummaryPanel';
 import ClassroomStatusModal from '../components/ClassroomStatusModal';
 import KioskHeader from '../components/KioskHeader';
-import KioskWelcomeScreen from '../components/KioskWelcomeScreen';
 import useAppStore from '../hooks/useAppStore';
 
 interface KioskPageProps {
@@ -59,7 +58,6 @@ const schematicNameToId = (name: string): string => {
 
 
 const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
-    const [showWelcome, setShowWelcome] = useState(true);
     const [language, setLanguage] = useState<'en' | 'ar'>('en');
 
     const dashboardData = useDashboardData();
@@ -185,11 +183,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                 classroomState={classroomState}
                 isManagable={false}
             />
-            <div className={`absolute inset-0 z-50 transition-all duration-700 ease-in-out ${!showWelcome ? 'opacity-0 -translate-x-full pointer-events-none' : 'opacity-100 translate-x-0'}`}>
-                <KioskWelcomeScreen onEnter={() => setShowWelcome(false)} now={liveStatusData.now} />
-            </div>
 
-            {/* FIX: Pass now and weekNumber to KioskHeader and remove redundant time display. */}
             <KioskHeader
                 onExitKiosk={onExitKiosk}
                 language={language}

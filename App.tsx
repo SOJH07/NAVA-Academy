@@ -3,11 +3,12 @@ import AdminDashboard from './pages/AdminDashboard';
 import KioskPage from './pages/KioskPage';
 import LoginPage from './pages/LoginPage';
 import useUserPreferencesStore from './hooks/useUserPreferencesStore';
+import KioskWelcomePage from './pages/KioskWelcomePage';
 
-type View = 'login' | 'admin' | 'kiosk';
+type View = 'login' | 'admin' | 'kiosk' | 'kioskWelcome';
 
 const App: React.FC = () => {
-    const [view, setView] = useState<View>('kiosk');
+    const [view, setView] = useState<View>('kioskWelcome');
     const { theme } = useUserPreferencesStore();
 
     useEffect(() => {
@@ -30,12 +31,18 @@ const App: React.FC = () => {
     }, []);
 
     const handleSwitchToKiosk = useCallback(() => {
+        setView('kioskWelcome');
+    }, []);
+
+    const handleEnterKiosk = useCallback(() => {
         setView('kiosk');
     }, []);
 
     switch (view) {
         case 'admin':
             return <AdminDashboard onLogout={handleLogout} />;
+        case 'kioskWelcome':
+            return <KioskWelcomePage onEnter={handleEnterKiosk} />;
         case 'kiosk':
             return <KioskPage onExitKiosk={handleLogout} />;
         case 'login':
