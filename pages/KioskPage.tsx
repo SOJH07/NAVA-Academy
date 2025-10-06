@@ -242,7 +242,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             cardHeightClass="h-36"
                         />
                     </div>
-                    <FloorPlanLegend />
+                    <FloorPlanLegend language={language} />
                 </div>
                 
                 <div className="col-span-12 lg:col-span-4 bg-kiosk-panel rounded-2xl shadow-xl flex flex-col p-6 min-h-0">
