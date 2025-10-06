@@ -21,9 +21,11 @@ const KioskHeader: React.FC<KioskHeaderProps> = ({ onExitKiosk, language, setLan
     return (
         <header className="flex-shrink-0 flex justify-between items-center">
             <div>
-                <h1 className="text-4xl font-black text-kiosk-text-title tracking-tight" lang="en">NAVA Academy Kiosk</h1>
+                <h1 className={`text-4xl font-black text-kiosk-text-title tracking-tight ${language === 'ar' ? 'font-kufi' : ''}`} lang={language === 'ar' ? 'ar' : 'en'}>
+                    {language === 'ar' ? 'نافا اليوم' : 'NAVA Today'}
+                </h1>
                 <p className={`text-lg text-kiosk-text-body font-medium ${language === 'ar' ? 'font-kufi' : ''}`}>
-                   {language === 'ar' ? `الأسبوع ${weekNumber} | عرض العمليات المباشرة` : `Week ${weekNumber} | Live Operations Display`}
+                   {language === 'ar' ? `الأسبوع ${weekNumber} | يومك في لمحة` : `Week ${weekNumber} | Your Day at a Glance`}
                 </p>
             </div>
 

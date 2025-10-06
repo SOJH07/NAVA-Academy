@@ -212,8 +212,8 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                 
                 <div className="col-span-12 lg:col-span-5 bg-kiosk-panel rounded-2xl shadow-xl flex flex-col p-6">
                      <div className="flex justify-between items-center mb-4 flex-shrink-0">
-                        <h2 className="text-2xl font-bold text-kiosk-text-title">
-                            {language === 'ar' ? 'خطة الطابق' : 'Live Floor Plan'}
+                        <h2 className={`text-2xl font-bold text-kiosk-text-title ${language === 'ar' ? 'font-kufi' : ''}`}>
+                            {language === 'ar' ? 'خريطة الأكاديمية' : 'Campus Navigator'}
                         </h2>
                         <div className="flex items-center gap-2 p-1 bg-kiosk-bg rounded-xl">
                             <FloorTab label="3rd" isActive={activeFloor === 'third'} onClick={() => setActiveFloor('third')} />
