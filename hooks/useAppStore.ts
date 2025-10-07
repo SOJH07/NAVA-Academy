@@ -73,7 +73,7 @@ const useAppStore = create<AppState>()(
       setFocusedPath: (path) => set({ focusedPath: path }),
       isHeatmapVisible: false,
       setIsHeatmapVisible: (isVisible) => set({ isHeatmapVisible: isVisible }),
-      simulatedTime: new Date('2025-10-06T08:35:00').getTime(),
+      simulatedTime: null,
       setSimulatedTime: (time) => set({ simulatedTime: time }),
 
 

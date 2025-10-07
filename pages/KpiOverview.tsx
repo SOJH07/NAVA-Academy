@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { format } from 'date-fns';
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, Cell, PieChart, Pie } from 'recharts';
 import type { AnalyzedStudent, LiveStudent } from '../types';
 import ChartContainer from '../components/ChartContainer';
@@ -169,8 +170,8 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, liveStat
             {isFiltered && <SelectionSummary students={allStudents} totalStudents={allStudents.length} />}
             
             <div className="pb-2">
-                <h2 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">Welcome, Director</h2>
-                <p className="text-base text-text-muted dark:text-dark-text-muted">Here is your live overview of academy operations.</p>
+                <h2 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">Today's Briefing</h2>
+                <p className="text-base text-text-muted dark:text-dark-text-muted">{format(liveStatusData.now, 'EEEE, MMMM d, yyyy')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
