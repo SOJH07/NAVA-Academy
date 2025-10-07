@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { LiveStudent, FoundationGrades, Assignment, DailyPeriod, FloorId } from '../types';
+import type { LiveStudent, FoundationGrades, Assignment, DailyPeriod, FloorId, FloorPlanItem } from '../types';
 import FloorPlan from '../components/FloorPlan';
 import FloorPlanLegend from '../components/FloorPlanLegend';
 import StudentDetailCard from '../components/StudentDetailCard';
@@ -136,7 +136,8 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
     const roomUsage = useMemo(() => {
         const counts: {[key: string]: number} = {};
         dashboardData.processedScheduleData.forEach(assignment => {
-            const allItems = Object.values(allFloorLayouts).flat();
+            // FIX: Explicitly cast the result of flat() to FloorPlanItem[] to resolve type inference issue.
+            const allItems = Object.values(allFloorLayouts).flat() as FloorPlanItem[];
             const item = allItems.find(i => i.name.includes(assignment.group));
             if (item) {
                 counts[item.name] = (counts[item.name] || 0) + 1;
