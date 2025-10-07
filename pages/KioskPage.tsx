@@ -46,7 +46,7 @@ const scheduleCodeToId = (code: string): string => {
 };
 
 const schematicNameToId = (name: string): string => {
-    const match = name.match(/(C|LAP|L|WS)-?\s?(\d+)/);
+    const match = name.match(/(C|Lab|L|WS)-?\s?(\d+)/);
     if (!match) return name; 
     const prefix = match[1];
     const number = match[2];
