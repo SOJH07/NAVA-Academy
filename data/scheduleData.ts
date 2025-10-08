@@ -68,10 +68,10 @@ const rawScheduleData = [
   { Day: 'Monday', Period: 'P 5-7', Group: 'DPIT-06', classroom: '2.06', instructor: 'Muhammad Asif', topic: 'U25 Lean Manufacturing' },
   { Day: 'Tuesday', Period: 'P 1-4', Group: 'DPIT-06', classroom: '2.06', instructor: 'Muhammad Asif', topic: 'U25 Lean Manufacturing' },
   { Day: 'Tuesday', Period: 'P 5-7', Group: 'DPIT-06', classroom: '2.06', instructor: 'Muhammad Asif', topic: 'U25 Lean Manufacturing' },
-  { Day: 'Wednesday', Period: 'P 1-4', Group: 'DPIT-06', classroom: '2.10', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
-  { Day: 'Wednesday', Period: 'P 5-7', Group: 'DPIT-06', classroom: '2.10', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
-  { Day: 'Thursday', Period: 'P 1-4', Group: 'DPIT-06', classroom: '2.10', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
-  { Day: 'Thursday', Period: 'P 5-7', Group: 'DPIT-06', classroom: '2.10', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
+  { Day: 'Wednesday', Period: 'P 1-4', Group: 'DPIT-06', classroom: '2.06', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
+  { Day: 'Wednesday', Period: 'P 5-7', Group: 'DPIT-06', classroom: '2.06', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
+  { Day: 'Thursday', Period: 'P 1-4', Group: 'DPIT-06', classroom: '2.06', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
+  { Day: 'Thursday', Period: 'P 5-7', Group: 'DPIT-06', classroom: '2.06', instructor: 'Victor', topic: 'U14 Pneumatic Fundamentals' },
 
   // DPIT-07
   { Day: 'Sunday', Period: 'P 1-4', Group: 'DPIT-07', classroom: 'WS-0.6', instructor: 'Muhammad Fathi', topic: 'U15 HVAC' },

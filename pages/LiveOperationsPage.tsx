@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-// FIX: Added Assignment, DailyPeriod, and FloorId to types import.
-import type { LiveStudent, FoundationGrades, Assignment, DailyPeriod, FloorId } from '../types';
+import type { LiveStudent, FoundationGrades, Assignment, DailyPeriod, FloorId, FloorPlanItem } from '../types';
 import FloorPlan from '../components/FloorPlan';
 import FloorPlanLegend from '../components/FloorPlanLegend';
 import StudentDetailCard from '../components/StudentDetailCard';
@@ -11,11 +10,12 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import useAppStore from '../hooks/useAppStore';
 import { useDebounce } from '../hooks/useDebounce';
-import { useLiveStatus } from '../hooks/useLiveStatus';
 import LiveStatusSummary from '../components/LiveStatusSummary';
 import ClassroomStatusModal from '../components/ClassroomStatusModal';
-// FIX: Added useDashboardData to fetch schedule data.
 import { useDashboardData } from '../hooks/useDashboardData';
+
+// FIX: Import 'useLiveStatus' hook to resolve 'Cannot find name' error.
+import { useLiveStatus } from '../hooks/useLiveStatus';
 
 interface LiveOperationsPageProps {
   liveStatusData: ReturnType<typeof useLiveStatus>;
@@ -116,7 +116,7 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
     const [selectedClassroom, setSelectedClassroom] = useState<string | null>(null);
     const [popoverTarget, setPopoverTarget] = useState<HTMLElement | null>(null);
     const { classrooms: classroomState, setOutOfService, setAvailable } = useClassroomStore();
-    const [activeFloor, setActiveFloor] = useState<FloorId>('ground');
+    const [activeFloor, setActiveFloor] = useState<FloorId>('second');
     
     const { 
         filters, globalSearchTerm, 
@@ -136,8 +136,8 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
     const roomUsage = useMemo(() => {
         const counts: {[key: string]: number} = {};
         dashboardData.processedScheduleData.forEach(assignment => {
-            const allItems = Object.values(allFloorLayouts).flat();
-            // This mapping is based on group name being part of the room name, which is fragile but matches the data structure.
+            // FIX: Explicitly cast the result of flat() to FloorPlanItem[] to resolve type inference issue.
+            const allItems = Object.values(allFloorLayouts).flat() as FloorPlanItem[];
             const item = allItems.find(i => i.name.includes(assignment.group));
             if (item) {
                 counts[item.name] = (counts[item.name] || 0) + 1;
@@ -233,7 +233,6 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
 
     return (
         <>
-            {/* FIX: Add missing targetRect and isManagable props, and update handlers. */}
             <ClassroomStatusModal
                 isOpen={!!selectedClassroom}
                 onClose={closePopover}
@@ -285,7 +284,8 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                                 isOperationalHours={liveStatusData.isOperationalHours}
                             />
                         </div>
-                        <FloorPlanLegend />
+                        {/* FIX: Pass 'language' prop to FloorPlanLegend. */}
+                        <FloorPlanLegend language="en" />
                     </div>
 
                      <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm flex flex-col p-4 h-full min-h-0">

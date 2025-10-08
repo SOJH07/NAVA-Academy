@@ -250,7 +250,8 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             cardHeightClass="h-36"
                         />
                     </div>
-                    <FloorPlanLegend />
+                    {/* FIX: Pass 'language' prop to FloorPlanLegend. */}
+                    <FloorPlanLegend language={language} />
                 </div>
                 
                 <div className="col-span-12 lg:col-span-4 bg-kiosk-panel rounded-2xl shadow-xl flex flex-col p-6 min-h-0">
@@ -268,13 +269,12 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
 
                     <div className="flex-grow overflow-y-auto -mr-3 pr-3 space-y-3">
                         {selectedGroup ? (
+                            // FIX: Corrected props for GroupDailyScheduleCard.
                             <GroupDailyScheduleCard
-                                group={selectedGroup}
-                                dailySchedule={dashboardData.dailySchedule}
-                                groupAssignments={dailyAssignments.filter(a => a.group === selectedGroup)}
+                                selection={{ type: 'group', value: selectedGroup }}
+                                allAssignments={dashboardData.processedScheduleData}
                                 currentPeriodName={liveStatusData.currentPeriod?.name ?? null}
-                                groupInfo={dashboardData.groupInfo}
-                                language={language}
+                                today={today}
                             />
                         ) : (isSearching || selectedClassroom) ? (
                              <>

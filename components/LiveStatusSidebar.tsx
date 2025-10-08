@@ -170,7 +170,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
                                     <button
                                         key={group}
                                         onClick={(e) => { e.stopPropagation(); toggleArrayFilter(filterType, group); }}
-                                        className={`px-2.5 py-1 text-xs font-semibold rounded-full transition-all duration-200 shadow-sm hover:scale-105 ${
+                                        className={`whitespace-nowrap px-2 py-1 text-xs font-semibold rounded-full transition-all duration-200 shadow-sm hover:scale-105 ${
                                             isGroupActive
                                                 ? `bg-white ${darkColor}`
                                                 : `${darkColor.replace('text-','bg-')} text-white opacity-80 hover:opacity-100`
