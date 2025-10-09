@@ -56,7 +56,7 @@ const BreakTimeDisplay: React.FC<BreakTimeDisplayProps> = ({ breakName, endTime,
     return (
         <div className="relative flex flex-col items-center justify-center h-full w-full text-center text-kiosk-text-title p-8 kiosk-welcome-bg">
             <div className="flex flex-col items-center" style={{ textShadow: '0 3px 10px rgba(0,0,0,0.1)' }}>
-                <h2 className="text-5xl lg:text-6xl font-black font-montserrat text-kiosk-text-title drop-shadow-md">
+                <h2 className={`text-5xl lg:text-6xl font-black text-kiosk-text-title drop-shadow-md ${language === 'ar' ? 'font-bukra' : 'font-sans'}`}>
                     {title}
                 </h2>
                 <p className="text-xl text-kiosk-text-body mt-4 drop-shadow-sm">

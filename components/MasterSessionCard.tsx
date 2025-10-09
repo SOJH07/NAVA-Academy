@@ -22,6 +22,8 @@ const MasterSessionCard: React.FC<MasterSessionCardProps> = ({ assignment, focus
         hoverBg: isTech ? 'hover:bg-rose-50/50' : 'hover:bg-sky-50/50',
     };
     const isDimmed = focusedInstructor && !assignment.instructors.includes(focusedInstructor);
+    const isLab = assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('3.');
+    const locationPrefix = isLab ? 'L' : 'C';
     
     const tooltipContent = (
         <div>
@@ -48,7 +50,7 @@ const MasterSessionCard: React.FC<MasterSessionCardProps> = ({ assignment, focus
                 </div>
                 <div className="flex items-center gap-1.5">
                     <LocationIcon className="w-3 h-3 flex-shrink-0" />
-                    <span>C-{assignment.classroom}</span>
+                    <span>{locationPrefix}-{assignment.classroom.replace('.', '')}</span>
                 </div>
             </div>
 

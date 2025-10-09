@@ -199,7 +199,7 @@ const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selec
         {PERIODS.map((period, index) => {
             const isLive = currentPeriodName === period && DAYS.indexOf(today) !== -1;
             return (
-                <div key={period} className={`row-start-${index + 2} col-start-1 text-right pr-2 font-montserrat font-semibold text-sm flex items-center justify-end transition-all ${isLive ? 'text-nava-gold scale-110 font-black' : 'text-text-muted'}`}>
+                <div key={period} className={`row-start-${index + 2} col-start-1 text-right pr-2 font-semibold text-sm flex items-center justify-end transition-all ${isLive ? 'text-nava-gold scale-110 font-black' : 'text-text-muted'}`}>
                     {period}
                 </div>
             );

@@ -17,18 +17,18 @@ import {
 
 // FIX: 'max' and 'min' are not exported from 'date-fns' in some environments.
 // Providing local implementations for date comparison.
-const max = (dates: Date[]): Date => {
+const max = (dates: (Date | number)[]): Date => {
     if (dates.length === 0) {
         throw new Error('Cannot determine the max of an empty array of dates.');
     }
-    return new Date(Math.max(...dates.map(date => date.getTime())));
+    return new Date(Math.max(...dates.map(date => new Date(date).getTime())));
 };
 
-const min = (dates: Date[]): Date => {
+const min = (dates: (Date | number)[]): Date => {
     if (dates.length === 0) {
         throw new Error('Cannot determine the min of an empty array of dates.');
     }
-    return new Date(Math.min(...dates.map(date => date.getTime())));
+    return new Date(Math.min(...dates.map(date => new Date(date).getTime())));
 };
 
 const EventPopover: React.FC<{ event: CalendarEvent, position: DOMRect | null, onClose: () => void }> = ({ event, position, onClose }) => {

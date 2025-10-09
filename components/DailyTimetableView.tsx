@@ -25,12 +25,14 @@ const TableHeader: React.FC<{isTech?: boolean}> = ({ isTech = false }) => (
 
 const TableRow: React.FC<{assignment: Assignment, groupInfo: GroupInfo, hasFocus: boolean, isTech?: boolean}> = ({ assignment, groupInfo, hasFocus, isTech = false }) => {
     const instructorColor = isTech ? 'text-status-tech dark:text-status-tech' : 'text-text-primary dark:text-dark-text-primary';
+    const isLab = assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('3.');
+    const locationPrefix = isLab ? 'L' : 'C';
 
     return (
         <tr className={`transition-opacity duration-300 ${!hasFocus ? 'opacity-30' : ''}`}>
             <td className={`p-2 font-bold ${instructorColor}`}>{assignment.instructors.join(', ')}</td>
             <td className="p-2 font-semibold text-text-primary dark:text-dark-text-primary">{assignment.group}</td>
-            <td className="p-2 text-text-secondary dark:text-dark-text-secondary">C-{assignment.classroom.replace('.', '')}</td>
+            <td className="p-2 text-text-secondary dark:text-dark-text-secondary">{locationPrefix}-{assignment.classroom.replace('.', '')}</td>
             <td className="p-2 text-text-secondary dark:text-dark-text-secondary">{assignment.topic}</td>
         </tr>
     )

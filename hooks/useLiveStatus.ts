@@ -148,14 +148,17 @@ export const useLiveStatus = (
                     
                     if (assignment) {
                         const classroom = assignment.classroom;
-                        if (classroom.startsWith('1.')) {
-                            location = `Lab: C-${classroom.replace('.', '')}`;
+                        const formattedName = classroom.replace('.', '');
+                        if (classroom.startsWith('1.') || classroom.startsWith('3.')) {
+                            location = `Lab: L-${formattedName}`;
                         } else if (classroom.startsWith('2.')) {
-                            location = `Classroom: C-${classroom.replace('.', '')}`;
+                            location = `Classroom: C-${formattedName}`;
                         } else if (classroom.startsWith('WS-')) {
                             location = `Workshop: ${classroom}`;
+                        } else if (classroom.startsWith('0.')) {
+                            location = `Workshop: WS-${formattedName}`;
                         } else {
-                            location = `Classroom: ${classroom}`;
+                            location = `Room: ${classroom}`;
                         }
                     } else {
                         location = 'Unscheduled';
@@ -180,7 +183,7 @@ export const useLiveStatus = (
                 
                 // Heuristic to determine session type based on location
                 const sessionType: LiveClass['sessionType'] = 
-                    assignment.classroom.startsWith('2.') || assignment.classroom.startsWith('3.') 
+                    assignment.classroom.startsWith('2.') 
                     ? 'theory' : 'practical';
 
                 if (!addedGroups.has(assignment.group)) {

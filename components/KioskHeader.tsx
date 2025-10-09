@@ -27,15 +27,15 @@ const KioskHeader: React.FC<KioskHeaderProps> = ({ onExitKiosk, language, setLan
         <header className="flex-shrink-0 flex justify-between items-center">
             <div className="flex items-center gap-6">
                 <div>
-                    <h1 className={`text-4xl font-black text-kiosk-text-title tracking-tight font-montserrat ${language === 'ar' ? 'font-kufi' : ''}`} lang={language === 'ar' ? 'ar' : 'en'}>
+                    <h1 className={`text-4xl font-black text-kiosk-text-title tracking-tight ${language === 'ar' ? 'font-bukra' : 'font-sans'}`} lang={language === 'ar' ? 'ar' : 'en'}>
                         {language === 'ar' ? 'نافا اليوم' : 'NAVA Today'}
                     </h1>
-                    <p className={`text-lg text-kiosk-text-body font-medium ${language === 'ar' ? 'font-kufi' : ''}`}>
+                    <p className={`text-lg text-kiosk-text-body font-medium`}>
                        {language === 'ar' ? `الأسبوع ${weekNumber} | يومك في لمحة` : `Week ${weekNumber} | Your Day at a Glance`}
                     </p>
                 </div>
                 <div className="pl-6 border-l-2 border-kiosk-border">
-                    <p className={`text-2xl font-bold text-kiosk-text-title ${language === 'ar' ? 'font-kufi' : 'font-montserrat'}`}>{formattedDate}</p>
+                    <p className={`text-2xl font-bold text-kiosk-text-title ${language === 'ar' ? 'font-bukra' : 'font-sans'}`}>{formattedDate}</p>
                 </div>
             </div>
 

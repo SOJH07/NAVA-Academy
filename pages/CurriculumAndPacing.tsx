@@ -5,7 +5,9 @@ import { foundationSubjects, year2IndustrialSubjects, year2ServiceSubjects, Subj
 import type { PacingEvent } from '../types';
 import useAppStore, { INITIAL_FILTERS } from '../hooks/useAppStore';
 import { useDebounce } from '../hooks/useDebounce';
-import { format, addDays, startOfISOWeek, differenceInDays, getISOWeek, parse } from 'date-fns';
+// FIX: 'parse' is not a top-level export in the project's date-fns setup. Importing from submodule.
+import { format, addDays, startOfISOWeek, differenceInDays, getISOWeek } from 'date-fns';
+import parse from 'date-fns/parse';
 
 // --- ICONS ---
 const AssessmentIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2.166 4.616a2.25 2.25 0 012.25 0l5.166 2.583a2.25 2.25 0 010 4.162l-5.166 2.583a2.25 2.25 0 01-2.25 0V4.616zm10.5 0a2.25 2.25 0 012.25 0l2.834 1.417a2.25 2.25 0 010 4.162l-2.834 1.417a2.25 2.25 0 01-2.25 0V4.616z" clipRule="evenodd" /></svg>;

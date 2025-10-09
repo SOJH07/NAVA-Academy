@@ -34,9 +34,10 @@ const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, d
     const unitCodeMatch = assignment.topic.match(/(U\d+|Unit-\d+)/i);
     const unitCode = unitCodeMatch ? unitCodeMatch[0].replace('Unit-', 'U').toUpperCase() : null;
 
+    const isLab = assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('3.');
     const formattedLocation = assignment.classroom.startsWith('WS-') 
         ? assignment.classroom.replace('WS-0.', 'WS-') 
-        : `C-${assignment.classroom.replace('.', '')}`;
+        : `${isLab ? 'L' : 'C'}-${assignment.classroom.replace('.', '')}`;
     
     let locationPillColor = 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200';
     if (assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('3.')) {

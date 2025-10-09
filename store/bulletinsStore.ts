@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mockBulletins } from '../data/AnnouncementsItems';
-import { differenceInHours, parseISO, parse } from 'date-fns';
+// FIX: 'parse' and 'parseISO' are not top-level exports in the project's date-fns setup. Importing from submodules.
+import { differenceInHours } from 'date-fns';
+import parseISO from 'date-fns/parseISO';
+import parse from 'date-fns/parse';
 
 export interface I18N {
   en?: string;

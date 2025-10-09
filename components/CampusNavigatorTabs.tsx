@@ -63,7 +63,7 @@ const RoomPill: React.FC<{ cell: Cell; }> = ({ cell }) => {
             <button
                 onClick={handleClick}
                 title={`In Class: ${roomStatus.group} in ${cell.code}`}
-                className={`w-full h-[28px] pl-2 pr-3 rounded-lg flex items-center gap-2 text-left border-l-4 border-emerald-500 transition-all duration-200 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400' : 'bg-white hover:bg-slate-50'}`}
+                className={`w-full h-[28px] pl-2 pr-3 rounded-lg flex items-center gap-2 border-l-4 border-emerald-500 transition-all duration-200 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400' : 'bg-white hover:bg-slate-50'}`}
             >
                 <div className="flex-grow min-w-0">
                     <p className="font-bold text-xs text-slate-800 truncate">{roomStatus.group}</p>
@@ -78,7 +78,7 @@ const RoomPill: React.FC<{ cell: Cell; }> = ({ cell }) => {
             onClick={handleClick}
             disabled={!isInteractive}
             title={cell.code}
-            className={`w-full h-[28px] px-3 rounded-lg flex items-center gap-2 text-left transition-all duration-200 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400' : 'bg-slate-100 hover:bg-slate-200'} ${isInteractive ? 'cursor-pointer' : 'cursor-default opacity-70'}`}
+            className={`w-full h-[28px] px-3 rounded-lg flex items-center gap-2 transition-all duration-200 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400' : 'bg-slate-100 hover:bg-slate-200'} ${isInteractive ? 'cursor-pointer' : 'cursor-default opacity-70'}`}
         >
             <div className="text-slate-500">{getRoomIcon(cell.type)}</div>
             <p className="font-semibold text-xs text-slate-600 truncate">{cell.code}</p>
@@ -115,7 +115,7 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
                 <div className="bg-brand-primary/20 p-2 rounded-lg">
                     <MapPinIcon className="h-6 w-6 text-text-primary" />
                 </div>
-                <h2 className={`font-bold text-lg text-text-primary ${language === 'ar' ? 'font-kufi' : ''}`}>
+                <h2 className={`font-bold text-lg text-text-primary`}>
                     {language === 'ar' ? 'مستكشف الحرم الجامعي' : 'Campus Navigator'}
                 </h2>
             </div>

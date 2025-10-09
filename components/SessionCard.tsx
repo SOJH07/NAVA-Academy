@@ -19,7 +19,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ assignment, density, focusedI
     const track = groupInfo[assignment.group]?.track_name;
     const isIndustrial = track === 'Industrial Tech';
     const isPD = assignment.type === 'Professional Development';
-    const isPractical = assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('WS-') || assignment.classroom.startsWith('0.');
+    const isPractical = !assignment.classroom.startsWith('2.');
 
 
     const styles = {

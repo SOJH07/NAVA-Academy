@@ -38,7 +38,7 @@ const GroupCard: React.FC<{
     return (
         <button
             onClick={onClick}
-            className={`w-full rounded-xl text-left transition-all duration-200 flex items-stretch border bg-white shadow-sm hover:bg-slate-50 ${isSelected ? `ring-2 ${selectedTheme.selectedBorder}` : 'border-slate-200'}`}
+            className={`w-full rounded-xl transition-all duration-200 flex items-stretch border bg-white shadow-sm hover:bg-slate-50 ${isSelected ? `ring-2 ${selectedTheme.selectedBorder}` : 'border-slate-200'}`}
         >
             <div className={`w-2/5 flex flex-col items-center justify-center p-2 font-extrabold text-lg border-r border-slate-200 ${selectedTheme.text}`}>
                 {liveInfo.group.split('-')[0]}
@@ -200,7 +200,7 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, dail
                 <div className="bg-brand-primary/20 p-2 rounded-lg">
                     <ScheduleIcon className="h-6 w-6 text-text-primary" />
                 </div>
-                <h2 className={`font-bold text-lg text-text-primary ${language === 'ar' ? 'font-kufi' : ''}`}>
+                <h2 className={`font-bold text-lg text-text-primary`}>
                     {language === 'ar' ? 'الجدول المباشر' : 'Live Schedule'}
                 </h2>
             </div>

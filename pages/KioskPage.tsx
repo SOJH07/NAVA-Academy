@@ -5,19 +5,22 @@ import StudentDetailCard from '../components/StudentDetailCard';
 import PeriodTimeline from '../components/PeriodTimeline';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import GroupDailyScheduleCard from '../components/GroupDailyScheduleCard';
-import type { Assignment, OccupancyData } from '../types';
+import type { Assignment, OccupancyData, GroupInfo } from '../types';
 import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import KioskHeader from '../components/KioskHeader';
 import useAppStore from '../hooks/useAppStore';
 import useKioskStore, { RoomStatus } from '../store/kioskStore';
 import KioskWelcomeMessage from '../components/KioskWelcomeMessage';
 import CampusNavigatorTabs from '../components/CampusNavigatorTabs';
-import { format, parse } from 'date-fns';
+// FIX: 'parse' is not a top-level export in the project's date-fns setup. Importing from submodule.
+import { format } from 'date-fns';
+import parse from 'date-fns/parse';
 import { FLOOR_PLANS } from '../data/floorPlanMatrix';
 import BreakTimeDisplay from '../components/BreakTimeDisplay';
 import BreakBanner from '../components/BreakBanner';
 import EndOfDayDisplay from '../components/EndOfDayDisplay';
 import EndOfDayBanner from '../components/EndOfDayBanner';
+import AcademyPulse from '../components/AcademyPulse';
 
 const schematicNameToId = (name: string): string => {
     const normalizedName = name.replace(/\s/g, '');
@@ -197,7 +200,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const shouldShowImmersiveEndOfDay = isFinished && !isEndOfDayDismissed;
 
     return (
-        <div className="min-h-screen w-screen bg-bg-body flex flex-col px-6 py-4 gap-4 font-sans overflow-y-auto">
+        <div className={`min-h-screen w-screen bg-bg-body flex flex-col px-6 py-4 gap-4 overflow-y-auto ${language === 'ar' ? 'font-bukra' : 'font-sans'}`}>
             <KioskHeader onExitKiosk={onExitKiosk} language={language} setLanguage={setLanguage} now={liveStatusData.now} weekNumber={liveStatusData.weekNumber} />
             <div className="flex-shrink-0 h-16"><PeriodTimeline dailySchedule={dashboardData.dailySchedule} currentPeriod={liveStatusData.currentPeriod} now={liveStatusData.now} /></div>
             
@@ -237,12 +240,12 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             {isBreak && isBreakScreenDismissed && currentPeriod && (<BreakBanner breakName={overallStatus} endTime={currentPeriod.end} now={now} language={language} onRestore={() => setIsBreakScreenDismissed(false)} />)}
                             {isFinished && isEndOfDayDismissed && (<EndOfDayBanner language={language} onRestore={() => setIsEndOfDayDismissed(false)} />)}
                             {!selection ? (
-                                <KioskWelcomeMessage language={language} dailyAssignments={dailyAssignments} now={now} />
+                                <KioskWelcomeMessage language={language} allDailyAssignments={dashboardData.processedScheduleData} now={now} groupInfo={dashboardData.groupInfo} />
                             ) : (
                                 <div className="flex flex-col h-full min-h-0 p-4">
                                      <div className="flex-shrink-0 flex justify-between items-center mb-4 px-1">
                                         <div className="min-w-0">
-                                            <h2 className="text-2xl font-bold font-montserrat text-text-primary truncate pr-4">
+                                            <h2 className="text-2xl font-bold text-text-primary truncate pr-4">
                                               {selection.type === 'group' ? `Group: ${selection.value}` : `Room: ${selection.value}`}
                                             </h2>
                                             <div className="text-sm text-text-muted font-mono flex items-center gap-4 mt-1">
@@ -251,7 +254,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                                                 <span className="font-bold text-red-500 tabular-nums">{nowNextInfo.countdown}</span>
                                             </div>
                                         </div>
-                                        <div className={`p-1 bg-slate-100 rounded-full flex items-center gap-1 ${language === 'ar' ? 'font-kufi' : ''}`}>
+                                        <div className={`p-1 bg-slate-100 rounded-full flex items-center gap-1`}>
                                             <button 
                                                 onClick={() => setActiveTab('schedule')} 
                                                 className={`px-6 py-2 text-base font-bold rounded-full transition-colors ${activeTab === 'schedule' ? 'bg-brand-primary-light text-text-primary shadow-sm' : 'text-text-muted hover:bg-slate-200/50'}`}
@@ -288,11 +291,15 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             )}
                         </div>
                         
-                        <div style={{ flexBasis: '14%' }} className="flex-shrink-0">
+                        <div style={{ flexBasis: '14%' }} className="flex-shrink-0 flex flex-col gap-6">
                             <CampusNavigatorTabs 
                                 liveClasses={liveStatusData.liveClasses}
                                 dailyAssignments={dailyAssignments}
                                 currentPeriod={liveStatusData.currentPeriod}
+                                language={language}
+                            />
+                             <AcademyPulse
+                                liveStatusData={liveStatusData}
                                 language={language}
                             />
                         </div>

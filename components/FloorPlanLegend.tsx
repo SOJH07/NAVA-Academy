@@ -24,7 +24,7 @@ const FloorPlanLegend: React.FC<FloorPlanLegendProps> = ({ language }) => {
     const isArabic = language === 'ar';
 
     return (
-        <div className={`mt-4 pt-4 border-t border-kiosk-border flex flex-col items-center justify-center gap-y-3 ${isArabic ? 'font-kufi' : ''}`}>
+        <div className={`mt-4 pt-4 border-t border-kiosk-border flex flex-col items-center justify-center gap-y-3 ${isArabic ? 'font-bukra' : ''}`}>
             <div className="flex items-center justify-center flex-wrap gap-x-6 gap-y-2" dir={isArabic ? 'rtl' : 'ltr'}>
                 
                 <LegendSection title={isArabic ? 'نوع الجلسة' : 'Session Type'}>
