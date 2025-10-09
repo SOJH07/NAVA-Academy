@@ -17,17 +17,21 @@ import { useDashboardData } from './hooks/useDashboardData';
 import { useLiveStatus } from './hooks/useLiveStatus';
 import useAppStore from './hooks/useAppStore';
 import { useAnalyticsData } from './hooks/useAnalyticsData';
+import TeamAndAcademyPage from './pages/TeamAndAcademyPage';
+// FIX: Import 'StudentAnalyticsPage' to resolve 'Cannot find name' error.
+import StudentAnalyticsPage from './pages/StudentAnalyticsPage';
+// FIX: Import 'CurriculumAndPacingPage' to resolve 'Cannot find name' error.
+import CurriculumAndPacingPage from './pages/CurriculumAndPacingPage';
 
 const pages: Page[] = [
     { id: 'kpiOverview', label: 'KPI Overview', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H5a2 2 0 01-2-2V7a2 2 0 012 2h14a2 2 0 012 2v10a2 2 0 01-2 2z" /></svg> },
     { id: 'liveOps', label: 'Live Operations', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
-    { id: 'analytics', label: 'Performance Analytics', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg> },
-    { id: 'gpaAnalysis', label: 'GPA Analysis', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3.5a1 1 0 00.028 1.84l7 3.5a1 1 0 00.764 0l7-3.5a1 1 0 00.028-1.84l-7-3.5z" /><path d="M3 9.332V14a1 1 0 00.553.894l6 3a1 1 0 00.894 0l6-3A1 1 0 0017 14v-4.668-2.45l-7 3.5-7-3.5v2.45z" /></svg> },
-    { id: 'studentFinder', label: 'Student Finder', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" /></svg> },
-    { id: 'instructorSchedule', label: 'Instructor Schedule', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> },
-    { id: 'instructorProfiles', label: 'Instructor Profiles', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg> },
+    { id: 'studentAnalytics', label: 'Student Analytics', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" /></svg> },
+    { id: 'teamAndAcademy', label: 'Team & Academy', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg> },
+    { id: 'curriculumAndPacing', label: 'Curriculum & Pacing', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg> },
     { id: 'facilityManagement', label: 'Facility Management', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-2 0v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" /></svg> },
     { id: 'calendar', label: 'Calendar', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+    { id: 'aboutNava', label: 'About NAVA', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg> },
 ];
 
 const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
@@ -41,13 +45,13 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
        toggleArrayFilter, toggleSessionTypeFilter,
        clearFilters,
        activeFilterCount,
-       // FIX: Get simulatedTime from the store to pass to useLiveStatus.
        simulatedTime
     } = useAppStore();
 
     const dashboardData = useDashboardData();
     const { analyzedStudents } = useAnalyticsData(dashboardData.enhancedStudents);
 
+    // FIX: Pass the `simulatedTime` argument to the `useLiveStatus` hook to fix missing argument error.
     const liveStatusData = useLiveStatus(
         analyzedStudents,
         dashboardData.dailySchedule,
@@ -116,20 +120,12 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                 return <LiveOperationsPage 
                             liveStatusData={liveStatusData}
                         />;
-            case 'analytics':
-                return <AnalyticsPage 
-                            allStudents={analyzedStudents}
-                        />;
-             case 'gpaAnalysis':
-                return <GpaAnalysisPage 
-                            allStudents={analyzedStudents}
-                        />;
-            case 'studentFinder':
-                return <StudentFinderPage
-                            analyzedStudents={analyzedStudents}
-                        />;
-            case 'instructorSchedule':
-                return <InstructorSchedulePage 
+            case 'studentAnalytics':
+                return <StudentAnalyticsPage allStudents={analyzedStudents} />;
+            case 'aboutNava':
+            case 'teamAndAcademy':
+                return <TeamAndAcademyPage 
+                            defaultTab={activePage === 'aboutNava' ? 'academy' : 'instructors'}
                             groupInfo={dashboardData.groupInfo}
                             groupCompanyMap={dashboardData.groupCompanyMap}
                             dailySchedule={dashboardData.dailySchedule}
@@ -137,10 +133,8 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                             now={liveStatusData.now}
                             allStudents={analyzedStudents}
                         />;
-            case 'instructorProfiles':
-                return <InstructorProfilesPage 
-                            groupInfo={dashboardData.groupInfo}
-                        />;
+            case 'curriculumAndPacing':
+                return <CurriculumAndPacingPage weekNumber={liveStatusData.weekNumber} />;
             case 'facilityManagement':
                 return <FacilityManagementPage />;
             case 'calendar':

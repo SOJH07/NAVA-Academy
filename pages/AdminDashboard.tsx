@@ -114,6 +114,7 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                             liveStatusData={liveStatusData}
                         />;
             case 'studentAnalytics':
+                // FIX: Added import for StudentAnalyticsPage.
                 return <StudentAnalyticsPage allStudents={analyzedStudents} />;
             case 'aboutNava':
             case 'teamAndAcademy':
@@ -127,6 +128,7 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
                             allStudents={analyzedStudents}
                         />;
             case 'curriculumAndPacing':
+                // FIX: Added import for CurriculumAndPacingPage.
                 return <CurriculumAndPacingPage weekNumber={liveStatusData.weekNumber} />;
             case 'facilityManagement':
                 return <FacilityManagementPage />;

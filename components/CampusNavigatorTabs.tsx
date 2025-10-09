@@ -11,6 +11,7 @@ const getFloorFromClassroomCode = (code: string): FloorMatrix['name'] | null => 
     return null;
 }
 
+const MapPinIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>;
 const ClassroomIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3.5a1 1 0 00.028 1.84l7 3.5a1 1 0 00.764 0l7-3.5a1 1 0 00.028-1.84l-7-3.5z" /><path d="M3 9.332V14a1 1 0 00.553.894l6 3a1 1 0 00.894 0l6-3A1 1 0 0017 14v-4.668-2.45l-7 3.5-7-3.5v2.45z" /></svg>;
 const LabIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.5 3a.5.5 0 00-.5.5v2.5a.5.5 0 00.5.5h.5a.5.5 0 00.5-.5V5.5a.5.5 0 00-.5-.5h-.5z" clipRule="evenodd" /></svg>;
 const WorkshopIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.972.03 2.287-.948 2.287-1.56.38-1.56 2.6 0 2.98.978.238 1.488 1.559.948 2.286-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.948c.38 1.56 2.6 1.56 2.98 0a1.532 1.532 0 012.287-.948c1.372.836 2.942-.734-2.106-2.106a1.532 1.532 0 01.948-2.287c1.56-.38 1.56-2.6 0-2.98a1.532 1.532 0 01-.948-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.948zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" /></svg>;
@@ -109,29 +110,37 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
     }, [selectedGroup, currentPeriod, dailyAssignments, setSelectedFloor, selectedFloor]);
 
     return (
-        <div className="bg-nava-neutral rounded-xl shadow-lg flex flex-col p-4 h-full min-h-0">
-            <h2 className={`text-3xl font-extrabold font-montserrat text-kiosk-text-title mb-6 flex-shrink-0 px-1 ${language === 'ar' ? 'font-kufi' : ''}`}>
-                {language === 'ar' ? 'مستكشف الحرم الجامعي' : 'Campus Navigator'}
-            </h2>
-            <div className="flex-shrink-0 bg-kiosk-bg p-1 rounded-lg flex items-center justify-center gap-1 mb-3">
-                {(["Ground", "1st", "2nd", "3rd"] as const).map((floorName) => (
-                     <button 
-                        key={floorName} 
-                        onClick={() => setSelectedFloor(floorName)} 
-                        className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors w-full ${selectedFloor === floorName ? 'bg-white text-kiosk-primary shadow-sm' : 'text-kiosk-text-muted hover:bg-slate-200'}`}
-                    >
-                        {floorName}
-                    </button>
-                ))}
+        <div className="bg-kiosk-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
+             <div className="flex items-center gap-3 p-4 rounded-t-xl bg-brand-primary-light flex-shrink-0">
+                <div className="bg-brand-primary/20 p-2 rounded-lg">
+                    <MapPinIcon className="h-6 w-6 text-brand-primary-dark" />
+                </div>
+                <h2 className={`font-bold text-lg text-brand-primary-dark ${language === 'ar' ? 'font-kufi' : ''}`}>
+                    {language === 'ar' ? 'مستكشف الحرم الجامعي' : 'Campus Navigator'}
+                </h2>
             </div>
-            <div className="flex-grow overflow-y-auto -mr-2 pr-2">
-                <div className="grid grid-cols-2 auto-rows-[28px] gap-2">
-                    {activeFloorData.rows.map((row, rowIndex) => (
-                        <React.Fragment key={rowIndex}>
-                            <RoomPill cell={row[0]}/>
-                            <RoomPill cell={row[1]}/>
-                        </React.Fragment>
+
+            <div className="p-4 flex-grow flex flex-col min-h-0">
+                <div className="flex-shrink-0 bg-kiosk-bg p-1 rounded-lg flex items-center justify-center gap-1 mb-3">
+                    {(["Ground", "1st", "2nd", "3rd"] as const).map((floorName) => (
+                        <button 
+                            key={floorName} 
+                            onClick={() => setSelectedFloor(floorName)} 
+                            className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors w-full ${selectedFloor === floorName ? 'bg-white text-kiosk-primary shadow-sm' : 'text-kiosk-text-muted hover:bg-slate-200'}`}
+                        >
+                            {floorName}
+                        </button>
                     ))}
+                </div>
+                <div className="flex-grow overflow-y-auto -mr-2 pr-2">
+                    <div className="grid grid-cols-2 auto-rows-[28px] gap-2">
+                        {activeFloorData.rows.map((row, rowIndex) => (
+                            <React.Fragment key={rowIndex}>
+                                <RoomPill cell={row[0]}/>
+                                <RoomPill cell={row[1]}/>
+                            </React.Fragment>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

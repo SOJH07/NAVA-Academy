@@ -4,19 +4,20 @@ import { useLiveStatus } from '../hooks/useLiveStatus';
 import StudentDetailCard from '../components/StudentDetailCard';
 import PeriodTimeline from '../components/PeriodTimeline';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
-import GroupWeeklyScheduleCard from '../components/GroupDailyScheduleCard';
-// FIX: Import `OccupancyData` to correctly type session data from `liveStatusData`.
+import GroupDailyScheduleCard from '../components/GroupDailyScheduleCard';
 import type { Assignment, OccupancyData } from '../types';
 import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import KioskHeader from '../components/KioskHeader';
 import useAppStore from '../hooks/useAppStore';
 import useKioskStore, { RoomStatus } from '../store/kioskStore';
 import CampusNavigatorTabs from '../components/CampusNavigatorTabs';
-import AnnouncementsMarquee from '../components/AnnouncementsMarquee';
 import { format, parse } from 'date-fns';
 import { FLOOR_PLANS } from '../data/floorPlanMatrix';
 import BreakTimeDisplay from '../components/BreakTimeDisplay';
 import BreakBanner from '../components/BreakBanner';
+import EndOfDayDisplay from '../components/EndOfDayDisplay';
+import EndOfDayBanner from '../components/EndOfDayBanner';
+import DailySummaryPanel from '../components/DailySummaryPanel';
 
 const schematicNameToId = (name: string): string => {
     const normalizedName = name.replace(/\s/g, '');
@@ -48,8 +49,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const [traineeSearch, setTraineeSearch] = useState('');
     const [traineeSort, setTraineeSort] = useState<'asc' | 'desc'>('asc');
     const [isBreakScreenDismissed, setIsBreakScreenDismissed] = useState(false);
-    const prevPeriodName = useRef<string | null>(null);
-
+    const [isEndOfDayDismissed, setIsEndOfDayDismissed] = useState(false);
 
     useEffect(() => {
         document.documentElement.lang = language;
@@ -67,7 +67,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     // Effect to synchronize live status with the kiosk store for the navigator
     useEffect(() => {
         const allRooms = FLOOR_PLANS.flatMap(floor => floor.rows.flat());
-        // FIX: Add type assertion to correctly type the map values, preventing `session` from being inferred as `unknown`.
         const occupancyByScheduleCode = new Map(Object.entries(liveStatusData.occupancy) as [string, OccupancyData[keyof OccupancyData]][]);
         
         allRooms.forEach(room => {
@@ -133,20 +132,19 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
 
     const { now, currentPeriod, overallStatus } = liveStatusData;
     const isBreak = overallStatus.toLowerCase().includes('break');
+    const isFinished = overallStatus === 'Finished';
 
     useEffect(() => {
-        const currentPeriodName = currentPeriod?.name ?? 'none';
-        const isNewPeriod = prevPeriodName.current !== currentPeriodName;
-    
-        if (isNewPeriod) {
-            const isNewPeriodABreak = overallStatus.toLowerCase().includes('break');
-            if (isNewPeriodABreak) {
-                setIsBreakScreenDismissed(false);
-            }
+        // If we are no longer in a break period, allow the break screen to show again next time
+        if (!isBreak) {
+            setIsBreakScreenDismissed(false);
         }
-    
-        prevPeriodName.current = currentPeriodName;
-    }, [currentPeriod, overallStatus]);
+        
+        // If the day is not finished, allow the end-of-day screen to show again next time
+        if (!isFinished) {
+            setIsEndOfDayDismissed(false);
+        }
+    }, [overallStatus, isBreak, isFinished]);
 
 
     const nowNextInfo = useMemo(() => {
@@ -196,14 +194,14 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const allGroups = useMemo(() => dashboardData.allFilterOptions.allTechGroups, [dashboardData]);
     
     const shouldShowImmersiveBreak = isBreak && currentPeriod && !isBreakScreenDismissed;
+    const shouldShowImmersiveEndOfDay = isFinished && !isEndOfDayDismissed;
 
     return (
         <div className="min-h-screen w-screen bg-kiosk-bg flex flex-col px-6 py-4 gap-4 font-sans overflow-y-auto">
             <KioskHeader onExitKiosk={onExitKiosk} language={language} setLanguage={setLanguage} now={liveStatusData.now} weekNumber={liveStatusData.weekNumber} />
             <div className="flex-shrink-0 h-16"><PeriodTimeline dailySchedule={dashboardData.dailySchedule} currentPeriod={liveStatusData.currentPeriod} now={liveStatusData.now} /></div>
-            <div className="flex-shrink-0 h-14 flex items-center"><AnnouncementsMarquee language={language} currentPeriod={currentPeriod}/></div>
             
-             <main className={`flex-grow flex gap-6 min-h-0 ${shouldShowImmersiveBreak ? 'items-center justify-center' : ''}`}>
+             <main className={`flex-grow flex gap-6 min-h-0 ${shouldShowImmersiveBreak || shouldShowImmersiveEndOfDay ? 'items-center justify-center' : ''}`}>
                 {shouldShowImmersiveBreak ? (
                     <div className="w-full h-full">
                         <BreakTimeDisplay 
@@ -214,13 +212,28 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             onDismiss={() => setIsBreakScreenDismissed(true)}
                         />
                     </div>
+                ) : shouldShowImmersiveEndOfDay ? (
+                     <div className="w-full h-full">
+                        <EndOfDayDisplay
+                            language={language}
+                            now={now}
+                            onDismiss={() => setIsEndOfDayDismissed(true)}
+                        />
+                    </div>
                 ) : (
                     <>
                         <div style={{ flexBasis: '30%' }} className="flex flex-col">
-                            <KioskSummaryPanel allGroups={allGroups} liveClasses={liveStatusData.liveClasses} groupInfo={dashboardData.groupInfo} overallStatus={liveStatusData.overallStatus} language={language} onGroupClick={handleGroupSelect} selectedGroup={selectedGroup} />
+                            <KioskSummaryPanel 
+                                liveClasses={liveStatusData.liveClasses}
+                                dailyAssignments={dailyAssignments} 
+                                groupInfo={dashboardData.groupInfo} 
+                                language={language} 
+                                onGroupClick={handleGroupSelect} 
+                                selectedGroup={selectedGroup} 
+                            />
                         </div>
                         
-                        <div style={{ flexBasis: '56%' }} className="bg-white/90 backdrop-blur shadow-sm transition duration-200 rounded-2xl flex flex-col p-4 min-h-0">
+                        <div style={{ flexBasis: '56%' }} className="bg-white/90 backdrop-blur-sm transition duration-200 rounded-2xl flex flex-col min-h-0">
                             {isBreak && isBreakScreenDismissed && currentPeriod && (
                                 <BreakBanner 
                                     breakName={overallStatus}
@@ -230,19 +243,20 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                                     onRestore={() => setIsBreakScreenDismissed(false)}
                                 />
                             )}
+                            {isFinished && isEndOfDayDismissed && (
+                                <EndOfDayBanner
+                                    language={language}
+                                    onRestore={() => setIsEndOfDayDismissed(false)}
+                                />
+                            )}
                             {!selection ? (
-                                <div className="flex items-center justify-center h-full text-center text-kiosk-text-muted">
-                                    <div className="max-w-sm">
-                                        <h3 className="font-bold text-lg font-montserrat">{language === 'ar' ? 'اختر عنصراً' : 'Select an Item'}</h3>
-                                        <p className="text-sm mt-1">{language === 'ar' ? 'اختر مجموعة، أو غرفة من المستكشف، أو استخدم أحد الإجراءات السريعة أدناه.' : 'Select a group, a room from the navigator, or use one of the quick actions below.'}</p>
-                                        <div className="mt-4 flex flex-col gap-2">
-                                            <button className="w-full text-left p-3 bg-white rounded-lg shadow-sm border hover:bg-slate-50">{language === 'ar' ? 'عرض غرفتي الحالية' : 'Show my current room'}</button>
-                                            <button onClick={() => setActiveTab('schedule')} className="w-full text-left p-3 bg-white rounded-lg shadow-sm border hover:bg-slate-50">{language === 'ar' ? 'فتح جدول اليوم' : "Open today's schedule"}</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <DailySummaryPanel
+                                    dailyAssignments={dailyAssignments}
+                                    groupInfo={dashboardData.groupInfo}
+                                    language={language}
+                                />
                             ) : (
-                                <div className="flex flex-col h-full min-h-0">
+                                <div className="flex flex-col h-full min-h-0 p-4">
                                      <div className="flex-shrink-0 flex justify-between items-center mb-4 px-1">
                                         <div className="min-w-0">
                                             <h2 className="text-2xl font-bold font-montserrat text-kiosk-text-title truncate pr-4">
@@ -271,7 +285,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                                     </div>
                                      <div className="flex-grow min-h-0 rounded-lg bg-white shadow-inner relative overflow-y-auto">
                                         {activeTab === 'schedule' ? (
-                                            <GroupWeeklyScheduleCard selection={selection} allAssignments={dashboardData.processedScheduleData} currentPeriodName={liveStatusData.currentPeriod?.name ?? null} today={today} language={language} />
+                                            <GroupDailyScheduleCard selection={selection} allAssignments={dashboardData.processedScheduleData} currentPeriodName={liveStatusData.currentPeriod?.name ?? null} today={today} language={language} />
                                         ) : (
                                           <div className="p-2 space-y-3">
                                               <div className="sticky top-0 bg-white/80 backdrop-blur-sm z-10 p-2 flex gap-2">

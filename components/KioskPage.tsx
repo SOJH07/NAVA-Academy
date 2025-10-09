@@ -275,6 +275,8 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                                 allAssignments={dashboardData.processedScheduleData}
                                 currentPeriodName={liveStatusData.currentPeriod?.name ?? null}
                                 today={today}
+                                // FIX: Pass missing 'language' prop to GroupDailyScheduleCard.
+                                language={language}
                             />
                         ) : (isSearching || selectedClassroom) ? (
                              <>
@@ -289,7 +291,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             </>
                         ) : (
                            <DailySummaryPanel 
-                                liveStatusData={liveStatusData}
                                 dailyAssignments={dailyAssignments}
                                 groupInfo={dashboardData.groupInfo}
                                 language={language}

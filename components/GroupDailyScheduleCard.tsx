@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import type { DailyPeriod, Assignment, GroupInfo } from '../types';
-import useBulletinsStore from '../store/bulletinsStore';
 import { isSameDay } from 'date-fns';
 
 const DAYS: Assignment['day'][] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
@@ -19,12 +18,6 @@ interface GroupWeeklyScheduleCardProps {
   today: Assignment['day'];
   language: 'en' | 'ar';
 }
-
-const timeToMinutes = (time: string): number => {
-    if (!time) return 0;
-    const [h, m] = time.split(':').map(Number);
-    return h * 60 + m;
-};
 
 const scheduleCodeToId = (code: string): string => {
     return code.replace('0.', '').replace('.', '');
@@ -96,8 +89,8 @@ const SessionCard: React.FC<{ assignment: Assignment, isLive: boolean, viewType:
         </div>
     );
 };
-
-const DayHeader: React.FC<{ day: string, isToday: boolean }> = ({ day, isToday }) => {
+// FIX: Changed `day` prop type from `string` to `Assignment['day']` to satisfy the type constraints of `DAYS.indexOf`.
+const DayHeader: React.FC<{ day: Assignment['day'], isToday: boolean }> = ({ day, isToday }) => {
     const baseClasses = "w-full max-w-xs text-center font-bold text-sm py-2 px-4 rounded-lg border";
     const todayClasses = "bg-kiosk-primary text-white border-transparent";
     const otherDayClasses = "bg-emerald-800 text-white border-transparent";
@@ -113,32 +106,7 @@ const DayHeader: React.FC<{ day: string, isToday: boolean }> = ({ day, isToday }
 
 
 const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selection, allAssignments, currentPeriodName, today, language }) => {
-    const { bulletins } = useBulletinsStore();
     const [timePosition, setTimePosition] = useState(-1);
-
-    useEffect(() => {
-        const calculatePosition = () => {
-            const now = new Date();
-            const nowMinutes = now.getHours() * 60 + now.getMinutes();
-
-            const scheduleStartMinutes = timeToMinutes('08:00');
-            const scheduleEndMinutes = timeToMinutes('15:40');
-            const totalDuration = scheduleEndMinutes - scheduleStartMinutes;
-
-            if (totalDuration <= 0 || nowMinutes < scheduleStartMinutes || nowMinutes > scheduleEndMinutes) {
-                setTimePosition(-1); // Hide if outside schedule hours
-                return;
-            }
-
-            const minutesSinceStart = nowMinutes - scheduleStartMinutes;
-            const percentage = (minutesSinceStart / totalDuration) * 100;
-            setTimePosition(percentage);
-        };
-
-        calculatePosition();
-        const interval = setInterval(calculatePosition, 60000); // Update every minute
-        return () => clearInterval(interval);
-    }, []);
 
     const groupToShow = React.useMemo(() => {
         if (!selection) return null;
@@ -201,27 +169,6 @@ const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selec
         return blocks;
     }, [assignmentsForSelection]);
   
-    const dayOverlays = React.useMemo(() => {
-        if (!groupToShow) return {};
-        const overlays: Record<string, any[]> = {};
-        const todayDate = new Date();
-        const startOfWeek = new Date(todayDate.setDate(todayDate.getDate() - todayDate.getDay()));
-
-        DAYS.forEach((day, dayIndex) => {
-            const dateForDay = new Date(startOfWeek.getTime());
-            dateForDay.setDate(startOfWeek.getDate() + dayIndex);
-            
-            overlays[day] = bulletins.filter(b => {
-                const audience = b.audience;
-                const groupMatch = audience && typeof audience === 'object' && 'groups' in audience && audience.groups?.includes(groupToShow);
-                return (b.type === 'visit' || b.type === 'event') && 
-                    b.date && isSameDay(new Date(b.date), dateForDay) &&
-                    b.timeStart && b.timeEnd && groupMatch;
-            });
-        });
-        return overlays;
-    }, [bulletins, groupToShow]);
-
   const PERIODS = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'];
   
   if (assignmentsForSelection.length === 0) {
@@ -258,43 +205,6 @@ const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selec
             );
         })}
         
-        {DAYS.map((day, dayIndex) => (
-            <div key={`col-bg-${day}`} className="relative" style={{ gridColumnStart: dayIndex + 2, gridRow: '2 / span 7' }}>
-                {day === today && timePosition >= 0 && (
-                    <div
-                        className="absolute left-0 right-0 h-0.5 bg-red-500 z-20 pointer-events-none"
-                        style={{ top: `${timePosition}%` }}
-                    >
-                        <div className="absolute -left-1.5 -top-1.5 w-3.5 h-3.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse"></div>
-                    </div>
-                )}
-
-                {(dayOverlays[day] || []).map((event: any) => {
-                    const dayStartMinutes = timeToMinutes('08:00');
-                    const dayEndMinutes = timeToMinutes('15:40');
-                    const totalDayMinutes = dayEndMinutes - dayStartMinutes;
-                    if(totalDayMinutes <= 0) return null;
-
-                    const eventStartMinutes = timeToMinutes(event.timeStart!);
-                    const eventEndMinutes = timeToMinutes(event.timeEnd!);
-
-                    const topPercent = Math.max(0, ((eventStartMinutes - dayStartMinutes) / totalDayMinutes) * 100);
-                    const heightPercent = Math.min(100 - topPercent, ((eventEndMinutes - eventStartMinutes) / totalDayMinutes) * 100);
-                    const headline = language === 'ar' && event.headline?.ar ? event.headline.ar : event.headline?.en;
-
-                    if (!headline) return null;
-                    
-                    return (
-                        <div key={event.id} className="absolute inset-x-0 z-0 pointer-events-none" style={{ top: `${topPercent}%`, height: `${heightPercent}%`}}>
-                            <div className={`h-full rounded-lg bg-gradient-to-b from-${event.accent}-400/20 to-transparent p-1`}>
-                                {headline && <div className={`px-2 py-0.5 text-xs font-bold rounded-full bg-${event.accent}-500 text-white w-max`}>{headline}</div>}
-                            </div>
-                        </div>
-                    )
-                })}
-            </div>
-        ))}
-
         {assignmentsByDayAndPeriod.map(block => {
              const dayIndex = DAYS.indexOf(block.day);
              if (dayIndex === -1) return null;

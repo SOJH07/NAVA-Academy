@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mockBulletins } from '../data/AnnouncementsItems';
-import { differenceInHours, parseISO } from 'date-fns';
+import { differenceInHours, parseISO, parse } from 'date-fns';
 
 export interface I18N {
   en?: string;
@@ -20,7 +20,8 @@ export interface Bulletin {
   type: BulletinType;
   headline?: I18N;
   body: I18N;
-  date?: string;        // ISO date (for timed overlays)
+  author?: string; // For quotes
+  date?: string;        // YYYY-MM-DD (for timed events)
   timeStart?: string;   // "HH:mm"
   timeEnd?: string;     // "HH:mm"
   startAt?: string;     // visibility window ISO DateTime
@@ -28,7 +29,6 @@ export interface Bulletin {
   audience?: Audience;
   priority?: "low"|"normal"|"high";
   accent?: "blue"|"green"|"amber"|"violet"|"slate" | "emerald";
-  icon?: string;
   createdBy: string;
   createdAt: string;
 }
@@ -54,11 +54,41 @@ export function quotesForPeriod(periodIndex: number, date: Date) {
   return [0, 1, 2, 3, 4].map(pick).map(q => ({...q, en: `“${q.en}”`, ar: `“${q.ar}”`}));
 }
 
+const audienceMatches = (bulletinAudience: Audience = 'all', filterAudience: Audience = 'all'): boolean => {
+    if (bulletinAudience === 'all' || filterAudience === 'all') return true;
+    if (typeof bulletinAudience === 'string' && typeof filterAudience === 'string') {
+        return bulletinAudience === filterAudience;
+    }
+    // This logic is simplified; the schedule overlay component has more specific group filtering.
+    // For the marquee, we just check if it's meant for the general student body.
+    if (filterAudience === 'students' && (bulletinAudience === 'students' || typeof bulletinAudience === 'object')) return true;
+
+    return false;
+};
+
+const isInWindow = (bulletin: Bulletin, now: Date): boolean => {
+    // A bulletin is active if it's timeless OR its visibility window is active.
+    // The `date` field is for display on a specific day, not for visibility window.
+    const isTimeless = !bulletin.startAt && !bulletin.endAt;
+    if (isTimeless) return true;
+
+    const start = bulletin.startAt ? parseISO(bulletin.startAt) : null;
+    const end = bulletin.endAt ? parseISO(bulletin.endAt) : null;
+    return (!start || now >= start) && (!end || now <= end);
+};
+
+const isStartingSoon = (bulletin: Bulletin, now: Date): boolean => {
+    const startDate = bulletin.startAt 
+        ? parseISO(bulletin.startAt) 
+        : (bulletin.date ? parse(bulletin.date, 'yyyy-MM-dd', new Date()) : null);
+    if (!startDate) return false;
+    const diff = differenceInHours(startDate, now);
+    return diff >= 0 && diff <= 24;
+}
 
 interface BulletinsState {
   bulletins: Bulletin[];
   addBulletin: (bulletin: Omit<Bulletin, 'id' | 'createdAt'>) => void;
-  deleteBulletin: (id: string) => void;
   getActiveBulletins: (now: Date, audienceFilter?: Audience) => Bulletin[];
 }
 
@@ -72,53 +102,24 @@ const useBulletinsStore = create<BulletinsState>()(
             { ...bulletin, id: new Date().toISOString(), createdAt: new Date().toISOString() }
         ] 
       })),
-      deleteBulletin: (id) => set((state) => ({ 
-          bulletins: state.bulletins.filter(b => b.id !== id) 
-      })),
       getActiveBulletins: (now: Date, audienceFilter: Audience = 'students') => {
-          const all = get().bulletins.filter(b => b.type !== 'quote'); // Exclude base quotes from initial fetch
-
-          const active = all.filter(b => {
-              // Time window filter
-              const start = b.startAt ? parseISO(b.startAt) : null;
-              const end = b.endAt ? parseISO(b.endAt) : null;
-              if (start && now < start) return false;
-              if (end && now > end) return false;
-
-              // Audience filter - simple version for now
-              if (b.audience && b.audience !== 'all' && b.audience !== audienceFilter) {
-                  // This doesn't handle the complex audience object, but for the kiosk 'students' is enough.
-                  return false;
-              }
-
+          const allItems = get().bulletins.filter(b => b.type !== 'quote'); // Exclude quotes from main source
+          
+          const active = allItems.filter(b => {
+              if (!audienceMatches(b.audience, audienceFilter)) return false;
+              if (!isInWindow(b, now)) return false;
               return true;
           });
-          
-          // Sort
+
           active.sort((a, b) => {
-              // High priority first
               if (a.priority === 'high' && b.priority !== 'high') return -1;
               if (b.priority === 'high' && a.priority !== 'high') return 1;
 
-              // Events happening today get a boost
-              const todayStr = now.toISOString().split('T')[0];
-              const aIsToday = a.date === todayStr;
-              const bIsToday = b.date === todayStr;
-              if (aIsToday && !bIsToday) return -1;
-              if (bIsToday && !aIsToday) return 1;
-
-              // Events starting within 24 hours
-              const aDate = a.date && a.timeStart ? new Date(`${a.date}T${a.timeStart}`) : null;
-              const bDate = b.date && b.timeStart ? new Date(`${b.date}T${b.timeStart}`) : null;
-
-              if (aDate && bDate) {
-                  const aDiff = differenceInHours(aDate, now);
-                  const bDiff = differenceInHours(bDate, now);
-                  if (aDiff >= 0 && aDiff <= 24 && (bDiff < 0 || bDiff > 24)) return -1;
-                  if (bDiff >= 0 && bDiff <= 24 && (aDiff < 0 || aDiff > 24)) return 1;
-              }
+              const aIsSoon = isStartingSoon(a, now);
+              const bIsSoon = isStartingSoon(b, now);
+              if (aIsSoon && !bIsSoon) return -1;
+              if (bIsSoon && !aIsSoon) return 1;
               
-              // Fallback to creation date
               return parseISO(b.createdAt).getTime() - parseISO(a.createdAt).getTime();
           });
           
@@ -127,6 +128,7 @@ const useBulletinsStore = create<BulletinsState>()(
     }),
     {
       name: 'nava-bulletins-store',
+      partialize: (state) => ({ bulletins: state.bulletins }),
     }
   )
 );

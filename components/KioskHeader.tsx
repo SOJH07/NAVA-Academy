@@ -35,13 +35,13 @@ const KioskHeader: React.FC<KioskHeaderProps> = ({ onExitKiosk, language, setLan
                     </p>
                 </div>
                 <div className="pl-6 border-l-2 border-kiosk-border">
-                    <p className={`text-2xl font-bold text-kiosk-primary ${language === 'ar' ? 'font-kufi' : 'font-montserrat'}`}>{formattedDate}</p>
+                    <p className={`text-2xl font-bold text-kiosk-text-title ${language === 'ar' ? 'font-kufi' : 'font-montserrat'}`}>{formattedDate}</p>
                 </div>
             </div>
 
             <div className="flex items-center gap-6">
                 <div className="text-right">
-                    <p className="font-black text-4xl text-kiosk-primary tabular-nums drop-shadow-md">
+                    <p className="font-black text-4xl text-kiosk-text-title tabular-nums drop-shadow-md">
                         {formatTime(now)}
                     </p>
                 </div>

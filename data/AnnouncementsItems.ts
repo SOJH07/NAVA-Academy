@@ -8,15 +8,15 @@ const tomorrowISO = tomorrow.toISOString().split('T')[0];
 
 export const mockBulletins: Bulletin[] = [
     {
-        id: 'launch-note',
+        id: 'launch-note-updated',
         type: 'announcement',
-        headline: { en: "Welcome to NAVA Today", ar: "مرحبًا بكم في نافا اليوم"},
-        body: { en: "This is your new hub for live academy information. For feedback or ideas, please contact the IT department.", ar: "هذه هي بوابتكم الجديدة للمعلومات المباشرة عن الأكاديمية. للملاحظات أو الأفكار، يرجى التواصل مع قسم تقنية المعلومات."},
+        headline: { en: "Welcome to NAVA Today!", ar: "أهلاً بكم في نافا اليوم!"},
+        body: { en: "We're excited to launch this platform as your live guide to academy life. For suggestions, please contact the admin team.", ar: "يسعدنا إطلاق هذه المنصة لتكون دليلكم المباشر للحياة في الأكاديمية. للاقتراحات، يرجى التواصل مع فريق الإدارة."},
         audience: 'all',
         accent: 'blue',
         priority: 'high',
         createdBy: 'Admin',
-        createdAt: new Date().toISOString(),
+        createdAt: new Date('2024-10-01T10:00:00Z').toISOString(),
     },
     {
         id: 'safety-drill',
@@ -53,21 +53,10 @@ export const mockBulletins: Bulletin[] = [
         body: { en: 'Today we celebrate the progress and future of electric mobility. Your skills are vital to this global shift.', ar: 'نحتفل اليوم بتقدم ومستقبل التنقل الكهربائي. مهاراتكم حيوية لهذا التحول العالمي.' },
         audience: 'all',
         accent: 'green',
-        startAt: '2024-09-09T00:00:00Z',
-        endAt: '2024-09-09T23:59:59Z',
+        // This will only show on Sept 9th
+        startAt: '2024-09-09T00:00:00+03:00',
+        endAt: '2024-09-09T23:59:59+03:00',
         createdBy: 'Admin',
-        createdAt: new Date().toISOString(),
-    },
-    {
-        id: 'world-engineering-day',
-        type: 'news',
-        headline: { en: 'World Engineering Day', ar: 'اليوم العالمي للهندسة' },
-        body: { en: 'Celebrating the engineers who build our world. Your journey in technical excellence starts here.', ar: 'نحتفل بالمهندسين الذين يبنون عالمنا. رحلتكم في التميز التقني تبدأ من هنا.' },
-        audience: 'all',
-        accent: 'slate',
-        startAt: '2025-03-04T00:00:00Z',
-        endAt: '2025-03-04T23:59:59Z',
-        createdBy: 'Admin',
-        createdAt: new Date().toISOString(),
+        createdAt: new Date('2024-09-01T10:00:00Z').toISOString(),
     },
 ];
