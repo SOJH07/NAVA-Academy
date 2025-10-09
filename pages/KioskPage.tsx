@@ -10,6 +10,7 @@ import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import KioskHeader from '../components/KioskHeader';
 import useAppStore from '../hooks/useAppStore';
 import useKioskStore, { RoomStatus } from '../store/kioskStore';
+import KioskWelcomeMessage from '../components/KioskWelcomeMessage';
 import CampusNavigatorTabs from '../components/CampusNavigatorTabs';
 import { format, parse } from 'date-fns';
 import { FLOOR_PLANS } from '../data/floorPlanMatrix';
@@ -17,7 +18,6 @@ import BreakTimeDisplay from '../components/BreakTimeDisplay';
 import BreakBanner from '../components/BreakBanner';
 import EndOfDayDisplay from '../components/EndOfDayDisplay';
 import EndOfDayBanner from '../components/EndOfDayBanner';
-import DailySummaryPanel from '../components/DailySummaryPanel';
 
 const schematicNameToId = (name: string): string => {
     const normalizedName = name.replace(/\s/g, '');
@@ -197,7 +197,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const shouldShowImmersiveEndOfDay = isFinished && !isEndOfDayDismissed;
 
     return (
-        <div className="min-h-screen w-screen bg-kiosk-bg flex flex-col px-6 py-4 gap-4 font-sans overflow-y-auto">
+        <div className="min-h-screen w-screen bg-bg-body flex flex-col px-6 py-4 gap-4 font-sans overflow-y-auto">
             <KioskHeader onExitKiosk={onExitKiosk} language={language} setLanguage={setLanguage} now={liveStatusData.now} weekNumber={liveStatusData.weekNumber} />
             <div className="flex-shrink-0 h-16"><PeriodTimeline dailySchedule={dashboardData.dailySchedule} currentPeriod={liveStatusData.currentPeriod} now={liveStatusData.now} /></div>
             
@@ -234,50 +234,33 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                         </div>
                         
                         <div style={{ flexBasis: '56%' }} className="bg-white/90 backdrop-blur-sm transition duration-200 rounded-2xl flex flex-col min-h-0">
-                            {isBreak && isBreakScreenDismissed && currentPeriod && (
-                                <BreakBanner 
-                                    breakName={overallStatus}
-                                    endTime={currentPeriod.end}
-                                    now={now}
-                                    language={language}
-                                    onRestore={() => setIsBreakScreenDismissed(false)}
-                                />
-                            )}
-                            {isFinished && isEndOfDayDismissed && (
-                                <EndOfDayBanner
-                                    language={language}
-                                    onRestore={() => setIsEndOfDayDismissed(false)}
-                                />
-                            )}
+                            {isBreak && isBreakScreenDismissed && currentPeriod && (<BreakBanner breakName={overallStatus} endTime={currentPeriod.end} now={now} language={language} onRestore={() => setIsBreakScreenDismissed(false)} />)}
+                            {isFinished && isEndOfDayDismissed && (<EndOfDayBanner language={language} onRestore={() => setIsEndOfDayDismissed(false)} />)}
                             {!selection ? (
-                                <DailySummaryPanel
-                                    dailyAssignments={dailyAssignments}
-                                    groupInfo={dashboardData.groupInfo}
-                                    language={language}
-                                />
+                                <KioskWelcomeMessage language={language} dailyAssignments={dailyAssignments} now={now} />
                             ) : (
                                 <div className="flex flex-col h-full min-h-0 p-4">
                                      <div className="flex-shrink-0 flex justify-between items-center mb-4 px-1">
                                         <div className="min-w-0">
-                                            <h2 className="text-2xl font-bold font-montserrat text-kiosk-text-title truncate pr-4">
+                                            <h2 className="text-2xl font-bold font-montserrat text-text-primary truncate pr-4">
                                               {selection.type === 'group' ? `Group: ${selection.value}` : `Room: ${selection.value}`}
                                             </h2>
-                                            <div className="text-sm text-kiosk-text-muted font-mono flex items-center gap-4 mt-1">
+                                            <div className="text-sm text-text-muted font-mono flex items-center gap-4 mt-1">
                                                 <span>{nowNextInfo.now}</span>
                                                 <span className="opacity-70">{nowNextInfo.next}</span>
                                                 <span className="font-bold text-red-500 tabular-nums">{nowNextInfo.countdown}</span>
                                             </div>
                                         </div>
-                                        <div className={`p-1 bg-kiosk-border/30 rounded-full flex items-center gap-1 ${language === 'ar' ? 'font-kufi' : ''}`}>
+                                        <div className={`p-1 bg-slate-100 rounded-full flex items-center gap-1 ${language === 'ar' ? 'font-kufi' : ''}`}>
                                             <button 
                                                 onClick={() => setActiveTab('schedule')} 
-                                                className={`px-6 py-2 text-base font-bold rounded-full transition-colors ${activeTab === 'schedule' ? 'bg-white text-kiosk-primary shadow-sm' : 'text-kiosk-text-muted hover:bg-white/50'}`}
+                                                className={`px-6 py-2 text-base font-bold rounded-full transition-colors ${activeTab === 'schedule' ? 'bg-brand-primary-light text-text-primary shadow-sm' : 'text-text-muted hover:bg-slate-200/50'}`}
                                             >
                                                 {language === 'ar' ? 'الجدول الأسبوعي' : 'Weekly Schedule'}
                                             </button>
                                             <button 
                                                 onClick={() => setActiveTab('trainees')} 
-                                                className={`px-6 py-2 text-base font-bold rounded-full transition-colors ${activeTab === 'trainees' ? 'bg-white text-kiosk-primary shadow-sm' : 'text-kiosk-text-muted hover:bg-white/50'}`}
+                                                className={`px-6 py-2 text-base font-bold rounded-full transition-colors ${activeTab === 'trainees' ? 'bg-brand-primary-light text-text-primary shadow-sm' : 'text-text-muted hover:bg-slate-200/50'}`}
                                             >
                                                 {language === 'ar' ? 'قائمة المتدربين' : 'Trainee List'}
                                             </button>
@@ -297,7 +280,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                                                 const sessionType = groupSessionTypeMap.get(student.techGroup);
                                                 return <StudentDetailCard key={student.navaId.toString()} student={student} viewMode="kiosk" sessionType={sessionType} />;
                                               })
-                                            ) : ( <div className="text-center py-10 text-kiosk-text-muted"><h3 className="font-bold text-lg">No Trainees Found</h3><p className="text-sm mt-1">There are no trainees for this selection.</p></div> )}
+                                            ) : ( <div className="text-center py-10 text-text-muted"><h3 className="font-bold text-lg">No Trainees Found</h3><p className="text-sm mt-1">There are no trainees for this selection.</p></div> )}
                                           </div>
                                         )}
                                     </div>

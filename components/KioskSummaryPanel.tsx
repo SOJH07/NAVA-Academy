@@ -198,9 +198,9 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, dail
         <div className="bg-kiosk-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
             <div className="flex items-center gap-3 p-4 rounded-t-xl bg-brand-primary-light flex-shrink-0">
                 <div className="bg-brand-primary/20 p-2 rounded-lg">
-                    <ScheduleIcon className="h-6 w-6 text-brand-primary-dark" />
+                    <ScheduleIcon className="h-6 w-6 text-text-primary" />
                 </div>
-                <h2 className={`font-bold text-lg text-brand-primary-dark ${language === 'ar' ? 'font-kufi' : ''}`}>
+                <h2 className={`font-bold text-lg text-text-primary ${language === 'ar' ? 'font-kufi' : ''}`}>
                     {language === 'ar' ? 'الجدول المباشر' : 'Live Schedule'}
                 </h2>
             </div>

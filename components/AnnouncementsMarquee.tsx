@@ -1,155 +1,130 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import useBulletinsStore, { Bulletin, quotesForPeriod } from '../store/bulletinsStore';
-import useKioskStore from '../store/kioskStore';
-import ComposeBulletinModal from './ComposeBulletinModal';
+import React, { useState, useEffect } from 'react';
 
-// --- ICONS ---
-const QuoteIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-9.57v3.543c-2.782 0-4.017 1.349-4.017 3.543v3.305H23V21h-8.983zM.017 21v-7.391c0-5.704 3.731-9.57 8.983-9.57v3.543C6.218 7.582 5.017 8.931 5.017 11.125v3.305H14V21H.017z" /></svg>;
-const MegaphoneIcon: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 12.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" /></svg>;
-const BuildingIcon: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-2 0v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" /></svg>;
-const NewspaperIcon: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clipRule="evenodd" /><path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z" /></svg>;
-const ArrowLeftIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>;
-const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>;
+// Icons to match user's aesthetic request
+const BellIcon: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 12.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" /></svg>;
+const QuoteIcon: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2v-2H7a1 1 0 110-2h3V4a2 2 0 00-2-2H6zM14 2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2v-2h-3a1 1 0 110-2h3V4a2 2 0 00-2-2h-2z" /></svg>;
+const SafetyIcon: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 1.944c1.664 0 3.206.5 4.582 1.342C16.356 4.28 17.5 5.89 17.5 7.916v3.25c0 .99-.344 1.933-.963 2.684l-.163.197c-.368.444-.666.953-.865 1.498a.75.75 0 01-1.342-.582c.153-.42.39-.813.67-1.15.22-.267.394-.56.505-.865a3.6 3.6 0 00.358-.882V7.916c0-1.424-.86-2.61-2.192-3.218C13.12 4.02 11.61 3.444 10 3.444c-1.61 0-3.12.576-4.192 1.054C4.368 5.305 3.5 6.492 3.5 7.916v3.25c0 .323.059.638.17.938.107.29.274.57.48.824.28.337.518.73.67 1.15a.75.75 0 11-1.342.582c-.2-.545-.497-1.054-.865-1.498l-.163-.197A3.97 3.97 0 012.5 11.166v-3.25c0-2.026 1.144-3.636 2.918-4.624C6.794 2.444 8.336 1.944 10 1.944z" clipRule="evenodd" /><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.23 8.23a.75.75 0 011.06 0L10 8.94l.71-.71a.75.75 0 111.06 1.06L11.06 10l.71.71a.75.75 0 11-1.06 1.06L10 11.06l-.71.71a.75.75 0 11-1.06-1.06l.71-.71-.71-.71a.75.75 0 010-1.06z" /></svg>;
+const TipIcon: React.FC<{ className?: string }> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 3zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM5.75 8.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H5.75zm6 1.5a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zm.75 3.25a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5zM8.75 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018.75 13zM10 8a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>;
 
-
-const getIconForBulletin = (bulletin: Bulletin) => {
-    let accentClass = 'text-slate-400';
-    if(bulletin.accent) {
-        accentClass = `text-${bulletin.accent}-400`;
-    }
-    const className = `h-5 w-5 flex-shrink-0 ${accentClass}`;
-
-    switch (bulletin.type) {
-        case 'visit': return <BuildingIcon className={className} />;
-        case 'event': return <MegaphoneIcon className={className} />;
-        case 'news':
-        case 'announcement': return <NewspaperIcon className={className} />;
-        case 'quote': return <QuoteIcon />;
-        default: return <NewspaperIcon className={className} />;
-    }
-};
-
-const AnnouncementsMarquee: React.FC<{ language: 'en' | 'ar', currentPeriod: {name: string} | null }> = ({ language, currentPeriod }) => {
-    const { getActiveBulletins } = useBulletinsStore();
-    const { kioskMode } = useKioskStore();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
-    const timerRef = useRef<number | null>(null);
-
-    const visibleItems = useMemo(() => {
-        const now = new Date();
-        const activeAnnouncements: Bulletin[] = getActiveBulletins(now, 'students');
-
-        if (activeAnnouncements.length > 0) {
-            return activeAnnouncements;
-        }
-
-        const periodName = currentPeriod?.name;
-        const periodIndex = periodName && periodName.startsWith('P') ? parseInt(periodName.substring(1), 10) : 0;
-        const periodQuotes = quotesForPeriod(periodIndex, now);
-        
-        return periodQuotes.map((q, i): Bulletin => ({
-            id: `quote-${periodName || 'break'}-${i}-${now.getDate()}`,
-            type: 'quote',
-            body: { en: q.en, ar: q.ar },
-            author: q.author,
-            audience: 'all',
-            createdBy: q.author || 'NAVA',
-            createdAt: now.toISOString(),
-            accent: 'emerald'
-        }));
-    }, [getActiveBulletins, currentPeriod]);
-
-    const handleNext = useCallback(() => {
-        setCurrentIndex(prev => (prev + 1) % (visibleItems.length || 1));
-    }, [visibleItems.length]);
-
-    const handlePrev = () => {
-        setCurrentIndex(prev => (prev - 1 + visibleItems.length) % (visibleItems.length || 1));
+interface AnnouncementItem {
+    type: 'ANNOUNCEMENT' | 'QUOTE' | 'TIP' | 'SAFETY';
+    content: {
+        en: string;
+        ar: string;
     };
+    author?: string;
+}
 
-    const resetTimer = useCallback(() => {
-        if (timerRef.current) window.clearTimeout(timerRef.current);
-        if (!isPaused && visibleItems.length > 1) {
-            const currentItem = visibleItems[currentIndex];
-            const duration = currentItem?.priority === 'high' ? 13000 : 9000;
-            timerRef.current = window.setTimeout(handleNext, duration);
+const announcements: AnnouncementItem[] = [
+    {
+        type: 'TIP',
+        content: {
+            en: "Engage actively in your classes, ask questions, and collaborate with your peers.",
+            ar: "تفاعل بنشاط في الفصول الدراسية، اطرح الأسئلة، وتعاون مع زملائك."
+        },
+        author: "Tips for Success"
+    },
+    {
+        type: 'SAFETY',
+        content: {
+            en: "Daily Safety Tip: Always wear appropriate PPE in designated workshop areas.",
+            ar: "نصيحة السلامة اليومية: احرص دائمًا على ارتداء معدات الوقاية الشخصية المناسبة في مناطق الورش المحددة."
+        },
+        author: "NAVA Safety"
+    },
+    {
+        type: 'QUOTE',
+        content: {
+            en: "The best way to predict the future is to create it.",
+            ar: "أفضل طريقة لتنبؤ المستقبل هي أن تصنعه."
+        },
+        author: "Peter Drucker"
+    },
+    {
+        type: 'ANNOUNCEMENT',
+        content: {
+            en: "Welcome to NAVA Today! We hope you have a pleasant experience and welcome all feedback for future improvements.",
+            ar: "أهلاً بكم في نافا اليوم! نتمنى لكم تجربة ممتعة ونرحب بجميع ملاحظاتكم للتحسينات المستقبلية."
         }
-    }, [isPaused, handleNext, visibleItems, currentIndex]);
-    
-    useEffect(() => {
-        resetTimer();
-        return () => { if (timerRef.current) window.clearTimeout(timerRef.current); };
-    }, [currentIndex, isPaused, resetTimer]);
-    
-    useEffect(() => {
-        // Reset to first item when the list of items changes
-        setCurrentIndex(0);
-    }, [visibleItems]);
+    },
+];
 
+const getIconForType = (type: AnnouncementItem['type'], className: string) => {
+    switch (type) {
+        case 'ANNOUNCEMENT': return <BellIcon className={className} />;
+        case 'QUOTE': return <QuoteIcon className={className} />;
+        case 'TIP': return <TipIcon className={className} />;
+        case 'SAFETY': return <SafetyIcon className={className} />;
+    }
+}
+
+interface AnnouncementsMarqueeProps {
+    language: 'en' | 'ar';
+}
+
+const AnnouncementsMarquee: React.FC<AnnouncementsMarqueeProps> = ({ language }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isFading, setIsFading] = useState(false);
+    
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIsFading(true);
+            setTimeout(() => {
+                setCurrentIndex(prev => (prev + 1) % announcements.length);
+                setIsFading(false);
+            }, 500); // fade out duration
+        }, 20000); // 20 seconds per item
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const currentItem = announcements[currentIndex];
     const isAr = language === 'ar';
+
+    let tagStyles = 'bg-indigo-100 text-indigo-600';
+    // FIX: Explicitly type `tagLabel` as a string to allow assigning different string values (English/Arabic).
+    let tagLabel: string = currentItem.type;
+
+    switch (currentItem.type) {
+        case 'QUOTE':
+            tagStyles = 'bg-emerald-100 text-emerald-700';
+            tagLabel = isAr ? 'اقتباس' : 'QUOTE';
+            break;
+        case 'TIP':
+            tagStyles = 'bg-sky-100 text-sky-700';
+            tagLabel = isAr ? 'نصيحة' : 'TIP';
+            break;
+        case 'SAFETY':
+            tagStyles = 'bg-amber-100 text-amber-700';
+            tagLabel = isAr ? 'سلامة' : 'SAFETY';
+            break;
+    }
+
+    const iconStyles = `h-5 w-5`;
 
     return (
         <div 
-            className="min-h-[56px] rounded-2xl bg-slate-900 text-slate-50 px-5 py-3 border border-slate-700 shadow-sm flex items-center justify-between gap-4"
-            onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}
+            className="w-full flex flex-col items-center justify-center min-h-[150px]"
             dir={isAr ? 'rtl' : 'ltr'}
         >
-            {kioskMode === 'admin' && <ComposeBulletinModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
-            
-            <div className="flex-grow h-full overflow-hidden relative">
-                {visibleItems.length > 0 ? (
-                    visibleItems.map((item, index) => {
-                        const headline = item.headline?.[language] || item.headline?.en;
-                        const body = item.body[language] || item.body.en;
-                        const isQuote = item.type === 'quote';
-
-                        return (
-                            <div 
-                                key={item.id}
-                                className="absolute inset-0 flex items-center transition-opacity duration-500"
-                                style={{ opacity: index === currentIndex ? 1 : 0 }}
-                                aria-hidden={index !== currentIndex}
-                            >
-                                <div className="flex items-center gap-3 w-full">
-                                    {getIconForBulletin(item)}
-                                    <div className="flex-grow min-w-0">
-                                        {headline && <p className="font-bold text-slate-100 truncate text-sm">{headline}</p>}
-                                        <p className={`text-slate-200 truncate ${headline ? 'text-xs' : 'text-sm'}`}>
-                                            {body}
-                                            {isQuote && item.author && <span className="font-semibold tracking-wide ml-2 text-slate-400">&mdash; {item.author}</span>}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <div className="flex items-center h-full text-slate-400">No announcements available.</div>
-                )}
-            </div>
-
-            <div className="flex items-center gap-3 flex-shrink-0">
-                 {visibleItems.length > 1 && (
-                    <div className="flex items-center gap-3">
-                        <button onClick={() => { handlePrev(); resetTimer(); }} className="p-1 text-slate-400 hover:text-white" aria-label="Previous"><ArrowLeftIcon/></button>
-                        <div className="flex items-center gap-1.5">
-                            {visibleItems.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setCurrentIndex(index)}
-                                    className={`w-2 h-2 rounded-full transition-colors ${index === currentIndex ? 'bg-white' : 'bg-slate-600 hover:bg-slate-400'}`}
-                                    aria-label={`Go to item ${index + 1}`}
-                                />
-                            ))}
-                        </div>
-                        <button onClick={() => { handleNext(); resetTimer(); }} className="p-1 text-slate-400 hover:text-white" aria-label="Next"><ArrowRightIcon/></button>
+            <div className={`w-full transition-opacity duration-500 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
+                <div className="flex flex-col items-center text-center">
+                    
+                    <div className={`flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-lg shadow-md ${tagStyles}`}>
+                        {getIconForType(currentItem.type, iconStyles)}
+                        <span className="tracking-wide">{tagLabel}</span>
                     </div>
-                )}
-                {kioskMode === 'admin' && (
-                    <button onClick={() => setIsModalOpen(true)} className="px-3 py-1 text-sm font-bold bg-brand-primary text-slate-900 rounded-lg shadow hover:bg-brand-primary/90" title="Compose New Bulletin">+</button>
-                )}
+
+                    <p className="text-2xl font-semibold text-kiosk-text-title text-wrap-balance mt-4">
+                        {currentItem.content[language] || currentItem.content['en']}
+                    </p>
+                    
+                    {currentItem.author && (
+                        <p className={`w-full text-base font-medium text-kiosk-text-muted mt-4 ${isAr ? 'text-left' : 'text-right'}`}>
+                            &mdash; {currentItem.author}
+                        </p>
+                    )}
+                </div>
             </div>
         </div>
     );

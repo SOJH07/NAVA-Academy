@@ -11,7 +11,6 @@ import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import GroupDailyScheduleCard from '../components/GroupDailyScheduleCard';
 import type { Assignment, FloorId, FloorPlanItem } from '../types';
 import KioskSummaryPanel from '../components/KioskSummaryPanel';
-import DailySummaryPanel from '../components/DailySummaryPanel';
 import ClassroomStatusModal from '../components/ClassroomStatusModal';
 import KioskHeader from '../components/KioskHeader';
 import KioskWelcomeScreen from '../components/KioskWelcomeScreen';
@@ -290,12 +289,19 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                                 )}
                             </>
                         ) : (
-                           // FIX: Removed invalid 'liveStatusData' prop.
-                           <DailySummaryPanel 
-                                dailyAssignments={dailyAssignments}
-                                groupInfo={dashboardData.groupInfo}
-                                language={language}
-                           />
+                           <div className="flex flex-col items-center justify-center h-full text-center text-kiosk-text-muted p-8">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-kiosk-border" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <h3 className="mt-4 text-lg font-bold text-kiosk-text-title">
+                                    {language === 'ar' ? 'عرض التفاصيل' : 'View Details'}
+                                </h3>
+                                <p className="mt-1 text-sm">
+                                    {language === 'ar' 
+                                        ? 'حدد مجموعة أو غرفة لعرض المعلومات.' 
+                                        : 'Select a group or room to see information.'}
+                                </p>
+                           </div>
                         )}
                     </div>
                 </div>

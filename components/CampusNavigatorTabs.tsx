@@ -110,23 +110,23 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
     }, [selectedGroup, currentPeriod, dailyAssignments, setSelectedFloor, selectedFloor]);
 
     return (
-        <div className="bg-kiosk-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
+        <div className="bg-bg-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
              <div className="flex items-center gap-3 p-4 rounded-t-xl bg-brand-primary-light flex-shrink-0">
                 <div className="bg-brand-primary/20 p-2 rounded-lg">
-                    <MapPinIcon className="h-6 w-6 text-brand-primary-dark" />
+                    <MapPinIcon className="h-6 w-6 text-text-primary" />
                 </div>
-                <h2 className={`font-bold text-lg text-brand-primary-dark ${language === 'ar' ? 'font-kufi' : ''}`}>
+                <h2 className={`font-bold text-lg text-text-primary ${language === 'ar' ? 'font-kufi' : ''}`}>
                     {language === 'ar' ? 'مستكشف الحرم الجامعي' : 'Campus Navigator'}
                 </h2>
             </div>
 
             <div className="p-4 flex-grow flex flex-col min-h-0">
-                <div className="flex-shrink-0 bg-kiosk-bg p-1 rounded-lg flex items-center justify-center gap-1 mb-3">
+                <div className="flex-shrink-0 bg-slate-100 p-1 rounded-lg flex items-center justify-center gap-1 mb-3">
                     {(["Ground", "1st", "2nd", "3rd"] as const).map((floorName) => (
                         <button 
                             key={floorName} 
                             onClick={() => setSelectedFloor(floorName)} 
-                            className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors w-full ${selectedFloor === floorName ? 'bg-white text-kiosk-primary shadow-sm' : 'text-kiosk-text-muted hover:bg-slate-200'}`}
+                            className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors w-full ${selectedFloor === floorName ? 'bg-brand-primary-light text-text-primary shadow-sm' : 'text-text-muted hover:bg-slate-200'}`}
                         >
                             {floorName}
                         </button>
