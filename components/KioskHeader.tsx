@@ -160,20 +160,27 @@ const KioskHeader: React.FC<KioskHeaderProps> = ({ onExitKiosk, language, setLan
                             <div 
                                 key={period.name}
                                 className={`
-                                    relative flex flex-col items-center justify-center p-1 text-center transition-colors duration-300 border-r border-slate-200/50 last:border-r-0
+                                    relative flex flex-col items-center justify-between p-2 text-center transition-colors duration-300 border-r border-slate-200/50 last:border-r-0
                                     ${isLive ? 'bg-kiosk-primary text-white font-bold' : ''}
                                     ${isPast ? 'bg-slate-100 text-slate-400' : ''}
                                     ${!isLive && !isPast ? 'bg-white text-slate-500' : ''}
                                 `}
                                 style={{ flexBasis }}
                             >
-                                {isLive && (
-                                    <div className="absolute bottom-0 left-0 top-0 bg-teal-700/50" style={{width: `${progress}%`, transition: 'width 1s linear'}}></div>
-                                )}
-                                <div className="relative z-10 flex flex-col items-center justify-center">
-                                    {Icon && <Icon className={`h-4 w-4 mb-0.5 opacity-80`} />}
+                                {/* Text content */}
+                                <div className="flex flex-col items-center justify-center">
+                                    {Icon && <Icon className={`h-4 w-4 mb-0.5 ${isLive ? 'opacity-100' : 'opacity-80'}`} />}
                                     <span className={`font-semibold ${isBreak ? 'text-xs' : 'text-sm'}`}>{label}</span>
-                                    <span className="text-[10px] font-mono opacity-70 mt-0.5">{formatPeriodTime(period.start)}-{formatPeriodTime(period.end)}</span>
+                                    <span className={`text-[10px] font-mono mt-0.5 ${isLive ? 'opacity-100' : 'opacity-70'}`}>{formatPeriodTime(period.start)}-{formatPeriodTime(period.end)}</span>
+                                </div>
+
+                                {/* Progress Bar */}
+                                <div className="h-1.5 w-full mt-1"> 
+                                    {isLive && (
+                                        <div className="bg-white/30 rounded-full h-full overflow-hidden">
+                                            <div className="bg-white h-full rounded-full" style={{width: `${progress}%`, transition: 'width 1s linear'}}></div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )
