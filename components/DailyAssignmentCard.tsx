@@ -27,6 +27,7 @@ const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, d
         text: isPD ? 'text-status-professional' : (isIndustrial ? 'text-status-industrial' : 'text-status-tech'),
         hoverBg: isPD ? 'hover:bg-emerald-200/60' : (isIndustrial ? 'hover:bg-blue-200/60' : 'hover:bg-rose-200/60'),
         hoverBorder: isPD ? 'hover:border-emerald-400' : (isIndustrial ? 'hover:border-blue-400' : 'hover:border-rose-400'),
+        pill: isPD ? 'bg-status-professional-light text-status-professional' : (isIndustrial ? 'bg-status-industrial-light text-status-industrial' : 'bg-status-tech-light text-status-tech'),
     };
 
     const isDimmed = focusedInstructor && !assignment.instructors.includes(focusedInstructor);
@@ -39,15 +40,6 @@ const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, d
         ? assignment.classroom.replace('WS-0.', 'WS-') 
         : `${isLab ? 'L' : 'C'}-${assignment.classroom.replace('.', '')}`;
     
-    let locationPillColor = 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200';
-    if (assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('3.')) {
-        locationPillColor = 'bg-lab-bg text-lab-text dark:bg-lab-dark-bg dark:text-lab-dark-text'; // Lab
-    } else if (assignment.classroom.startsWith('2.')) {
-        locationPillColor = 'bg-classroom-bg text-classroom-text dark:bg-classroom-dark-bg dark:text-classroom-dark-text'; // Classroom
-    } else if (assignment.classroom.startsWith('WS-')) {
-        locationPillColor = 'bg-status-break-light text-status-break dark:bg-amber-900/50 dark:text-amber-300'; // Workshop (using break colors)
-    }
-
     const tooltipContent = (
         <div>
             <p className="font-bold">{assignment.group}: {assignment.topic}</p>
@@ -60,41 +52,42 @@ const DailyAssignmentCard: React.FC<DailyAssignmentCardProps> = ({ assignment, d
         setFocusedPath({type, id});
     };
 
+    const groupNumber = assignment.group.split('-')[1] || '';
+
     return (
         <div 
             className={`relative w-full h-full rounded-xl border-l-4 flex flex-row ${styles.border} ${styles.bg} ${styles.hoverBorder} transition-all duration-300 cursor-pointer shadow-sm hover:shadow-lg ${isDimmed ? 'opacity-30' : ''} ${isLive ? 'ring-2 ring-offset-1 ring-amber-400 shadow-xl' : ''} overflow-hidden`}
             onMouseEnter={(e) => showTooltip(tooltipContent, e)}
             onMouseLeave={hideTooltip}
         >
-            {/* Left Part: Group Name */}
+            {/* Left Part: Group Number */}
             <button 
-                className={`w-1/3 flex flex-col items-center justify-center p-2 border-r border-slate-300/50 dark:border-dark-border/50 ${styles.hoverBg} h-full`}
+                className="w-1/4 flex items-center justify-center p-2 border-r border-slate-300/50 dark:border-dark-border/50"
                 onClick={(e) => { e.stopPropagation(); handlePathClick('group', assignment.group); }}
+                aria-label={`Focus on group ${assignment.group}`}
             >
-                <div className={`font-extrabold text-center ${styles.text} ${density === 'comfortable' ? 'text-xl' : 'text-lg'}`}>
-                    <div>{assignment.group.split('-')[0]}</div>
-                    <div>{assignment.group.split('-')[1]}</div>
+                <div className={`font-extrabold text-3xl ${styles.text}`}>
+                    {groupNumber}
                 </div>
             </button>
 
             {/* Right Part: Details */}
-            <div className="w-2/3 flex-grow p-2 flex flex-col justify-between">
-                {/* Top Row: Location & Unit Pill */}
-                <div className="flex justify-between items-start">
-                    <span className="font-semibold text-sm text-text-secondary dark:text-dark-text-secondary">{unitCode}</span>
-                    <span className={`px-2 py-0.5 text-xs font-bold rounded-md ${locationPillColor}`}>
-                        {formattedLocation}
-                    </span>
+            <div className="w-3/4 flex-grow p-2 flex flex-col justify-center">
+                <div className="flex justify-between items-center">
+                    <span className="font-semibold text-sm text-text-secondary dark:text-dark-text-secondary">{formattedLocation}</span>
+                    {unitCode && <span className={`px-2 py-0.5 text-xs font-bold rounded-md ${styles.pill}`}>
+                        {unitCode}
+                    </span>}
                 </div>
                 
-                {/* Bottom Row: Instructor */}
-                <div className={`text-sm font-semibold text-text-secondary dark:text-dark-text-secondary truncate`}>
+                <div className="mt-1 text-base font-bold text-text-primary dark:text-dark-text-primary truncate">
                     {assignment.instructors.map((inst, index) => (
                         <span key={inst}>
                             <button
                                 onClick={(e) => { e.stopPropagation(); handlePathClick('instructor', inst); }}
                                 className="hover:underline focus:outline-none focus:text-brand-primary disabled:no-underline disabled:cursor-default"
                                 disabled={!!focusedInstructor}
+                                aria-label={`Focus on instructor ${inst}`}
                             >
                                 {inst}
                             </button>
