@@ -106,7 +106,7 @@ const useBulletinsStore = create<BulletinsState>()(
         ] 
       })),
       getActiveBulletins: (now: Date, audienceFilter: Audience = 'students') => {
-          const allItems = get().bulletins.filter(b => b.type !== 'quote'); // Exclude quotes from main source
+          const allItems = get().bulletins;
           
           const active = allItems.filter(b => {
               if (!audienceMatches(b.audience, audienceFilter)) return false;

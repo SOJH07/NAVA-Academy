@@ -3,19 +3,19 @@ import { format, getDay, addDays, isAfter } from 'date-fns';
 import { calendarEventsData } from '../data/calendarEvents';
 
 // Cleaner, more modern solid-style icons
-const MapIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m1 2v5h5V5h-5m7 0v5h5V5h-5m-7 7v5h5v-5h-5m7 0v5h5v-5h-5Z"/></svg>;
-const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>;
-const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.57 4.23l.27.28v.79l5 4.99L20.49 19l-4.99-5v-.79l-.27-.28A6.516 6.516 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5Z"/></svg>;
+const MapIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m1 2v5h5V5h-5m7 0v5h5V5h-5m-7 7v5h5v-5h-5m7 0v5h5v-5h-5Z"/></svg>;
+const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>;
+const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.57 4.23l.27.28v.79l5 4.99L20.49 19l-4.99-5v-.79l-.27-.28A6.516 6.516 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5Z"/></svg>;
 
 
 // More compact feature card with enhanced hover effect
 const FeatureCard: React.FC<{icon: React.ReactElement; title: string; description: string}> = ({ icon, title, description }) => (
-    <div className="bg-white/40 backdrop-blur-lg p-5 rounded-2xl text-center border border-white/60 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1.5">
-        <div className="inline-block p-3 bg-white/50 rounded-xl mb-3">
+    <div className="bg-white/60 backdrop-blur-xl p-6 rounded-3xl text-center border border-white/30 shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2">
+        <div className="inline-block p-4 bg-brand-primary-light rounded-2xl mb-4">
             {icon}
         </div>
-        <h3 className="text-xl font-bold text-text-primary mb-2">{title}</h3>
-        <p className="text-text-secondary text-base leading-relaxed">{description}</p>
+        <h3 className="text-xl font-bold text-kiosk-text-title mb-1">{title}</h3>
+        <p className="text-kiosk-text-body text-base leading-relaxed">{description}</p>
     </div>
 );
 
@@ -52,11 +52,11 @@ const KioskWelcomeScreen: React.FC<KioskWelcomeScreenProps> = ({ onEnter, now })
 
     return (
         <div className="w-full h-full flex flex-col p-4 md:p-8 kiosk-welcome-bg overflow-hidden">
-            <div className="w-full max-w-5xl m-auto text-center animate-fade-in">
-                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-text-primary tracking-tighter drop-shadow-md">{greeting}</h1>
-                <p className="text-lg sm:text-xl lg:text-2xl font-medium text-text-secondary mt-4 max-w-3xl mx-auto leading-relaxed">{subheading}</p>
+            <div className="w-full max-w-7xl m-auto text-center animate-fade-in">
+                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-kiosk-primary tracking-tighter drop-shadow-md">{greeting}</h1>
+                <p className="text-lg sm:text-xl lg:text-2xl font-medium text-kiosk-text-body mt-4 max-w-3xl mx-auto leading-relaxed tracking-wide">{subheading}</p>
 
-                <div className="grid md:grid-cols-3 gap-8 my-12 text-wrap-balance">
+                <div className="grid md:grid-cols-3 gap-10 my-16 text-wrap-balance">
                     <FeatureCard 
                         icon={<MapIcon />}
                         title="Live Floor Plans"
@@ -76,12 +76,12 @@ const KioskWelcomeScreen: React.FC<KioskWelcomeScreenProps> = ({ onEnter, now })
 
                 <button 
                     onClick={onEnter} 
-                    className="bg-brand-primary text-black font-bold text-xl px-12 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-glow-md"
+                    className="bg-gradient-to-br from-brand-primary to-brand-primary-dark text-white font-bold text-xl px-16 py-4 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-glow-md"
                 >
                     Start Your Day
                 </button>
 
-                <p className="text-sm text-text-muted mt-8 italic max-w-2xl mx-auto">
+                <p className="text-sm text-kiosk-text-muted mt-10 italic max-w-2xl mx-auto">
                     We are continuously enhancing this platform to better serve you. Your experience is our blueprint for future improvements.
                 </p>
             </div>

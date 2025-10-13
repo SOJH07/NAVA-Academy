@@ -69,6 +69,7 @@ const AnnouncementsMarquee: React.FC<AnnouncementsMarqueeProps> = ({ language })
     const isAr = language === 'ar';
     const headline = (isAr && currentBulletin.headline?.ar) || currentBulletin.headline?.en;
     const body = (isAr && currentBulletin.body.ar) || currentBulletin.body.en;
+    const author = currentBulletin.author;
 
     return (
         <div className="w-full bg-slate-50/50 backdrop-blur-sm p-4 rounded-xl border border-slate-200/80 shadow-md flex flex-col justify-center min-h-[140px]">
@@ -86,9 +87,14 @@ const AnnouncementsMarquee: React.FC<AnnouncementsMarqueeProps> = ({ language })
                             {headline}
                         </h3>
                     )}
-                    <p className={`font-medium text-kiosk-text-body text-wrap-balance ${headline ? 'mt-1 text-base' : 'mt-3 text-lg'}`}>
-                        {body}
+                    <p className={`font-medium text-kiosk-text-body text-wrap-balance ${headline ? 'mt-1 text-base' : 'mt-3 text-lg'} ${currentBulletin.type === 'quote' ? 'italic' : ''}`}>
+                        {currentBulletin.type === 'quote' ? `“${body}”` : body}
                     </p>
+                    {currentBulletin.type === 'quote' && author && (
+                        <p className="font-semibold text-kiosk-text-muted mt-2 text-sm">
+                            — {author}
+                        </p>
+                    )}
                 </div>
             </div>
 
