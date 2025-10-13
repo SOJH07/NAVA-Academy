@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { LiveStudent } from '../types';
 import useAppStore from '../hooks/useAppStore';
+import { dailyPeriodsData } from '../data/dailyPeriods';
 
 const CircuitBoardIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -37,6 +38,9 @@ const UpcomingIcon: React.FC = () => (
     </svg>
 );
 
+const MapPinIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>;
+const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clipRule="evenodd" /></svg>;
+
 
 interface StudentDetailCardProps {
     student: LiveStudent;
@@ -52,21 +56,28 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
     const isKiosk = viewMode === 'kiosk';
 
     let statusPill;
+    let location = student.location;
+    let statusIconAndText;
+    
     switch(student.status) {
         case 'In Class':
-            statusPill = <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-kiosk-primary text-white shadow-sm">{student.location}</span>;
+            statusIconAndText = <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span className="text-xs font-semibold text-green-700">In Class</span></div>;
             break;
         case 'Break':
-            statusPill = <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-status-break-light text-status-break">{student.status}</span>;
+            statusIconAndText = <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div><span className="text-xs font-semibold text-amber-700">On Break</span></div>;
+            location = "On Break";
             break;
         case 'Finished':
-             statusPill = <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-status-out-of-service-light text-status-out-of-service">{student.status}</span>;
+             statusIconAndText = <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-slate-400"></div><span className="text-xs font-semibold text-slate-500">Finished</span></div>;
+            location = "N/A";
             break;
         case 'Upcoming':
-            statusPill = <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-status-upcoming-light text-status-upcoming">{student.status}</span>;
+            statusIconAndText = <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div><span className="text-xs font-semibold text-blue-700">Upcoming</span></div>;
+            location = "Not Started";
             break;
         default:
-            statusPill = <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-slate-200 text-slate-800">{student.status}</span>;
+            statusIconAndText = <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-slate-400"></div><span className="text-xs font-semibold text-slate-500">{student.status}</span></div>;
+            location = "N/A";
     }
 
     const companyColor = student.company === 'Ceer' ? 'bg-brand-ceer' : 'bg-brand-lucid';
@@ -88,43 +99,56 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
         toggleArrayFilter('techGroups', student.techGroup);
     };
 
-    let statusIndicator = null;
-    let borderColorClass = 'border-kiosk-border';
     let cardBgClass = 'bg-kiosk-panel';
+    const trackBorderColor = student.trackName === 'Industrial Tech' ? 'border-status-industrial' : 'border-status-tech';
+    const currentPeriodDetails = dailyPeriodsData.find(p => p.name === student.currentPeriod);
+    const timeRange = currentPeriodDetails ? `${currentPeriodDetails.start} - ${currentPeriodDetails.end}` : 'N/A';
 
     if (isKiosk && student.status === 'In Class' && sessionType) {
         if (sessionType === 'industrial') cardBgClass = 'bg-status-industrial-light';
         if (sessionType === 'service') cardBgClass = 'bg-status-tech-light';
         if (sessionType === 'professional') cardBgClass = 'bg-status-professional-light';
     }
-
-    switch(student.status) {
-        case 'In Class':
-            statusIndicator = <InClassIcon />;
-            borderColorClass = 'border-kiosk-primary';
-            break;
-        case 'Break':
-            statusIndicator = <OnBreakIcon />;
-            borderColorClass = 'border-status-break';
-            break;
-        case 'Finished':
-            statusIndicator = <FinishedIcon />;
-            borderColorClass = 'border-slate-400';
-            break;
-        case 'Upcoming':
-            statusIndicator = <UpcomingIcon />;
-            borderColorClass = 'border-slate-300';
-            break;
+    
+    if (isKiosk) {
+        return (
+            <div 
+                className={`relative ${cardBgClass} text-kiosk-text-title border-t-4 ${trackBorderColor} rounded-xl shadow-md p-3 flex flex-col justify-between transition-all duration-300 ${isDimmed ? 'opacity-40' : 'opacity-100'} hover:shadow-lg hover:-translate-y-1`}
+            >
+                <div>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="font-extrabold text-2xl text-kiosk-text-title leading-tight">{student.navaId}</p>
+                            <p className="text-sm font-semibold text-kiosk-text-muted">{student.techGroup}</p>
+                        </div>
+                        <div className="flex-shrink-0">
+                            {statusIconAndText}
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-text-secondary space-y-1">
+                    <div className="flex items-center gap-1.5 truncate">
+                        <MapPinIcon />
+                        <span className="truncate" title={location}>{location}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <ClockIcon />
+                        <span>{timeRange}</span>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
 
     return (
         <div 
-            onMouseEnter={isKiosk ? undefined : () => setIsHovered(true)}
-            onMouseLeave={isKiosk ? undefined : () => setIsHovered(false)}
-            className={`relative ${cardBgClass} text-kiosk-text-title border ${borderColorClass} rounded-xl shadow-md p-4 flex flex-col justify-between transition-all duration-300 ${!isKiosk ? 'hover:shadow-glow-sm hover:border-kiosk-primary' : ''} overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className={`relative bg-white text-kiosk-text-title border rounded-xl shadow-md p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-glow-sm hover:border-kiosk-primary overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
         >
-             {isHovered && !isKiosk && (
+             {isHovered && (
                 <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center gap-4 animate-fade-in z-10">
                     <button onClick={handleViewProfile} className="flex items-center gap-2 px-4 py-2 bg-white/90 text-slate-800 font-bold rounded-lg hover:bg-white transition-transform hover:scale-105">
                         <SearchIcon />
@@ -136,39 +160,22 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
                     </button>
                 </div>
             )}
-            {!isKiosk && <div className={`absolute left-0 top-0 bottom-0 w-2 ${companyColor}`}></div>}
-            <div className={!isKiosk ? "pl-4" : ""}>
-                <div className="flex justify-between items-start mb-3">
+            <div className={`absolute left-0 top-0 bottom-0 w-2 ${companyColor}`}></div>
+            <div className="pl-4">
+                <div className="flex justify-between items-start mb-2">
                     <div>
                         <div className="flex items-center gap-2">
-                            {statusIndicator}
-                            <h3 className="font-bold text-lg leading-tight text-kiosk-text-title">{isKiosk ? 'Trainee' : student.fullName}</h3>
+                            <h3 className="font-bold text-lg leading-tight text-kiosk-text-title">{student.fullName}</h3>
                         </div>
-                         <p className="text-xs text-kiosk-text-muted">ID: {student.navaId}{!isKiosk && ` | ${student.company}`}</p>
+                         <p className="text-xs text-kiosk-text-muted">ID: {student.navaId}</p>
                     </div>
-                    {statusPill}
+                    {statusIconAndText}
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 text-sm mt-4">
-                    <div>
-                        <div className="flex items-center gap-2 mb-2 font-semibold text-kiosk-text-body">
-                            <CircuitBoardIcon/>
-                            <span>Technical Program</span>
-                        </div>
-                        <div className="space-y-1 pl-1 text-sm text-kiosk-text-muted">
-                            <p><strong className="font-medium text-kiosk-text-body w-20 inline-block">Track:</strong> {student.trackName}</p>
-                            <p><strong className="font-medium text-kiosk-text-body w-20 inline-block">Group:</strong> {student.techGroup}</p>
-                             {!isKiosk && student.aptisScores && (
-                                <>
-                                 <p className="mt-2 pt-2 border-t border-slate-200/60">
-                                     <strong className="font-medium text-kiosk-text-body w-24 inline-block">Aptis CEFR:</strong> 
-                                     <span className={`px-1.5 py-0.5 rounded font-bold ${cefrColorClass}`}>{cefr}</span>
-                                     <span className="ml-2 font-semibold text-kiosk-text-title">{student.aptisScores.overall.score}</span>
-                                 </p>
-                                </>
-                            )}
-                        </div>
-                    </div>
+                <div className="mt-2 text-sm text-kiosk-text-muted border-t border-kiosk-border/50 pt-2">
+                    <span className="font-semibold text-kiosk-text-body">{student.trackName}</span>
+                    <span className="mx-1.5">&bull;</span>
+                    <span>{student.techGroup}</span>
                 </div>
             </div>
         </div>

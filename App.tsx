@@ -9,25 +9,13 @@ type View = 'login' | 'admin' | 'kiosk' | 'kioskWelcome';
 
 const App: React.FC = () => {
     const [view, setView] = useState<View>('kioskWelcome');
-    const { theme } = useUserPreferencesStore();
-
-    useEffect(() => {
-        const root = window.document.documentElement;
-        const isDark =
-            theme === 'dark' ||
-            (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-        root.classList.remove(isDark ? 'light' : 'dark');
-        root.classList.add(isDark ? 'dark' : 'light');
-    }, [theme]);
-
 
     const handleLoginSuccess = useCallback(() => {
         setView('admin');
     }, []);
     
     const handleLogout = useCallback(() => {
-        setView('login');
+        setView('kioskWelcome');
     }, []);
 
     const handleSwitchToKiosk = useCallback(() => {

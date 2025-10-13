@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { AnalyzedStudent, DailyPeriod, GroupInfo, LiveStudent, OccupancyData, LiveClass, Assignment } from '../types';
-import { getISOWeek } from 'date-fns';
+import { getWeek } from 'date-fns';
 
 
 const timeToMinutes = (time: string): number => {
@@ -70,7 +70,7 @@ export const useLiveStatus = (
         };
     }, [now]);
     
-    const weekNumber = useMemo(() => getISOWeek(now), [now]);
+    const weekNumber = useMemo(() => getWeek(now, { weekStartsOn: 0 }), [now]);
     const nowMinutes = useMemo(() => saudiHour * 60 + saudiMinute, [saudiHour, saudiMinute]);
     const today: Assignment['day'] = useMemo(() => saudiDayName, [saudiDayName]);
 
@@ -93,6 +93,34 @@ export const useLiveStatus = (
             return nowMinutes >= startMinutes && nowMinutes < endMinutes;
         }) || null;
     }, [nowMinutes, dailySchedule]);
+
+    const nextPeriod = useMemo<DailyPeriod | null>(() => {
+        if (!currentPeriod) {
+            // If before the day starts, the next period is the first one
+            if (dailySchedule.length > 0 && nowMinutes < timeToMinutes(dailySchedule[0].start)) {
+                return dailySchedule[0];
+            }
+            return null; // Day is over
+        }
+        const currentIndex = dailySchedule.findIndex(p => p.name === currentPeriod.name);
+        if (currentIndex > -1 && currentIndex < dailySchedule.length - 1) {
+            return dailySchedule[currentIndex + 1];
+        }
+        return null;
+    }, [currentPeriod, dailySchedule, nowMinutes]);
+
+    const secondsUntilEndOfPeriod = useMemo<number | null>(() => {
+        if (!currentPeriod) return null;
+        
+        const endMinutes = timeToMinutes(currentPeriod.end);
+        const nowTotalSeconds = saudiHour * 3600 + saudiMinute * 60 + now.getSeconds();
+        const endTotalSeconds = endMinutes * 60;
+        
+        const secondsLeft = endTotalSeconds - nowTotalSeconds;
+        
+        return Math.max(0, secondsLeft);
+
+    }, [currentPeriod, saudiHour, saudiMinute, now]);
 
     const overallStatus = useMemo<string>(() => {
         if (!currentPeriod) {
@@ -214,5 +242,5 @@ export const useLiveStatus = (
 
     }, [analyzedStudents, nowMinutes, currentPeriod, today, dailySchedule, scheduleAssignments, groupInfo]);
 
-    return { now, weekNumber, currentPeriod, ...liveData, overallStatus, isOperationalHours };
+    return { now, weekNumber, currentPeriod, nextPeriod, secondsUntilEndOfPeriod, ...liveData, overallStatus, isOperationalHours };
 };

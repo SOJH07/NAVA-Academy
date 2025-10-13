@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { DailyPeriod, Assignment, GroupInfo } from '../types';
-import { isSameDay } from 'date-fns';
+import { isSameDay, format, addDays, startOfWeek } from 'date-fns';
 
 const DAYS: Assignment['day'][] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
 
@@ -11,12 +11,13 @@ const WorkshopIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns
 const UserIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>;
 
 
-interface GroupWeeklyScheduleCardProps {
+interface GroupDailyScheduleCardProps {
   selection: { type: 'group' | 'room', value: string };
   allAssignments: Assignment[];
   currentPeriodName: string | null;
   today: Assignment['day'];
   language: 'en' | 'ar';
+  now: Date;
 }
 
 const scheduleCodeToId = (code: string): string => {
@@ -89,23 +90,28 @@ const SessionCard: React.FC<{ assignment: Assignment, isLive: boolean, viewType:
         </div>
     );
 };
-// FIX: Changed `day` prop type from `string` to `Assignment['day']` to satisfy the type constraints of `DAYS.indexOf`.
-const DayHeader: React.FC<{ day: Assignment['day'], isToday: boolean }> = ({ day, isToday }) => {
-    const baseClasses = "w-full max-w-xs text-center font-bold text-sm py-2 px-4 rounded-lg border";
-    const todayClasses = "bg-kiosk-primary text-white border-transparent";
+const DayHeader: React.FC<{ day: Assignment['day'], date: Date, isToday: boolean, language: 'en' | 'ar' }> = ({ day, date, isToday, language }) => {
+    const dayAbbreviation = format(date, 'EEE');
+    const shortDate = format(date, 'd MMM');
+
+    const baseClasses = "w-full max-w-xs text-center text-sm py-2 px-2 rounded-lg border flex items-center justify-center gap-2";
+    const todayClasses = "bg-kiosk-primary text-white border-transparent ring-2 ring-offset-2 ring-kiosk-primary ring-offset-kiosk-panel";
     const otherDayClasses = "bg-emerald-800 text-white border-transparent";
     
     return (
         <div className={`row-start-1 col-start-${DAYS.indexOf(day) + 2} flex justify-center items-center p-2`}>
             <div className={`${baseClasses} ${isToday ? todayClasses : otherDayClasses}`}>
-                {day}
+                <div className="flex flex-col items-center leading-tight">
+                    <span className="font-bold text-base">{dayAbbreviation}</span>
+                    <span className="text-xs font-semibold opacity-80 mt-0.5">{shortDate}</span>
+                </div>
             </div>
         </div>
     );
 };
 
 
-const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selection, allAssignments, currentPeriodName, today, language }) => {
+const GroupDailyScheduleCard: React.FC<GroupDailyScheduleCardProps> = ({ selection, allAssignments, currentPeriodName, today, language, now }) => {
     const [timePosition, setTimePosition] = useState(-1);
 
     const groupToShow = React.useMemo(() => {
@@ -170,6 +176,8 @@ const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selec
     }, [assignmentsForSelection]);
   
   const PERIODS = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'];
+
+  const weekStartDate = startOfWeek(now, { weekStartsOn: 0 }); // Sunday as start of week
   
   if (assignmentsForSelection.length === 0) {
       return (
@@ -192,9 +200,10 @@ const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selec
         }}
       >
         <div className="row-start-1 col-start-1"></div>
-        {DAYS.map((day) => (
-            <DayHeader key={day} day={day} isToday={day === today} />
-        ))}
+        {DAYS.map((day, dayIndex) => {
+            const dateForDay = addDays(weekStartDate, dayIndex);
+            return <DayHeader key={day} day={day} date={dateForDay} isToday={day === today} language={language} />;
+        })}
 
         {PERIODS.map((period, index) => {
             const isLive = currentPeriodName === period && DAYS.indexOf(today) !== -1;
@@ -228,4 +237,4 @@ const GroupWeeklyScheduleCard: React.FC<GroupWeeklyScheduleCardProps> = ({ selec
   );
 };
 
-export default GroupWeeklyScheduleCard;
+export default GroupDailyScheduleCard;

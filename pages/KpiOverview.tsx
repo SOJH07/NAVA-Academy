@@ -7,12 +7,14 @@ import useAppStore from '../hooks/useAppStore';
 import { useLiveStatus } from '../hooks/useLiveStatus';
 import { processedScheduleData } from '../data/scheduleData';
 import SelectionSummary from '../components/SelectionSummary';
+import UpcomingEvents from '../components/UpcomingEvents';
 
 // --- ICONS ---
 const UserCheckIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.092 1.21-.138 2.43-.138 3.662" /></svg>;
 const RocketLaunchIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.82m5.84-2.56v4.82a6 6 0 01-1.332 3.935m-4.508-2.56a6 6 0 01-5.84-7.38v-4.82m5.84 2.56v-4.82a6 6 0 011.332-3.935m-4.508 2.56a6 6 0 015.84 7.38m-1.332-3.935a6 6 0 01-1.332-3.935" /></svg>;
 const PresentationChartLineIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25a2.25 2.25 0 01-2.25 2.25h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg>;
 const ClipboardDocumentCheckIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const CalendarDaysIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" /></svg>;
 
 // --- PROPS & MOCK DATA ---
 interface KpiOverviewPageProps {
@@ -212,6 +214,9 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, liveStat
                     </ChartContainer>
                 </div>
                 <div className="lg:col-span-1 space-y-6">
+                    <ChartContainer title="Upcoming Events" headerContent={<CalendarDaysIcon className="h-5 w-5 text-text-muted dark:text-dark-text-muted" />}>
+                        <UpcomingEvents />
+                    </ChartContainer>
                     <ChartContainer title="Instructor Activity (Weekly)">
                         <ul className="space-y-4">
                             {instructorActivityData.slice(0, 7).map((inst, idx) => (

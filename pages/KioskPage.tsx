@@ -1,210 +1,179 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useLiveStatus } from '../hooks/useLiveStatus';
-import StudentDetailCard from '../components/StudentDetailCard';
+import TraineeRosterCard from '../components/TraineeRosterCard';
 import PeriodTimeline from '../components/PeriodTimeline';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import GroupDailyScheduleCard from '../components/GroupDailyScheduleCard';
-import type { Assignment, OccupancyData, GroupInfo } from '../types';
+import type { Assignment, AnalyzedStudent, LiveStudent } from '../types';
 import KioskSummaryPanel from '../components/KioskSummaryPanel';
 import KioskHeader from '../components/KioskHeader';
-import useAppStore from '../hooks/useAppStore';
 import useKioskStore, { RoomStatus } from '../store/kioskStore';
 import KioskWelcomeMessage from '../components/KioskWelcomeMessage';
 import CampusNavigatorTabs from '../components/CampusNavigatorTabs';
-// FIX: 'parse' is not a top-level export in the project's date-fns setup. Importing from submodule.
-import { format } from 'date-fns';
-import parse from 'date-fns/parse';
-import { FLOOR_PLANS } from '../data/floorPlanMatrix';
 import BreakTimeDisplay from '../components/BreakTimeDisplay';
 import BreakBanner from '../components/BreakBanner';
 import EndOfDayDisplay from '../components/EndOfDayDisplay';
 import EndOfDayBanner from '../components/EndOfDayBanner';
-import AcademyPulse from '../components/AcademyPulse';
-
-const schematicNameToId = (name: string): string => {
-    const normalizedName = name.replace(/\s/g, '');
-    const match = normalizedName.match(/(C|LAP|L|WS)-?(\d+)/i);
-    if (!match) return normalizedName.replace(/[^a-z0-9]/gi, ''); 
-    const prefix = match[1].toUpperCase();
-    const number = match[2];
-    if (prefix === 'WS') return `WS${parseInt(number, 10)}`;
-    const numericPart = parseInt(number, 10);
-    if (numericPart > 100) return String(numericPart);
-    return number;
-};
+import FocusModeToggle from '../components/FocusModeToggle';
+import StudentDetailModal from '../components/StudentDetailModal';
+import { FLOOR_PLANS } from '../data/floorPlanMatrix';
 
 interface KioskPageProps {
     onExitKiosk: () => void;
 }
 
+const scheduleCodeToId = (code: string): string => {
+    return code.replace('0.', '').replace('.', '');
+};
+
+const schematicNameToId = (name: string): string => {
+    const match = name.match(/(C|LAP|L|WS)-?\s?(\d+)/i);
+    if (!match) return name;
+    const prefix = match[1].toUpperCase();
+    const number = match[2];
+    if (prefix === 'WS') {
+        return `WS-${parseInt(number, 10)}`;
+    }
+    const numericPart = parseInt(number, 10);
+    if (numericPart > 100) return String(numericPart);
+    return number;
+};
+
+const formatPeriodTime = (time24: string): string => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':').map(Number);
+    const d = new Date(0);
+    d.setHours(hours, minutes);
+    return d.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    }).replace(/\s/g, '');
+};
+
+const Countdown: React.FC<{ seconds: number }> = ({ seconds }) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return (
+        <div className="text-2xl font-mono font-bold text-red-500 tabular-nums">
+            {String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
+        </div>
+    );
+};
+
+
 const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
+    // FIX: Changed language from a hardcoded const to a state to enable language switching, resolving the comparison error.
     const [language, setLanguage] = useState<'en' | 'ar'>('en');
 
     const dashboardData = useDashboardData();
     const { analyzedStudents } = useAnalyticsData(dashboardData.enhancedStudents);
-    const { simulatedTime } = useAppStore();
-    const liveStatusData = useLiveStatus(analyzedStudents, dashboardData.dailySchedule, dashboardData.groupInfo, dashboardData.processedScheduleData, simulatedTime);
+    const liveStatusData = useLiveStatus(analyzedStudents, dashboardData.dailySchedule, dashboardData.groupInfo, dashboardData.processedScheduleData, null);
     
-    const [activeTab, setActiveTab] = useState<'schedule' | 'trainees'>('schedule');
-    const { selectedGroup, setSelectedGroup, selectedRoom, setRoomStatus, clearSelection } = useKioskStore();
+    const { selectedGroup, setSelectedGroup, clearSelection, setRoomStatuses } = useKioskStore();
     
-    const [traineeSearch, setTraineeSearch] = useState('');
     const [traineeSort, setTraineeSort] = useState<'asc' | 'desc'>('asc');
     const [isBreakScreenDismissed, setIsBreakScreenDismissed] = useState(false);
     const [isEndOfDayDismissed, setIsEndOfDayDismissed] = useState(false);
+    const [isFocusMode, setIsFocusMode] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState<AnalyzedStudent | null>(null);
+    const [activeTab, setActiveTab] = useState<'schedule' | 'trainees'>('schedule');
 
     useEffect(() => {
+        // FIX: Update document language and direction based on the language state.
         document.documentElement.lang = language;
         document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     }, [language]);
+
+    useEffect(() => {
+        const newStatuses: Record<string, RoomStatus> = {};
+        const allCells = FLOOR_PLANS.flatMap(f => f.rows.flat());
+        
+        allCells.forEach(cell => {
+            if (cell.type !== 'Facility') {
+                newStatuses[cell.code] = { status: 'empty' };
+            }
+        });
+
+        if (liveStatusData.currentPeriod?.type === 'class') {
+            liveStatusData.liveClasses.forEach(liveClass => {
+                const scheduleId = scheduleCodeToId(liveClass.classroom);
+                const matchingCell = allCells.find(cell => schematicNameToId(cell.code) === scheduleId);
+                
+                if (matchingCell) {
+                    newStatuses[matchingCell.code] = {
+                        status: 'inClass',
+                        group: liveClass.group,
+                        instructor: liveClass.instructors.join(', '),
+                        period: liveStatusData.currentPeriod!.name,
+                        topic: liveClass.topic,
+                    };
+                }
+            });
+        }
+        
+        setRoomStatuses(newStatuses);
+    }, [liveStatusData.liveClasses, liveStatusData.currentPeriod, setRoomStatuses]);
 
     const handleGroupSelect = (group: string) => {
         if (selectedGroup === group) {
             clearSelection();
         } else {
             setSelectedGroup(group);
+            setActiveTab('schedule');
+        }
+    };
+    
+    const handleStudentSelect = (student: LiveStudent) => {
+        if (student.techGroup) {
+            setSelectedGroup(student.techGroup);
         }
     };
 
-    // Effect to synchronize live status with the kiosk store for the navigator
-    useEffect(() => {
-        const allRooms = FLOOR_PLANS.flatMap(floor => floor.rows.flat());
-        const occupancyByScheduleCode = new Map(Object.entries(liveStatusData.occupancy) as [string, OccupancyData[keyof OccupancyData]][]);
-        
-        allRooms.forEach(room => {
-            let status: RoomStatus;
-            let scheduleCode = '';
-    
-            if (room.code.startsWith('WS-')) {
-                const numMatch = room.code.match(/\d+/);
-                if (numMatch) {
-                    scheduleCode = `WS-0.${parseInt(numMatch[0], 10)}`;
-                }
-            } else if (room.code.startsWith('C-')) {
-                const num = room.code.substring(2);
-                if (num.length === 3) scheduleCode = `${num[0]}.${num.substring(1)}`;
-            } else if (room.code.match(/^(LAP|L)-/)) {
-                 const numMatch = room.code.match(/\d+/);
-                if (numMatch) {
-                    const num = numMatch[0];
-                    if (num.length === 3) scheduleCode = `${num[0]}.${num.substring(1)}`;
-                }
-            }
-    
-            const session = scheduleCode ? occupancyByScheduleCode.get(scheduleCode) : undefined;
-    
-            if (session) {
-                status = {
-                    status: 'inClass',
-                    group: session.group,
-                    period: liveStatusData.currentPeriod?.name,
-                    topic: session.topic,
-                    instructor: session.instructors.join(', '),
-                };
-            } else if (room.type === 'Facility') {
-                status = { status: 'staffOnly' };
-            } else {
-                status = { status: 'empty' };
-            }
-            setRoomStatus(room.code, status);
-        });
-    }, [liveStatusData.occupancy, liveStatusData.currentPeriod, setRoomStatus]);
-
     const today: Assignment['day'] = useMemo(() => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][liveStatusData.now.getDay()] as Assignment['day'], [liveStatusData.now]);
-    const dailyAssignments = useMemo(() => dashboardData.processedScheduleData.filter(a => a.day === today), [dashboardData.processedScheduleData, today]);
 
     const selection = useMemo(() => {
         if (selectedGroup) return { type: 'group' as const, value: selectedGroup };
-        if (selectedRoom) return { type: 'room' as const, value: selectedRoom.name };
         return null;
-    }, [selectedGroup, selectedRoom]);
-    
-    const groupForSelection = useMemo(() => {
-        if (selectedGroup) return selectedGroup;
-        if (selectedRoom && liveStatusData.currentPeriod) {
-            const schematicId = schematicNameToId(selectedRoom.name);
-            const assignmentInRoom = dailyAssignments.find(a => 
-                a.period === liveStatusData.currentPeriod?.name &&
-                (schematicNameToId(a.classroom).toLowerCase() === schematicId.toLowerCase())
-            );
-            return assignmentInRoom?.group ?? null;
-        }
-        return null;
-    }, [selectedGroup, selectedRoom, liveStatusData.currentPeriod, dailyAssignments]);
+    }, [selectedGroup]);
 
     const { now, currentPeriod, overallStatus } = liveStatusData;
+    const dayOfWeek = now.getDay();
     const isBreak = overallStatus.toLowerCase().includes('break');
-    const isFinished = overallStatus === 'Finished';
+    const isFinished = overallStatus === 'Finished' || dayOfWeek === 5 || dayOfWeek === 6;
 
     useEffect(() => {
-        // If we are no longer in a break period, allow the break screen to show again next time
-        if (!isBreak) {
-            setIsBreakScreenDismissed(false);
-        }
-        
-        // If the day is not finished, allow the end-of-day screen to show again next time
-        if (!isFinished) {
-            setIsEndOfDayDismissed(false);
-        }
-    }, [overallStatus, isBreak, isFinished]);
-
-
-    const nowNextInfo = useMemo(() => {
-        if (!currentPeriod) return { now: null, next: null, countdown: '' };
-        const currentPeriodIndex = dashboardData.dailySchedule.findIndex(p => p.name === currentPeriod.name);
-        const nextPeriod = dashboardData.dailySchedule[currentPeriodIndex + 1];
-        
-        const end = new Date();
-        const [h,m] = currentPeriod.end.split(':');
-        end.setHours(parseInt(h), parseInt(m), 0, 0);
-        const diff = end.getTime() - now.getTime();
-        const minutes = Math.floor((diff / 1000) / 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-        const countdown = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-        return {
-            now: `Now: ${currentPeriod.name} • ends ${format(end, 'h:mm a')}`,
-            next: nextPeriod ? `Next: ${nextPeriod.name} at ${format(parse(nextPeriod.start, 'HH:mm', new Date()), 'h:mm a')}` : 'End of day',
-            countdown,
-        }
-    }, [now, currentPeriod, dashboardData.dailySchedule]);
-
-
+        if (!isBreak) setIsBreakScreenDismissed(false);
+        if (!isFinished) setIsEndOfDayDismissed(false);
+    }, [isBreak, isFinished]);
+    
     const traineesForSelection = useMemo(() => {
-        if (!groupForSelection) return [];
-        let students = liveStatusData.liveStudents.filter(s => s.techGroup === groupForSelection);
-        
-        if (traineeSearch) {
-            const lowerSearch = traineeSearch.toLowerCase();
-            students = students.filter(s => s.fullName.toLowerCase().includes(lowerSearch) || String(s.navaId).includes(lowerSearch));
-        }
+        if (!selectedGroup) return [];
+        let students = liveStatusData.liveStudents.filter(s => s.techGroup === selectedGroup);
         
         students.sort((a, b) => {
-            if (traineeSort === 'asc') return a.fullName.localeCompare(b.fullName);
-            return b.fullName.localeCompare(a.fullName);
+            if (traineeSort === 'asc') return a.navaId - b.navaId;
+            return b.navaId - a.navaId;
         });
 
         return students;
-    }, [groupForSelection, liveStatusData.liveStudents, traineeSearch, traineeSort]);
-
-    const groupSessionTypeMap = useMemo(() => {
-        const map = new Map<string, 'industrial' | 'service' | 'professional'>();
-        liveStatusData.liveClasses.forEach(c => map.set(c.group, c.trackType));
-        return map;
-    }, [liveStatusData.liveClasses]);
-    
-    const allGroups = useMemo(() => dashboardData.allFilterOptions.allTechGroups, [dashboardData]);
+    }, [selectedGroup, liveStatusData.liveStudents, traineeSort]);
     
     const shouldShowImmersiveBreak = isBreak && currentPeriod && !isBreakScreenDismissed;
     const shouldShowImmersiveEndOfDay = isFinished && !isEndOfDayDismissed;
 
     return (
-        <div className={`min-h-screen w-screen bg-bg-body flex flex-col px-6 py-4 gap-4 overflow-y-auto ${language === 'ar' ? 'font-bukra' : 'font-sans'}`}>
-            <KioskHeader onExitKiosk={onExitKiosk} language={language} setLanguage={setLanguage} now={liveStatusData.now} weekNumber={liveStatusData.weekNumber} />
-            <div className="flex-shrink-0 h-16"><PeriodTimeline dailySchedule={dashboardData.dailySchedule} currentPeriod={liveStatusData.currentPeriod} now={liveStatusData.now} /></div>
+        <div className="h-screen w-screen bg-kiosk-bg flex flex-col px-4 py-4 overflow-hidden">
+            <StudentDetailModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
+            <div className="flex-shrink-0">
+                <KioskHeader onExitKiosk={onExitKiosk} />
+                <div className="mt-2">
+                  <PeriodTimeline dailySchedule={dashboardData.dailySchedule} currentPeriod={liveStatusData.currentPeriod} now={liveStatusData.now} />
+                </div>
+            </div>
             
-             <main className={`flex-grow flex gap-6 min-h-0 ${shouldShowImmersiveBreak || shouldShowImmersiveEndOfDay ? 'items-center justify-center' : ''}`}>
+             <main className={`flex-grow flex gap-4 min-h-0 mt-4 ${shouldShowImmersiveBreak || shouldShowImmersiveEndOfDay ? 'items-center justify-center' : ''}`}>
                 {shouldShowImmersiveBreak ? (
                     <div className="w-full h-full">
                         <BreakTimeDisplay 
@@ -225,83 +194,105 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                     </div>
                 ) : (
                     <>
-                        <div style={{ flexBasis: '30%' }} className="flex flex-col">
-                            <KioskSummaryPanel 
-                                liveClasses={liveStatusData.liveClasses}
-                                dailyAssignments={dailyAssignments} 
-                                groupInfo={dashboardData.groupInfo} 
-                                language={language} 
-                                onGroupClick={handleGroupSelect} 
-                                selectedGroup={selectedGroup} 
-                            />
+                        {/* Left Panel */}
+                        <div className={`flex-shrink-0 transition-all duration-500 ease-in-out ${isFocusMode ? 'w-0 opacity-0' : 'w-96 opacity-100'}`}>
+                            <div className={`h-full overflow-hidden`}>
+                                <KioskSummaryPanel 
+                                    liveClasses={liveStatusData.liveClasses}
+                                    groupInfo={dashboardData.groupInfo} 
+                                    language={language} 
+                                    onGroupClick={handleGroupSelect} 
+                                    selectedGroup={selectedGroup} 
+                                    allGroups={dashboardData.allFilterOptions.allTechGroups}
+                                />
+                            </div>
                         </div>
                         
-                        <div style={{ flexBasis: '56%' }} className="bg-white/90 backdrop-blur-sm transition duration-200 rounded-2xl flex flex-col min-h-0">
+                        {/* Center Panel */}
+                        <div className="flex-grow bg-kiosk-panel/80 backdrop-blur-sm transition-all duration-300 ease-in-out rounded-2xl flex flex-col min-h-0 relative">
+                            <div className="absolute top-3 right-3 z-20">
+                                <FocusModeToggle isFocusMode={isFocusMode} onToggle={() => setIsFocusMode(!isFocusMode)} language={language}/>
+                            </div>
                             {isBreak && isBreakScreenDismissed && currentPeriod && (<BreakBanner breakName={overallStatus} endTime={currentPeriod.end} now={now} language={language} onRestore={() => setIsBreakScreenDismissed(false)} />)}
                             {isFinished && isEndOfDayDismissed && (<EndOfDayBanner language={language} onRestore={() => setIsEndOfDayDismissed(false)} />)}
-                            {!selection ? (
-                                <KioskWelcomeMessage language={language} allDailyAssignments={dashboardData.processedScheduleData} now={now} groupInfo={dashboardData.groupInfo} />
-                            ) : (
-                                <div className="flex flex-col h-full min-h-0 p-4">
-                                     <div className="flex-shrink-0 flex justify-between items-center mb-4 px-1">
-                                        <div className="min-w-0">
-                                            <h2 className="text-2xl font-bold text-text-primary truncate pr-4">
-                                              {selection.type === 'group' ? `Group: ${selection.value}` : `Room: ${selection.value}`}
-                                            </h2>
-                                            <div className="text-sm text-text-muted font-mono flex items-center gap-4 mt-1">
-                                                <span>{nowNextInfo.now}</span>
-                                                <span className="opacity-70">{nowNextInfo.next}</span>
-                                                <span className="font-bold text-red-500 tabular-nums">{nowNextInfo.countdown}</span>
+                            
+                            <div className="flex-grow min-h-0 p-4 flex flex-col">
+                                {!selection ? (
+                                    <KioskWelcomeMessage
+                                        language={language}
+                                        liveStatusData={liveStatusData}
+                                        dailyAssignments={dashboardData.processedScheduleData.filter(a => a.day === today)}
+                                        groupInfo={dashboardData.groupInfo}
+                                    />
+                                ) : (
+                                    <div className="flex flex-col h-full min-h-0">
+                                        <div className="flex-shrink-0 flex justify-between items-start mb-2 pl-1 pr-14">
+                                            <div className="min-w-0 pr-4">
+                                                <h2 className="text-2xl font-bold text-text-primary truncate">
+                                                    Group: {selection.value}
+                                                </h2>
+                                                <div className="flex items-center gap-4 text-sm text-kiosk-text-muted mt-1 font-medium">
+                                                    {liveStatusData.currentPeriod && (
+                                                        <div className="flex items-center gap-2 min-w-0">
+                                                            <span className="font-bold text-kiosk-text-body">Now:</span>
+                                                            <span className="truncate">{liveStatusData.currentPeriod.name} • ends {formatPeriodTime(liveStatusData.currentPeriod.end)}</span>
+                                                        </div>
+                                                    )}
+                                                    {liveStatusData.nextPeriod && (
+                                                        <div className="flex items-center gap-2 min-w-0">
+                                                            <span className="font-bold text-kiosk-text-body">Next:</span>
+                                                            <span className="truncate">{liveStatusData.nextPeriod.name} at {formatPeriodTime(liveStatusData.nextPeriod.start)}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
+                                            {liveStatusData.currentPeriod && liveStatusData.secondsUntilEndOfPeriod !== null && liveStatusData.secondsUntilEndOfPeriod > 0 && (
+                                                <Countdown seconds={liveStatusData.secondsUntilEndOfPeriod} />
+                                            )}
                                         </div>
-                                        <div className={`p-1 bg-slate-100 rounded-full flex items-center gap-1`}>
-                                            <button 
-                                                onClick={() => setActiveTab('schedule')} 
-                                                className={`px-6 py-2 text-base font-bold rounded-full transition-colors ${activeTab === 'schedule' ? 'bg-brand-primary-light text-text-primary shadow-sm' : 'text-text-muted hover:bg-slate-200/50'}`}
-                                            >
-                                                {language === 'ar' ? 'الجدول الأسبوعي' : 'Weekly Schedule'}
-                                            </button>
-                                            <button 
-                                                onClick={() => setActiveTab('trainees')} 
-                                                className={`px-6 py-2 text-base font-bold rounded-full transition-colors ${activeTab === 'trainees' ? 'bg-brand-primary-light text-text-primary shadow-sm' : 'text-text-muted hover:bg-slate-200/50'}`}
-                                            >
-                                                {language === 'ar' ? 'قائمة المتدربين' : 'Trainee List'}
-                                            </button>
+
+                                        <div className="flex-shrink-0 flex items-center border-b border-kiosk-border mb-3">
+                                            <button onClick={() => setActiveTab('schedule')} className={`px-4 py-2 font-semibold ${activeTab === 'schedule' ? 'text-kiosk-primary border-b-2 border-kiosk-primary' : 'text-kiosk-text-muted'}`}>Weekly Schedule</button>
+                                            <button onClick={() => setActiveTab('trainees')} className={`px-4 py-2 font-semibold ${activeTab === 'trainees' ? 'text-kiosk-primary border-b-2 border-kiosk-primary' : 'text-kiosk-text-muted'}`}>Trainee Roster ({traineesForSelection.length})</button>
+                                        </div>
+                                        
+                                        <div className="flex-grow min-h-0 relative">
+                                            {activeTab === 'schedule' && (
+                                                <div className="absolute inset-0 rounded-lg bg-white/50 shadow-inner overflow-hidden">
+                                                    <GroupDailyScheduleCard selection={selection} allAssignments={dashboardData.processedScheduleData} currentPeriodName={liveStatusData.currentPeriod?.name ?? null} today={today} language={language} now={liveStatusData.now} />
+                                                </div>
+                                            )}
+                                            {activeTab === 'trainees' && (
+                                                <div className="absolute inset-0 flex flex-col">
+                                                    <div className="flex-grow overflow-y-auto pt-1">
+                                                        {traineesForSelection.length > 0 ? (
+                                                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                                                {traineesForSelection.map(student => (
+                                                                    <TraineeRosterCard key={student.navaId.toString()} student={student} />
+                                                                ))}
+                                                            </div>
+                                                        ) : ( <div className="text-center py-10 text-text-muted"><h3 className="font-bold text-lg">{language === 'ar' ? "لم يتم العثور على متدربين" : "No Trainees Found"}</h3><p className="text-sm mt-1">{language === 'ar' ? "لا يوجد متدربين يطابقون هذا الاختيار." : "There are no trainees for this selection."}</p></div> )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                     <div className="flex-grow min-h-0 rounded-lg bg-white shadow-inner relative overflow-y-auto">
-                                        {activeTab === 'schedule' ? (
-                                            <GroupDailyScheduleCard selection={selection} allAssignments={dashboardData.processedScheduleData} currentPeriodName={liveStatusData.currentPeriod?.name ?? null} today={today} language={language} />
-                                        ) : (
-                                          <div className="p-2 space-y-3">
-                                              <div className="sticky top-0 bg-white/80 backdrop-blur-sm z-10 p-2 flex gap-2">
-                                                <input type="search" placeholder="Search by name or ID..." value={traineeSearch} onChange={e => setTraineeSearch(e.target.value)} className="w-full border p-2 rounded-lg text-sm" />
-                                                <button onClick={() => setTraineeSort(s => s === 'asc' ? 'desc' : 'asc')} className="p-2 border rounded-lg text-sm font-semibold">A-Z {traineeSort === 'asc' ? '↑' : '↓'}</button>
-                                              </div>
-                                            {traineesForSelection.length > 0 ? (
-                                              traineesForSelection.map(student => {
-                                                const sessionType = groupSessionTypeMap.get(student.techGroup);
-                                                return <StudentDetailCard key={student.navaId.toString()} student={student} viewMode="kiosk" sessionType={sessionType} />;
-                                              })
-                                            ) : ( <div className="text-center py-10 text-text-muted"><h3 className="font-bold text-lg">No Trainees Found</h3><p className="text-sm mt-1">There are no trainees for this selection.</p></div> )}
-                                          </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                         
-                        <div style={{ flexBasis: '14%' }} className="flex-shrink-0 flex flex-col gap-6">
-                            <CampusNavigatorTabs 
-                                liveClasses={liveStatusData.liveClasses}
-                                dailyAssignments={dailyAssignments}
-                                currentPeriod={liveStatusData.currentPeriod}
-                                language={language}
-                            />
-                             <AcademyPulse
-                                liveStatusData={liveStatusData}
-                                language={language}
-                            />
+                        {/* Right Panel */}
+                        <div className={`flex-shrink-0 transition-all duration-500 ease-in-out ${isFocusMode ? 'w-0 opacity-0' : 'w-96 opacity-100'}`}>
+                             <div className={`h-full flex flex-col overflow-hidden`}>
+                                <CampusNavigatorTabs 
+                                    liveClasses={liveStatusData.liveClasses}
+                                    dailyAssignments={dashboardData.processedScheduleData.filter(a => a.day === today)}
+                                    currentPeriod={liveStatusData.currentPeriod}
+                                    language={language}
+                                    liveStudents={liveStatusData.liveStudents}
+                                    onStudentSelect={handleStudentSelect}
+                                />
+                            </div>
                         </div>
                     </>
                 )}

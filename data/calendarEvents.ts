@@ -1,6 +1,7 @@
 import type { CalendarEvent } from '../types';
 
 export const calendarEventsData: CalendarEvent[] = [
+  // Existing events before Oct 2025
   { "event": "CH1 Onboarding", "start": "2024-10-01", "end": "2024-10-03", "type": "CH", "color": "bg-green-200 text-green-800 border-green-300" },
   { "event": "CH1 Foundation Program", "start": "2024-10-06", "end": "2024-11-14", "type": "CH", "color": "bg-blue-500 text-white border-blue-600" },
   { "event": "NAVA Holiday", "start": "2024-11-17", "end": "2024-11-17", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
@@ -9,26 +10,34 @@ export const calendarEventsData: CalendarEvent[] = [
   { "event": "NAVA Holiday", "start": "2025-01-05", "end": "2025-01-05", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
   { "event": "CH1 Technical Program", "start": "2025-01-08", "end": "2025-02-20", "type": "CH", "color": "bg-green-600 text-white border-green-700" },
   { "event": "National Holiday", "start": "2025-02-23", "end": "2025-02-23", "type": "National", "color": "bg-purple-500 text-white border-purple-600" },
-  { "event": "Ramadan", "start": "2025-03-01", "end": "2025-03-29", "type": "Ramadan", "color": "bg-white text-green-700 border-green-400 border-2" },
+  { "event": "Ramadan", "start": "2025-03-01", "end": "2025-03-29", "type": "Ramadan", "color": "bg-green-200 text-green-800 border-green-300" },
   { "event": "Eid Al Fitr", "start": "2025-03-30", "end": "2025-04-03", "type": "Eid", "color": "bg-amber-400 text-amber-900 border-amber-500" },
-  { "event": "CH1 Foundation Program", "start": "2025-05-15", "end": "2025-05-15", "type": "CH", "color": "bg-blue-500 text-white border-blue-600" },
+  { "event": "CH1 Foundation Program End", "start": "2025-05-15", "end": "2025-05-15", "type": "CH", "color": "bg-blue-500 text-white border-blue-600" },
   { "event": "NAVA Holiday", "start": "2025-05-18", "end": "2025-05-18", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
-  { "event": "Eid Al Adha", "start": "2025-06-05", "end": "2025-06-09", "type": "Eid", "color": "bg-sky-400 text-sky-900 border-sky-500" },
+  { "event": "Eid Al Adha", "start": "2025-06-05", "end": "2025-06-09", "type": "Eid", "color": "bg-slate-500 text-white border-slate-600" },
   { "event": "Annual Vacation", "start": "2025-08-03", "end": "2025-08-28", "type": "Annual", "color": "bg-orange-500 text-white border-orange-600" },
   { "event": "National Holiday", "start": "2025-09-23", "end": "2025-09-24", "type": "National", "color": "bg-purple-500 text-white border-purple-600" },
   { "event": "CH2 Onboarding", "start": "2025-10-01", "end": "2025-10-02", "type": "CH", "color": "bg-green-200 text-green-800 border-green-300" },
   { "event": "CH2 Foundation Program", "start": "2025-10-05", "end": "2025-10-05", "type": "CH", "color": "bg-blue-500 text-white border-blue-600" },
-  { "event": "National Holiday", "start": "2025-12-25", "end": "2025-12-25", "type": "National", "color": "bg-purple-500 text-white border-purple-600" },
-  { "event": "National Holiday", "start": "2026-01-01", "end": "2026-01-01", "type": "National", "color": "bg-purple-500 text-white border-purple-600" },
+  
+  // New data from user, starting Oct 2025 - Corrected
+  { "event": "NAVA Holiday", "start": "2025-11-16", "end": "2025-11-16", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
   { "event": "NAVA Holiday", "start": "2026-01-04", "end": "2026-01-04", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
-  { "event": "CH2 Technical Program", "start": "2026-01-07", "end": "2026-01-07", "type": "CH", "color": "bg-green-600 text-white border-green-700" },
+  { "event": "Ramadan", "start": "2026-02-16", "end": "2026-02-19", "type": "Ramadan", "color": "bg-green-200 text-green-800 border-green-300" },
   { "event": "National Holiday", "start": "2026-02-22", "end": "2026-02-22", "type": "National", "color": "bg-purple-500 text-white border-purple-600" },
-  { "event": "Eid Al Fitr", "start": "2026-03-19", "end": "2026-03-23", "type": "Eid", "color": "bg-amber-400 text-amber-900 border-amber-500" },
-  { "event": "CH2 Foundation Program", "start": "2026-05-14", "end": "2026-05-14", "type": "CH", "color": "bg-blue-500 text-white border-blue-600" },
-  { "event": "NAVA Holiday", "start": "2026-05-17", "end": "2026-05-17", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
-  { "event": "Eid Al Adha", "start": "2026-05-26", "end": "2026-05-30", "type": "Eid", "color": "bg-sky-400 text-sky-900 border-sky-500" },
-  { "event": "Annual Vacation", "start": "2026-08-02", "end": "2026-08-27", "type": "Annual", "color": "bg-orange-500 text-white border-orange-600" },
+  { "event": "NAVA Holiday", "start": "2026-02-23", "end": "2026-02-26", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
+  { "event": "Ramadan", "start": "2026-03-01", "end": "2026-03-04", "type": "Ramadan", "color": "bg-green-200 text-green-800 border-green-300" },
+  { "event": "CH1 Technical Program", "start": "2026-03-05", "end": "2026-03-06", "type": "CH", "color": "bg-green-600 text-white border-green-700" },
+  { "event": "Ramadan", "start": "2026-03-08", "end": "2026-03-12", "type": "Ramadan", "color": "bg-green-200 text-green-800 border-green-300" },
+  { "event": "Eid Al Fitr", "start": "2026-03-15", "end": "2026-03-19", "type": "Eid", "color": "bg-amber-400 text-amber-900 border-amber-500" },
+  { "event": "Eid Al Fitr", "start": "2026-03-22", "end": "2026-03-26", "type": "Eid", "color": "bg-amber-400 text-amber-900 border-amber-500" },
+  { "event": "Eid Al Adha", "start": "2026-06-04", "end": "2026-06-04", "type": "Eid", "color": "bg-slate-500 text-white border-slate-600" },
+  { "event": "Annual Vacation", "start": "2026-08-02", "end": "2026-08-06", "type": "Annual", "color": "bg-orange-500 text-white border-orange-600" },
+  { "event": "Annual Vacation", "start": "2026-08-09", "end": "2026-08-13", "type": "Annual", "color": "bg-orange-500 text-white border-orange-600" },
+  { "event": "Annual Vacation", "start": "2026-08-16", "end": "2026-08-20", "type": "Annual", "color": "bg-orange-500 text-white border-orange-600" },
+  { "event": "NAVA Holiday", "start": "2026-08-23", "end": "2026-08-23", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
+  { "event": "Annual Vacation", "start": "2026-08-24", "end": "2026-08-27", "type": "Annual", "color": "bg-orange-500 text-white border-orange-600" },
   { "event": "National Holiday", "start": "2026-09-23", "end": "2026-09-23", "type": "National", "color": "bg-purple-500 text-white border-purple-600" },
-  { "event": "CH3 Onboarding", "start": "2026-10-01", "end": "2026-10-01", "type": "CH", "color": "bg-green-200 text-green-800 border-green-300" },
-  { "event": "National Holiday", "start": "2026-12-25", "end": "2026-12-25", "type": "National", "color": "bg-purple-500 text-white border-purple-600" }
+  { "event": "NAVA Holiday", "start": "2026-09-24", "end": "2026-09-24", "type": "NAVA", "color": "bg-yellow-400 text-yellow-900 border-yellow-500" },
+  { "event": "CH1 Technical Program", "start": "2026-09-28", "end": "2026-09-30", "type": "CH", "color": "bg-green-600 text-white border-green-700" }
 ];

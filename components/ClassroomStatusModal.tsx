@@ -34,11 +34,11 @@ const scheduleCodeToId = (code: string): string => {
 
 const schematicNameToId = (name: string): string => {
     const match = name.match(/(C|Lab|L|WS)-?\s?(\d+)/);
-    if (!match) return name; 
-    const prefix = match[1];
+    if (!match) return name;
+    const prefix = match[1].toUpperCase();
     const number = match[2];
     if (prefix === 'WS') {
-        return `WS${parseInt(number, 10)}`;
+        return `WS-${parseInt(number, 10)}`;
     }
     return number;
 };

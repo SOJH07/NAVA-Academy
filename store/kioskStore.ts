@@ -22,6 +22,7 @@ interface KioskState {
     setSelectedRoom: (room: FloorPlanItem | null) => void;
     setSelectedGroup: (group: string | null) => void;
     setRoomStatus: (roomId: string, status: RoomStatus) => void;
+    setRoomStatuses: (statuses: Record<string, RoomStatus>) => void;
     clearSelection: () => void;
     setKioskMode: (mode: 'student' | 'admin') => void;
     setSelectedFloor: (floor: FloorName) => void;
@@ -41,6 +42,7 @@ const useKioskStore = create<KioskState>((set) => ({
             [roomId]: status,
         }
     })),
+    setRoomStatuses: (statuses) => set({ roomStatusById: statuses }),
     clearSelection: () => set({ selectedRoom: null, selectedGroup: null }),
     setKioskMode: (mode) => set({ kioskMode: mode }),
     setSelectedFloor: (floor) => set({ selectedFloor: floor }),

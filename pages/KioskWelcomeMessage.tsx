@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import AnnouncementsMarquee from './AnnouncementsMarquee';
-import UpcomingEventsCard from './UpcomingEventsCard';
+import AnnouncementsMarquee from '../components/AnnouncementsMarquee';
+import UpcomingEventsCard from '../components/UpcomingEventsCard';
 import type { Assignment, GroupInfo } from '../types';
 import type { useLiveStatus } from '../hooks/useLiveStatus';
 import { learningOutcomesData } from '../data/learningOutcomes';
@@ -157,7 +157,7 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
                     setIsFading(false);
                 }, 300);
             }
-        }, 7000);
+        }, 10000);
         return () => clearInterval(timer);
     }, [isPaused, activeTopics.length]);
     

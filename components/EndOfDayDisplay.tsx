@@ -34,7 +34,7 @@ const EndOfDayDisplay: React.FC<EndOfDayDisplayProps> = ({ language, now, onDism
     return (
         <div className="relative flex flex-col items-center justify-center h-full w-full text-center text-kiosk-text-title p-8 kiosk-welcome-bg animate-fade-in">
             <div className="flex flex-col items-center" style={{ textShadow: '0 3px 10px rgba(0,0,0,0.1)' }}>
-                <h2 className={`text-5xl lg:text-6xl font-black text-kiosk-text-title drop-shadow-md ${language === 'ar' ? 'font-bukra' : 'font-sans'}`}>
+                <h2 className={`text-5xl lg:text-6xl font-black text-kiosk-text-title drop-shadow-md`}>
                     {title}
                 </h2>
                 <p className="text-xl font-medium text-kiosk-text-body mt-6 drop-shadow-sm text-wrap-balance max-w-2xl">

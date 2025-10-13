@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import type { LiveClass, GroupInfo, Assignment } from '../types';
+import type { LiveClass, GroupInfo } from '../types';
 
 const TheoryIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3.5a1 1 0 00.028 1.84l7 3.5a1 1 0 00.764 0l7-3.5a1 1 0 00.028-1.84l-7-3.5z" /><path d="M3 9.332V14a1 1 0 00.553.894l6 3a1 1 0 00.894 0l6-3A1 1 0 0017 14v-4.668-2.45l-7 3.5-7-3.5v2.45z" /></svg>;
 const PracticalIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.972.03 2.287-.948 2.287-1.56.38-1.56 2.6 0 2.98.978.238 1.488 1.559.948 2.286-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.948c.38 1.56 2.6 1.56 2.98 0a1.532 1.532 0 012.287-.948c1.372.836 2.942-.734-2.106-2.106a1.532 1.532 0 01.948-2.287c1.56-.38 1.56-2.6 0-2.98a1.532 1.532 0 01-.948-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.948zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" /></svg>;
@@ -28,8 +28,8 @@ const GroupCard: React.FC<{
 }> = ({ liveInfo, onClick, isSelected, theme }) => {
     
     const themeClasses = {
-        blue: { text: 'text-status-industrial', selectedBorder: 'border-status-industrial', unitBg: 'bg-status-industrial-light' },
-        red: { text: 'text-status-tech', selectedBorder: 'border-status-tech', unitBg: 'bg-status-tech-light' }
+        blue: { text: 'text-status-industrial', selectedRing: 'ring-status-industrial', unitBg: 'bg-status-industrial-light' },
+        red: { text: 'text-status-tech', selectedRing: 'ring-status-tech', unitBg: 'bg-status-tech-light' }
     };
     const selectedTheme = themeClasses[theme];
     const classroom = liveInfo.classroom.startsWith('WS-') ? liveInfo.classroom.replace('WS-0.', 'WS-') : `C-${liveInfo.classroom.replace('.', '')}`;
@@ -38,13 +38,12 @@ const GroupCard: React.FC<{
     return (
         <button
             onClick={onClick}
-            className={`w-full rounded-xl transition-all duration-200 flex items-stretch border bg-white shadow-sm hover:bg-slate-50 ${isSelected ? `ring-2 ${selectedTheme.selectedBorder}` : 'border-slate-200'}`}
+            className={`rounded-xl transition-all duration-200 flex items-stretch border bg-white shadow-sm hover:bg-slate-50 ${isSelected ? `ring-2 ${selectedTheme.selectedRing}` : 'border-slate-200'}`}
         >
-            <div className={`w-2/5 flex flex-col items-center justify-center p-2 font-extrabold text-lg border-r border-slate-200 ${selectedTheme.text}`}>
-                {liveInfo.group.split('-')[0]}
-                <span>{liveInfo.group.split('-')[1]}</span>
+            <div className={`w-1/3 flex items-center justify-center p-2 font-extrabold text-2xl border-r border-slate-200 ${selectedTheme.text}`}>
+                {liveInfo.group.split('-')[1]}
             </div>
-            <div className="w-3/5 flex-grow p-2 text-xs flex flex-col justify-center">
+            <div className="w-2/3 flex-grow p-2 text-xs flex flex-col justify-center">
                 <div className="flex justify-between items-center">
                     <span className="text-kiosk-text-muted font-semibold">{classroom}</span>
                     <span className={`font-bold px-2 py-0.5 rounded-md text-[10px] ${selectedTheme.unitBg} ${selectedTheme.text}`}>{shortTopic}</span>
@@ -55,19 +54,57 @@ const GroupCard: React.FC<{
     );
 };
 
+const InactiveGroupCard: React.FC<{ groupName: string; onClick: () => void; isSelected: boolean; theme: 'blue' | 'red'; language: 'en' | 'ar' }> = ({ groupName, onClick, isSelected, theme, language }) => {
+    const themeClasses = theme === 'blue'
+        ? { text: 'text-slate-400', border: 'border-slate-200', selectedRing: 'ring-status-industrial' }
+        : { text: 'text-slate-400', border: 'border-slate-200', selectedRing: 'ring-status-tech' };
+
+    return (
+        <button
+            onClick={onClick}
+            className={`rounded-xl transition-all duration-200 flex items-stretch border bg-slate-50/70 shadow-sm hover:bg-slate-100 ${isSelected ? `ring-2 ${themeClasses.selectedRing}` : themeClasses.border}`}
+        >
+            <div className={`w-1/3 flex items-center justify-center p-2 font-extrabold text-2xl border-r border-slate-200 ${themeClasses.text}`}>
+                {groupName.split('-')[1]}
+            </div>
+            <div className="w-2/3 flex-grow p-2 text-xs flex flex-col justify-center items-center text-slate-500 font-semibold italic">
+                {language === 'ar' ? 'لا توجد جلسة نشطة' : 'No active session'}
+            </div>
+        </button>
+    );
+};
+
 const TrackSection: React.FC<{
     title: string;
     icon: React.ReactElement;
     iconBgClass: string;
-    data: { theory: LiveClass[], practical: LiveClass[] };
+    groupPrefix: string;
+    groups: string[];
+    liveClassMap: Map<string, LiveClass>;
     theme: 'blue' | 'red';
     onGroupClick: (group: string) => void;
     selectedGroup: string | null;
-}> = ({ title, icon, iconBgClass, data, theme, onGroupClick, selectedGroup }) => {
-    const hasTheory = data.theory.length > 0;
-    const hasPractical = data.practical.length > 0;
+    language: 'en' | 'ar';
+}> = ({ title, icon, iconBgClass, groupPrefix, groups, liveClassMap, theme, onGroupClick, selectedGroup, language }) => {
+    
+    const { theory, practical, inactive } = useMemo(() => {
+        const theory: LiveClass[] = [];
+        const practical: LiveClass[] = [];
+        const inactive: string[] = [];
 
-    if (!hasTheory && !hasPractical) return null;
+        for (const group of groups) {
+            const liveInfo = liveClassMap.get(group);
+            if (liveInfo) {
+                if (liveInfo.sessionType === 'practical') practical.push(liveInfo);
+                else theory.push(liveInfo);
+            } else {
+                inactive.push(group);
+            }
+        }
+        return { theory, practical, inactive };
+    }, [groups, liveClassMap]);
+
+    if (groups.length === 0) return null;
     
     const iconColorClass = theme === 'blue' ? 'text-status-industrial' : 'text-status-tech';
 
@@ -77,92 +114,60 @@ const TrackSection: React.FC<{
                 <div className={`${iconBgClass} p-2 rounded-lg`}>
                     {React.cloneElement(icon, { className: iconColorClass })}
                 </div>
-                <h3 className="font-bold text-lg text-kiosk-text-title">{title}</h3>
+                 <div className="flex items-baseline gap-2">
+                    <h3 className="font-bold text-lg text-kiosk-text-title">{title}</h3>
+                    <span className={`font-bold text-base ${iconColorClass}`}>{groupPrefix}</span>
+                </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-                <div>
+            
+            {theory.length > 0 && (
+                <div className="mt-2">
                     <div className="flex items-center gap-2 text-sm font-bold uppercase text-kiosk-text-muted mb-2 px-1"><TheoryIcon /> Theory</div>
-                    <div className="space-y-2">
-                        {data.theory.map(lc => <GroupCard key={lc.group} liveInfo={lc} onClick={() => onGroupClick(lc.group)} isSelected={selectedGroup === lc.group} theme={theme}/>)}
+                    <div className="grid grid-cols-2 gap-2">
+                        {theory.map(lc => <GroupCard key={lc.group} liveInfo={lc} onClick={() => onGroupClick(lc.group)} isSelected={selectedGroup === lc.group} theme={theme}/>)}
                     </div>
                 </div>
-                <div>
+            )}
+            
+            {practical.length > 0 && (
+                <div className="mt-4">
                     <div className="flex items-center gap-2 text-sm font-bold uppercase text-kiosk-text-muted mb-2 px-1"><PracticalIcon /> Practical</div>
-                    <div className="space-y-2">
-                        {data.practical.map(lc => <GroupCard key={lc.group} liveInfo={lc} onClick={() => onGroupClick(lc.group)} isSelected={selectedGroup === lc.group} theme={theme}/>)}
+                    <div className="grid grid-cols-2 gap-2">
+                        {practical.map(lc => <GroupCard key={lc.group} liveInfo={lc} onClick={() => onGroupClick(lc.group)} isSelected={selectedGroup === lc.group} theme={theme}/>)}
                     </div>
                 </div>
-            </div>
+            )}
+            
+            {inactive.length > 0 && (
+                <div className="mt-4">
+                    <div className="text-sm font-bold uppercase text-kiosk-text-muted mb-2 px-1 opacity-60">{language === 'ar' ? 'غير نشط' : 'Inactive'}</div>
+                    <div className="grid grid-cols-2 gap-2">
+                        {inactive.map(group => <InactiveGroupCard key={group} groupName={group} onClick={() => onGroupClick(group)} isSelected={selectedGroup === group} theme={theme} language={language}/>)}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 interface KioskSummaryPanelProps {
   liveClasses: LiveClass[];
-  dailyAssignments: Assignment[];
+  allGroups: string[];
   groupInfo: GroupInfo;
   onGroupClick: (group: string) => void;
   selectedGroup: string | null;
   language: 'en' | 'ar';
 }
 
-const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, dailyAssignments, groupInfo, onGroupClick, selectedGroup, language }) => {
+const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, allGroups, groupInfo, onGroupClick, selectedGroup, language }) => {
 
-    const { industrial, service } = useMemo(() => {
-        const industrial: { theory: LiveClass[], practical: LiveClass[] } = { theory: [], practical: [] };
-        const service: { theory: LiveClass[], practical: LiveClass[] } = { theory: [], practical: [] };
-
-        const sourceData = liveClasses.length > 0
-            ? liveClasses // Use live data if available
-            : dailyAssignments.map(assignment => { // Otherwise, create a summary from all day's assignments
-                const trackName = groupInfo[assignment.group]?.track_name;
-                const trackType = trackName === 'Industrial Tech' ? 'industrial' : 'service';
-                const sessionType = assignment.classroom.startsWith('2.') || assignment.classroom.startsWith('3.') ? 'theory' : 'practical';
-                return {
-                    group: assignment.group,
-                    trackType,
-                    classroom: assignment.classroom,
-                    instructors: assignment.instructors,
-                    sessionType,
-                    topic: assignment.topic
-                };
-            });
-
-        // De-duplicate if we're using dailyAssignments as source, showing each group once
-        const itemsToProcess = liveClasses.length > 0
-            ? sourceData
-            : Array.from(new Map(sourceData.map(item => [item.group, item])).values());
-        
-        for (const item of itemsToProcess) {
-            const trackName = groupInfo[item.group]?.track_name;
-            const target = trackName === 'Industrial Tech' ? 'industrial' : 'service';
-            const isPractical = item.sessionType === 'practical';
-            const liveClassItem = item as LiveClass;
-
-            if (target === 'industrial') {
-                if(isPractical) industrial.practical.push(liveClassItem);
-                else industrial.theory.push(liveClassItem);
-            } else {
-                if(isPractical) service.practical.push(liveClassItem);
-                else service.theory.push(liveClassItem);
-            }
-        }
-        
-        // Sort
-        industrial.theory.sort((a,b) => a.group.localeCompare(b.group));
-        industrial.practical.sort((a,b) => a.group.localeCompare(b.group));
-        service.theory.sort((a,b) => a.group.localeCompare(b.group));
-        service.practical.sort((a,b) => a.group.localeCompare(b.group));
-
-        return { industrial, service };
-
-    }, [liveClasses, dailyAssignments, groupInfo]);
+    const liveClassMap = useMemo(() => new Map(liveClasses.map(lc => [lc.group, lc])), [liveClasses]);
+    
+    const industrialGroups = useMemo(() => allGroups.filter(g => groupInfo[g]?.track_name === 'Industrial Tech').sort(), [allGroups, groupInfo]);
+    const serviceGroups = useMemo(() => allGroups.filter(g => groupInfo[g]?.track_name === 'Service Tech').sort(), [allGroups, groupInfo]);
 
     const renderContent = () => {
-        const hasIndustrial = industrial.theory.length > 0 || industrial.practical.length > 0;
-        const hasService = service.theory.length > 0 || service.practical.length > 0;
-
-        if (!hasIndustrial && !hasService) {
+        if (industrialGroups.length === 0 && serviceGroups.length === 0) {
             return (
                 <div className="text-center text-kiosk-text-muted p-4 pt-16">
                     <p className="font-semibold">{language === 'ar' ? 'لا توجد فصول دراسية لهذا اليوم.' : 'No classes are scheduled for today.'}</p>
@@ -172,23 +177,29 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, dail
 
         return (
             <>
-                {hasIndustrial && <TrackSection 
+                {industrialGroups.length > 0 && <TrackSection 
                     title={language === 'ar' ? 'فني صناعي' : 'Industrial Technician'}
                     icon={<IndustrialIcon />}
                     iconBgClass="bg-status-industrial-light"
-                    data={industrial} 
+                    groupPrefix="DPIT"
+                    groups={industrialGroups} 
+                    liveClassMap={liveClassMap}
                     theme="blue" 
                     onGroupClick={onGroupClick} 
                     selectedGroup={selectedGroup}
+                    language={language}
                 />}
-                {hasService && <TrackSection 
+                {serviceGroups.length > 0 && <TrackSection 
                     title={language === 'ar' ? 'فني خدمات' : 'Service Technician'}
                     icon={<ServiceIcon />}
                     iconBgClass="bg-status-tech-light"
-                    data={service} 
+                    groupPrefix="DPST"
+                    groups={serviceGroups}
+                    liveClassMap={liveClassMap}
                     theme="red" 
                     onGroupClick={onGroupClick} 
-                    selectedGroup={selectedGroup} 
+                    selectedGroup={selectedGroup}
+                    language={language}
                 />}
             </>
         );
@@ -196,7 +207,7 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, dail
 
     return (
         <div className="bg-kiosk-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
-            <div className="flex items-center gap-3 p-4 rounded-t-xl bg-brand-primary-light flex-shrink-0">
+            <div className="flex items-center gap-3 p-4 rounded-t-xl bg-brand-primary-light flex-shrink-0 border-b border-slate-200">
                 <div className="bg-brand-primary/20 p-2 rounded-lg">
                     <ScheduleIcon className="h-6 w-6 text-text-primary" />
                 </div>
@@ -204,7 +215,7 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, dail
                     {language === 'ar' ? 'الجدول المباشر' : 'Live Schedule'}
                 </h2>
             </div>
-            <div className="flex-grow overflow-y-auto p-4 space-y-6">
+            <div className="flex-grow overflow-y-auto p-4 space-y-8">
                 {renderContent()}
             </div>
         </div>

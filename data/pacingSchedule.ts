@@ -412,11 +412,11 @@ export const pacingScheduleData: PacingEvent[] = [
   },
   {
       group: 'DPIT-02', unitCode: 'NAVA110', unitName: 'U20 Pneumatics-Hydraulics Advanced', startDate: '5-Oct-25', endDate: '23-Oct-25', startWeek: 41, duration: 3,
-      assessments: { theoretical: '7-Oct-25', performance: '7-Oct-25' }
+      assessments: { performance: '14-Oct-25' }
   },
   {
       group: 'DPIT-09', unitCode: 'NAVA103', unitName: 'U13 Electrical Fundamental', startDate: '5-Oct-25', endDate: '23-Oct-25', startWeek: 41, duration: 3,
-      assessments: { theoretical: '7-Oct-25', performance: '7-Oct-25' }
+      assessments: { performance: '13-Oct-25' }
   },
   {
       group: 'DPST-03', unitCode: 'NAVA205', unitName: 'Unit-15 Accessories, Lighting, and Wiper Systems', startDate: '21-Sep-25', endDate: '9-Oct-25', startWeek: 39, duration: 3,
@@ -424,10 +424,36 @@ export const pacingScheduleData: PacingEvent[] = [
   },
   {
       group: 'DPIT-03', unitCode: 'NAVA109', unitName: 'U19 Electro-Mechanical', startDate: '5-Oct-25', endDate: '23-Oct-25', startWeek: 41, duration: 3,
-      assessments: { theoretical: '8-Oct-25' }
+      assessments: { performance: '15-Oct-25' }
   },
   {
       group: 'DPIT-05', unitCode: 'NAVA102', unitName: 'U12 Mechanical Fundamental', startDate: '8-Oct-25', endDate: '28-Oct-25', startWeek: 41, duration: 3,
       assessments: { theoretical: '9-Oct-25', performance: '9-Oct-25' }
-  }
+  },
+  // ADDED FOR WEEK 42 DEMO
+  {
+      group: 'DPST-02', 
+      unitCode: 'NAVA203', 
+      unitName: 'Unit-13 Tires and Wheel System', 
+      startDate: '13-Oct-25', 
+      endDate: '16-Oct-25', 
+      startWeek: 42, 
+      duration: 1,
+      assessments: { theoretical: '15-Oct-25', performance: '16-Oct-25' }
+  },
+  {
+      group: 'DPST-04', 
+      unitCode: 'NAVA202', 
+      unitName: 'Unit-12 Electrical Fundamentals and HV Safety', 
+      startDate: '13-Oct-25', 
+      endDate: '16-Oct-25', 
+      startWeek: 42, 
+      duration: 1,
+      assessments: { performance: '16-Oct-25' }
+  },
+  { group: 'DPIT-07', unitCode: 'NAVA105', unitName: 'U15 HVAC', startDate: '12-Oct-25', endDate: '16-Oct-25', startWeek: 42, duration: 1, assessments: { performance: '13-Oct-25' } },
+  { group: 'DPIT-01', unitCode: 'NAVA110', unitName: 'U20 Pneumatics-Hydraulics Advanced', startDate: '12-Oct-25', endDate: '16-Oct-25', startWeek: 42, duration: 1, assessments: { performance: '14-Oct-25' } },
+  { group: 'DPIT-06', unitCode: 'NAVA104', unitName: 'U14 Pneumatic Fundamentals', startDate: '12-Oct-25', endDate: '16-Oct-25', startWeek: 42, duration: 1, assessments: { performance: '14-Oct-25' } },
+  { group: 'DPIT-04', unitCode: 'NAVA104', unitName: 'U14 Pneumatic Fundamentals', startDate: '12-Oct-25', endDate: '16-Oct-25', startWeek: 42, duration: 1, assessments: { performance: '14-Oct-25' } },
+  { group: 'DPIT-04', unitCode: 'NAVA101', unitName: 'Unit 11 - Hydraulics Fundamentals', startDate: '12-Oct-25', endDate: '16-Oct-25', startWeek: 42, duration: 1, assessments: { performance: '15-Oct-25' } }
 ];
