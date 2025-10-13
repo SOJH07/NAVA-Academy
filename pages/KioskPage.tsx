@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useLiveStatus } from '../hooks/useLiveStatus';
 import TraineeRosterCard from '../components/TraineeRosterCard';
-import PeriodTimeline from '../components/PeriodTimeline';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import GroupDailyScheduleCard from '../components/GroupDailyScheduleCard';
 import type { Assignment, AnalyzedStudent, LiveStudent } from '../types';
@@ -166,12 +165,15 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     return (
         <div className="h-screen w-screen bg-kiosk-bg flex flex-col px-4 py-4 overflow-hidden">
             <StudentDetailModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
-            <div className="flex-shrink-0">
-                <KioskHeader onExitKiosk={onExitKiosk} />
-                <div className="mt-2">
-                  <PeriodTimeline dailySchedule={dashboardData.dailySchedule} currentPeriod={liveStatusData.currentPeriod} now={liveStatusData.now} />
-                </div>
-            </div>
+            <KioskHeader 
+                onExitKiosk={onExitKiosk}
+                language={language}
+                setLanguage={setLanguage}
+                now={liveStatusData.now}
+                weekNumber={liveStatusData.weekNumber}
+                dailySchedule={dashboardData.dailySchedule}
+                currentPeriod={liveStatusData.currentPeriod}
+            />
             
              <main className={`flex-grow flex gap-4 min-h-0 mt-4 ${shouldShowImmersiveBreak || shouldShowImmersiveEndOfDay ? 'items-center justify-center' : ''}`}>
                 {shouldShowImmersiveBreak ? (
