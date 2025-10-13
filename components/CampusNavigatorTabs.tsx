@@ -230,11 +230,11 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
 
     return (
         <div className="bg-bg-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
-             <div className="flex items-center gap-3 p-4 rounded-t-xl bg-brand-primary-light flex-shrink-0">
-                <div className="bg-brand-primary/20 p-2 rounded-lg">
-                    <MapPinIcon className="h-6 w-6 text-text-primary" />
+             <div className="flex items-center gap-3 p-4 rounded-t-xl bg-white flex-shrink-0 border-b border-slate-200">
+                <div className="bg-brand-primary-light p-2 rounded-lg">
+                    <MapPinIcon className="h-6 w-6 text-brand-primary" />
                 </div>
-                <h2 className={`font-bold text-lg text-text-primary`}>
+                <h2 className={`font-bold text-lg text-black`}>
                     {language === 'ar' ? 'مستكشف الحرم الجامعي' : 'Campus Navigator'}
                 </h2>
             </div>

@@ -107,10 +107,12 @@ const TrackSection: React.FC<{
     if (groups.length === 0) return null;
     
     const iconColorClass = theme === 'blue' ? 'text-status-industrial' : 'text-status-tech';
+    const trackBgClass = theme === 'blue' ? 'bg-status-industrial-light/50' : 'bg-status-tech-light/50';
+    const trackBorderClass = theme === 'blue' ? 'border-status-industrial/20' : 'border-status-tech/20';
 
     return (
         <div>
-            <div className="flex items-center gap-3 mb-2">
+            <div className={`flex items-center gap-3 mb-3 p-3 rounded-lg border-b-2 ${trackBgClass} ${trackBorderClass}`}>
                 <div className={`${iconBgClass} p-2 rounded-lg`}>
                     {React.cloneElement(icon, { className: iconColorClass })}
                 </div>
@@ -207,15 +209,15 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, allG
 
     return (
         <div className="bg-kiosk-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
-            <div className="flex items-center gap-3 p-4 rounded-t-xl bg-brand-primary-light flex-shrink-0 border-b border-slate-200">
-                <div className="bg-brand-primary/20 p-2 rounded-lg">
-                    <ScheduleIcon className="h-6 w-6 text-text-primary" />
+            <div className="flex items-center gap-3 p-4 rounded-t-xl bg-white flex-shrink-0 border-b border-slate-200">
+                <div className="bg-brand-primary-light p-2 rounded-lg">
+                    <ScheduleIcon className="h-6 w-6 text-brand-primary" />
                 </div>
-                <h2 className={`font-bold text-lg text-text-primary`}>
+                <h2 className={`font-bold text-lg text-black`}>
                     {language === 'ar' ? 'الجدول المباشر' : 'Live Schedule'}
                 </h2>
             </div>
-            <div className="flex-grow overflow-y-auto p-4 space-y-8">
+            <div className="flex-grow overflow-y-auto p-4 space-y-6">
                 {renderContent()}
             </div>
         </div>
