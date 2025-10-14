@@ -211,7 +211,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                         </div>
                         
                         {/* Center Panel */}
-                        <div className="flex-grow bg-kiosk-panel/80 backdrop-blur-sm transition-all duration-300 ease-in-out rounded-2xl flex flex-col min-h-0 relative">
+                        <div className="flex-grow bg-kiosk-panel/80 backdrop-blur-sm transition-all duration-300 ease-in-out rounded-2xl flex flex-col min-h-0 relative border border-white/50">
                             <div className="absolute top-3 right-3 z-20">
                                 <FocusModeToggle isFocusMode={isFocusMode} onToggle={() => setIsFocusMode(!isFocusMode)} language={language}/>
                             </div>

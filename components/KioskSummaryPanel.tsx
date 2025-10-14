@@ -208,8 +208,8 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, allG
     };
 
     return (
-        <div className="bg-kiosk-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
-            <div className="flex items-center gap-3 p-4 rounded-t-xl bg-white flex-shrink-0 border-b border-slate-200">
+        <div className="border border-slate-200 rounded-2xl shadow-sm bg-white flex flex-col h-full min-h-0">
+            <div className="flex items-center gap-3 p-4 md:p-5 rounded-t-2xl bg-white flex-shrink-0 border-b border-slate-200">
                 <div className="bg-brand-primary-light p-2 rounded-lg">
                     <ScheduleIcon className="h-6 w-6 text-brand-primary" />
                 </div>
@@ -217,7 +217,7 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, allG
                     {language === 'ar' ? 'الجدول المباشر' : 'Live Schedule'}
                 </h2>
             </div>
-            <div className="flex-grow overflow-y-auto p-4 space-y-6">
+            <div className="flex-grow overflow-y-auto p-4 md:p-5 space-y-6">
                 {renderContent()}
             </div>
         </div>

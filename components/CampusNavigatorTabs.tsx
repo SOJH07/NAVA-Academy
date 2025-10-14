@@ -25,27 +25,30 @@ const ClockIconSearch = () => <svg xmlns="http://www.w3.org/2000/svg" className=
 
 const getRoomIcon = (type: RoomType) => {
     switch (type) {
-        case 'Classroom': return <ClassroomIcon className="h-3.5 w-3.5" />;
-        case 'Lab': return <LabIcon className="h-3.5 w-3.5" />;
-        case 'Workshop': return <WorkshopIcon className="h-3.5 w-3.5" />;
-        default: return <FacilityIcon className="h-3.5 w-3.5 text-slate-400" />;
+        case 'Classroom': return <ClassroomIcon className="h-4 w-4 text-status-professional" />;
+        case 'Lab': return <LabIcon className="h-4 w-4 text-status-industrial" />;
+        case 'Workshop': return <WorkshopIcon className="h-4 w-4 text-status-tech" />;
+        default: return <FacilityIcon className="h-4 w-4 text-slate-400" />;
     }
 };
 
 const getStatusInfo = (status?: RoomStatus) => {
-    if (!status) return { dot: 'bg-slate-400', tooltip: 'Status Unknown' };
+    if (!status) return { dot: 'bg-green-400 shadow-glow-sm animate-glow', tooltip: 'Available' };
     switch (status.status) {
-        case 'inClass': return { dot: 'bg-emerald-500 animate-pulse', tooltip: `In Class • ${status.group} (${status.instructor})` };
-        case 'staffOnly': return { dot: 'is-lock', tooltip: 'Staff Only' };
-        default: return { dot: 'bg-slate-400', tooltip: 'Empty' };
+        case 'inClass': return { dot: 'bg-blue-500 animate-pulse-slow', tooltip: `In Class • ${status.group} • ${status.period}` };
+        case 'break': return { dot: 'bg-amber-400 animate-pulse-slow', tooltip: 'On Break' };
+        case 'maintenance': return { dot: 'bg-red-500', tooltip: 'Maintenance' };
+        case 'staffOnly': return { dot: 'bg-slate-500', tooltip: 'Staff Only' };
+        default: return { dot: 'bg-green-400 shadow-glow-sm animate-glow', tooltip: 'Available' };
     }
 };
 
-const RoomPill: React.FC<{ cell: Cell; }> = ({ cell }) => {
+const RoomPill: React.FC<{ cell: Cell; liveClasses: LiveClass[] }> = ({ cell, liveClasses }) => {
     const { selectedGroup, setSelectedGroup, selectedRoom, setSelectedRoom } = useKioskStore();
     const roomStatus = useKioskStore(state => state.roomStatusById[cell.code]);
     
     const isInteractive = cell.type !== 'Facility';
+    const statusInfo = getStatusInfo(roomStatus);
 
     const isSelectedByRoom = selectedRoom?.name === cell.code;
     const isSelectedByGroup = selectedGroup && roomStatus?.group === selectedGroup;
@@ -65,13 +68,19 @@ const RoomPill: React.FC<{ cell: Cell; }> = ({ cell }) => {
     };
     
     if (roomStatus?.status === 'inClass' && roomStatus.group) {
+        const liveClass = liveClasses.find(lc => lc.group === roomStatus.group);
+        let trackBorderColor = 'border-slate-400';
+        if (liveClass?.trackType === 'industrial') trackBorderColor = 'border-status-industrial';
+        else if (liveClass?.trackType === 'service') trackBorderColor = 'border-status-tech';
+
         return (
             <button
                 onClick={handleClick}
                 title={`In Class: ${roomStatus.group} in ${cell.code}`}
-                className={`w-full h-[32px] pl-2 pr-3 rounded-lg flex items-center gap-2 border-l-4 border-emerald-500 transition-all duration-200 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400' : 'bg-white hover:bg-slate-50'}`}
+                className={`w-full h-[36px] px-3 rounded-full flex items-center justify-between gap-2 border-l-4 ${trackBorderColor} transition-all duration-300 ease-out transform hover:-translate-y-0.5 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400 shadow-lg' : 'bg-white hover:bg-slate-50 shadow-md'}`}
             >
-                <div className="flex-grow min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
+                    <div className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${statusInfo.dot}`}></div>
                     <p className="font-bold text-xs text-slate-800 truncate">{roomStatus.group}</p>
                 </div>
                 <p className="text-[10px] text-slate-500 font-semibold flex-shrink-0">{cell.code.replace('LAP ','').replace('Computer Lab-','Comp ')}</p>
@@ -81,12 +90,13 @@ const RoomPill: React.FC<{ cell: Cell; }> = ({ cell }) => {
     
     return (
         <button
-            onClick={handleClick}
             disabled={!isInteractive}
+            onClick={handleClick}
             title={cell.code}
-            className={`w-full h-[32px] px-3 rounded-lg flex items-center gap-2 transition-all duration-200 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400' : 'bg-slate-100 hover:bg-slate-200'} ${isInteractive ? 'cursor-pointer' : 'cursor-default opacity-70'}`}
+            className={`w-full h-[36px] px-3 rounded-full flex items-center gap-2 border transition-all duration-300 ease-out transform hover:-translate-y-0.5 ${isSelected ? 'bg-sky-100 ring-2 ring-sky-400 shadow-lg' : 'bg-slate-100 hover:bg-slate-200 shadow-sm'} ${isInteractive ? 'cursor-pointer' : 'cursor-default opacity-70'}`}
         >
-            <div className="text-slate-500">{getRoomIcon(cell.type)}</div>
+            <div className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${statusInfo.dot}`}></div>
+            {getRoomIcon(cell.type)}
             <p className="font-semibold text-xs text-slate-600 truncate">{cell.code}</p>
         </button>
     );
@@ -217,11 +227,11 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
             );
         }
         return (
-            <div className="grid grid-cols-2 auto-rows-[32px] gap-2.5">
+            <div key={selectedFloor} className="grid grid-cols-2 auto-rows-[36px] gap-2.5 animate-fade-in">
                 {activeFloorData.rows.map((row, rowIndex) => (
                     <React.Fragment key={rowIndex}>
-                        <RoomPill cell={row[0]}/>
-                        <RoomPill cell={row[1]}/>
+                        <RoomPill cell={row[0]} liveClasses={liveClasses}/>
+                        <RoomPill cell={row[1]} liveClasses={liveClasses}/>
                     </React.Fragment>
                 ))}
             </div>
@@ -229,8 +239,8 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
     };
 
     return (
-        <div className="bg-bg-panel rounded-xl shadow-xl flex flex-col h-full min-h-0">
-             <div className="flex items-center gap-3 p-4 rounded-t-xl bg-white flex-shrink-0 border-b border-slate-200">
+        <div className="border border-slate-200 rounded-2xl shadow-sm bg-white flex flex-col h-full min-h-0">
+             <div className="flex items-center gap-3 p-4 md:p-5 rounded-t-2xl bg-white flex-shrink-0 border-b border-slate-200">
                 <div className="bg-brand-primary-light p-2 rounded-lg">
                     <MapPinIcon className="h-6 w-6 text-brand-primary" />
                 </div>
@@ -239,14 +249,14 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
                 </h2>
             </div>
 
-            <div className="p-4 flex-grow flex flex-col min-h-0">
+            <div className="p-4 md:p-5 flex-grow flex flex-col min-h-0">
                 {!showResults && (
-                    <div className="flex-shrink-0 bg-slate-100 p-1 rounded-lg flex items-center justify-center gap-1 mb-3">
+                    <div className="flex-shrink-0 bg-slate-100 p-1 rounded-xl flex items-center justify-center gap-1 mb-4">
                         {(["Ground", "1st", "2nd", "3rd"] as const).map((floorName) => (
                             <button 
                                 key={floorName} 
                                 onClick={() => setSelectedFloor(floorName)} 
-                                className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors w-full ${selectedFloor === floorName ? 'bg-brand-primary-light text-text-primary shadow-sm' : 'text-text-muted hover:bg-slate-200'}`}
+                                className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-colors w-full ${selectedFloor === floorName ? 'bg-white text-kiosk-primary shadow' : 'text-kiosk-text-muted hover:bg-white/60'}`}
                             >
                                 {floorName}
                             </button>
@@ -257,7 +267,7 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
                     {renderMainContent()}
                 </div>
             </div>
-             <div className="flex-shrink-0 mt-auto p-4 border-t border-kiosk-border">
+             <div className="flex-shrink-0 mt-auto p-4 md:p-5 border-t border-kiosk-border">
                 <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-kiosk-text-muted" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" /></svg>

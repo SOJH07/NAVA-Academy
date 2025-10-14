@@ -9,7 +9,7 @@ import parse from 'date-fns/parse';
 import { pacingScheduleData } from '../data/pacingSchedule';
 
 // Icons
-const BookIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg>;
+const BookIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-kiosk-primary" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg>;
 const LearningIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-kiosk-primary" viewBox="0 0 20 20" fill="currentColor"><path d="M10.21 4.21a1 1 0 00-1.42 0l-5 5a1 1 0 000 1.42L8.5 15.34a1 1 0 001.42 0l5-5a1 1 0 000-1.42l-4.71-4.71z" /></svg>;
 const GearIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
 const WrenchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.83-5.83M11.42 15.17A3 3 0 017.25 21m4.17-5.83c.02-.02.04-.04.06-.06a3 3 0 00-5.83 4.17M11.42 15.17c-.02.02-.04.04-.06.06m0 0a3 3 0 01-5.83 4.17M12.75 3.75l-4.125 4.125a3 3 0 00-4.17 5.83l-1.48 1.48a.75.75 0 000 1.06l6.125 6.125a.75.75 0 001.06 0l1.48-1.48a3 3 0 005.83-4.17l4.125-4.125a.75.75 0 00-1.06-1.06Z" /></svg>;
@@ -75,14 +75,12 @@ interface InfoCardProps {
 }
 
 const InfoCard: React.FC<InfoCardProps> = ({ title, icon, children, bodyClassName = "", containerClassName = "" }) => (
-    <div className={`bg-white rounded-xl border border-kiosk-border shadow-md flex flex-col h-full min-h-0 ${containerClassName}`}>
-        <h3 className="flex items-center gap-3 font-bold text-base text-black p-3 flex-shrink-0 bg-white rounded-t-xl border-b border-kiosk-border">
-            <div className="text-brand-primary">
-                {React.cloneElement(icon, { className: "h-5 w-5" })}
-            </div>
+    <div className={`border border-slate-200 rounded-2xl shadow-sm bg-white flex flex-col h-full min-h-0 ${containerClassName}`}>
+        <h3 className="flex items-center gap-3 font-bold text-base text-black p-4 md:p-5 flex-shrink-0 bg-brand-primary-light rounded-t-2xl border-b border-kiosk-border">
+            {React.cloneElement(icon, { className: "h-5 w-5" })}
             <span className="uppercase tracking-wider">{title}</span>
         </h3>
-        <div className={`flex-grow p-4 min-h-0 ${bodyClassName}`}>
+        <div className={`flex-grow p-4 md:p-5 min-h-0 ${bodyClassName}`}>
             {children}
         </div>
     </div>

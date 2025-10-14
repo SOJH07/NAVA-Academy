@@ -91,7 +91,7 @@ const KioskHeader: React.FC<KioskHeaderProps> = ({ onExitKiosk, language, setLan
     const nowMinutes = timeToMinutes(`${now.getHours()}:${now.getMinutes()}`);
 
     return (
-        <header className="flex-shrink-0 bg-bg-panel p-4 pb-0 border border-slate-200 shadow-lg rounded-2xl flex flex-col">
+        <header className="flex-shrink-0 bg-bg-panel p-4 pb-0 border border-kiosk-border shadow-lg rounded-2xl flex flex-col">
             {/* Top Row */}
             <div className="flex items-center justify-between">
                 {/* Left Section: Date */}

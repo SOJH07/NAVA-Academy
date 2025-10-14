@@ -72,7 +72,7 @@ const AnnouncementsMarquee: React.FC<AnnouncementsMarqueeProps> = ({ language })
     const author = currentBulletin.author;
 
     return (
-        <div className="w-full bg-slate-50/50 backdrop-blur-sm p-4 rounded-xl border border-slate-200/80 shadow-md flex flex-col justify-center min-h-[140px]">
+        <div className="w-full border border-slate-200 rounded-2xl shadow-sm bg-white p-4 md:p-5 flex flex-col justify-center min-h-[140px]">
             <div 
                 className={`transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}
                 dir={isAr ? 'rtl' : 'ltr'}
