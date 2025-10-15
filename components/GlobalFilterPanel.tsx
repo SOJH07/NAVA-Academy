@@ -24,7 +24,7 @@ const FilterPill: React.FC<{ label: string; onClick: () => void; isActive: boole
         className={`px-3 py-1.5 text-sm rounded-lg transition-all border ${
             isActive
                 ? 'bg-brand-primary border-brand-primary text-white font-semibold shadow-sm'
-                : 'bg-white dark:bg-dark-panel border-slate-300 dark:border-dark-border text-text-secondary dark:text-dark-text-secondary hover:bg-bg-panel-hover dark:hover:bg-dark-panel-hover hover:border-slate-400'
+                : 'bg-white border-slate-300 text-text-secondary hover:bg-bg-panel-hover hover:border-slate-400'
         } ${className}`}
     >
         {label}
@@ -32,8 +32,8 @@ const FilterPill: React.FC<{ label: string; onClick: () => void; isActive: boole
 );
 
 const FilterSection: React.FC<{ title: string; children: React.ReactNode, initiallyOpen?: boolean }> = ({ title, children, initiallyOpen = false }) => (
-    <details className="py-4 border-b border-slate-200 dark:border-dark-border" open={initiallyOpen}>
-        <summary className="font-semibold text-text-secondary dark:text-dark-text-secondary cursor-pointer hover:text-text-primary dark:hover:text-dark-text-primary transition-colors px-4 list-none flex justify-between items-center">
+    <details className="py-4 border-b border-slate-200" open={initiallyOpen}>
+        <summary className="font-semibold text-text-secondary cursor-pointer hover:text-text-primary transition-colors px-4 list-none flex justify-between items-center">
             {title}
             <svg className="w-4 h-4 transition-transform transform details-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
         </summary>
@@ -105,12 +105,12 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
             <aside 
                 className={`fixed top-0 right-0 h-full bg-bg-panel w-full max-w-sm z-50 shadow-xl flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
             >
-                <header className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-200 dark:border-dark-border">
-                    <h3 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Filters</h3>
+                <header className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-200">
+                    <h3 className="text-xl font-bold text-text-primary">Filters</h3>
                     <div className="flex items-center gap-4">
                          <button onClick={clearFilters} className="text-sm text-red-500 hover:text-red-700 font-semibold transition-colors">Clear All</button>
-                        <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-dark-panel-hover">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-text-muted dark:text-dark-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
                 </header>
@@ -121,11 +121,11 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                         ) : (
                             <ul className="space-y-2">
                                 {presets.map(preset => (
-                                    <li key={preset.id} className="flex items-center justify-between gap-2 p-2 pr-1 rounded-lg bg-slate-100 dark:bg-dark-panel">
-                                        <span className="font-semibold text-text-primary dark:text-dark-text-primary truncate">{preset.name}</span>
+                                    <li key={preset.id} className="flex items-center justify-between gap-2 p-2 pr-1 rounded-lg bg-slate-100">
+                                        <span className="font-semibold text-text-primary truncate">{preset.name}</span>
                                         <div className="flex items-center gap-1 flex-shrink-0">
-                                            <button onClick={() => handleApplyPreset(preset)} className="px-3 py-1 text-sm font-bold text-brand-primary bg-white dark:bg-dark-panel-hover border border-slate-200 dark:border-dark-border rounded-md hover:bg-brand-primary-light transition-colors">Apply</button>
-                                            <button onClick={() => deletePreset(preset.id)} className="p-2 text-red-500 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors" title={`Delete "${preset.name}"`}>
+                                            <button onClick={() => handleApplyPreset(preset)} className="px-3 py-1 text-sm font-bold text-brand-primary bg-white border border-slate-200 rounded-md hover:bg-brand-primary-light transition-colors">Apply</button>
+                                            <button onClick={() => deletePreset(preset.id)} className="p-2 text-red-500 rounded-md hover:bg-red-100 transition-colors" title={`Delete "${preset.name}"`}>
                                                 <TrashIcon />
                                             </button>
                                         </div>
@@ -136,7 +136,7 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                     </FilterSection>
                     <FilterSection title="General">
                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                            <span className="font-medium text-text-secondary dark:text-dark-text-secondary text-sm w-24">Company:</span>
+                            <span className="font-medium text-text-secondary text-sm w-24">Company:</span>
                             <div className="flex flex-wrap gap-2">
                                 {allCompanies.map(c => <FilterPill key={c} label={c} isActive={filters.companies.includes(c)} onClick={() => toggleArrayFilter('companies', c)} />)}
                             </div>
@@ -146,15 +146,15 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                     <FilterSection title="Academic Performance">
                         <div className="space-y-4">
                             <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">GPA Range</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">GPA Range</h5>
                                 <div className="flex items-center gap-2">
-                                    <input type="number" value={filters.gpaRange[0]} onChange={e => handleGpaChange('min', e.target.value)} min="0" max="4" step="0.1" className="w-full p-2 border border-slate-300 dark:border-dark-border rounded-md bg-white dark:bg-dark-body" />
-                                    <span className="text-text-muted dark:text-dark-text-muted">-</span>
-                                    <input type="number" value={filters.gpaRange[1]} onChange={e => handleGpaChange('max', e.target.value)} min="0" max="4" step="0.1" className="w-full p-2 border border-slate-300 dark:border-dark-border rounded-md bg-white dark:bg-dark-body" />
+                                    <input type="number" value={filters.gpaRange[0]} onChange={e => handleGpaChange('min', e.target.value)} min="0" max="4" step="0.1" className="w-full p-2 border border-slate-300 rounded-md bg-white" />
+                                    <span className="text-text-muted">-</span>
+                                    <input type="number" value={filters.gpaRange[1]} onChange={e => handleGpaChange('max', e.target.value)} min="0" max="4" step="0.1" className="w-full p-2 border border-slate-300 rounded-md bg-white" />
                                 </div>
                             </div>
                             <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">Technical Grades</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">Technical Grades</h5>
                                 <div className="flex flex-wrap gap-2">
                                     {Object.entries(allTechnicalGrades).map(([grade, label]) => 
                                         <FilterPill key={grade} label={`${label} (${grade})`} isActive={filters.technicalGrades.includes(grade)} onClick={() => toggleArrayFilter('technicalGrades', grade)} />
@@ -162,13 +162,13 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                                 </div>
                             </div>
                              <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">Performance Segment</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">Performance Segment</h5>
                                 <div className="flex flex-wrap gap-2">
                                     {allPerformanceSegments.map(segment => <FilterPill key={segment} label={segment} isActive={filters.performanceSegments.includes(segment)} onClick={() => toggleArrayFilter('performanceSegments', segment)} />)}
                                 </div>
                             </div>
                              <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">CEFR Level</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">CEFR Level</h5>
                                 <div className="flex flex-wrap gap-2">
                                     {allAptisCEFRLevels.map(level => <FilterPill key={level} label={level} isActive={filters.aptisCEFRLevels.includes(level)} onClick={() => toggleArrayFilter('aptisCEFRLevels', level)} />)}
                                 </div>
@@ -178,7 +178,7 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
 
                     <FilterSection title="Technical Program">
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                            <span className="font-medium text-text-secondary dark:text-dark-text-muted text-sm w-24">Tech Track:</span>
+                            <span className="font-medium text-text-secondary text-sm w-24">Tech Track:</span>
                              <div className="flex flex-wrap gap-2">
                                 {allTechTracks.map(t => <FilterPill key={t} label={t} isActive={filters.techTracks.includes(t)} onClick={() => toggleArrayFilter('techTracks', t)} />)}
                             </div>
@@ -188,7 +188,7 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                     <FilterSection title="Live Operations">
                          <div className="space-y-4">
                              <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">Status</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">Status</h5>
                                 <div className="flex flex-wrap gap-2">
                                     <FilterPill label="All" isActive={filters.status === 'all'} onClick={() => setFilters(f => ({...f, status: 'all'}))} />
                                     <FilterPill label="Live" isActive={filters.status === 'live'} onClick={() => setFilters(f => ({...f, status: 'live'}))} />
@@ -196,7 +196,7 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                                 </div>
                             </div>
                              <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">Session Type</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">Session Type</h5>
                                 <div className="flex flex-wrap gap-2">
                                     <FilterPill label="All" isActive={filters.sessionType === 'all'} onClick={() => setFilters(f => ({...f, sessionType: 'all'}))} />
                                     <FilterPill label="Tech" isActive={filters.sessionType === 'tech'} onClick={() => setFilters(f => ({...f, sessionType: 'tech'}))} />
@@ -209,13 +209,13 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                     <FilterSection title="Specific Groups & Classrooms">
                         <div className="space-y-4">
                              <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">Technical Groups</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">Technical Groups</h5>
                                 <div className="flex flex-wrap gap-1.5">
                                     {allTechGroups.map(g => <FilterPill key={g} label={g} isActive={filters.techGroups.includes(g)} onClick={() => toggleArrayFilter('techGroups', g)} />)}
                                 </div>
                             </div>
                             <div>
-                                <h5 className="font-medium text-text-secondary dark:text-dark-text-muted text-sm mb-2">Classrooms</h5>
+                                <h5 className="font-medium text-text-secondary text-sm mb-2">Classrooms</h5>
                                 <div className="flex flex-wrap gap-1.5">
                                     {allClassrooms.map(c => <FilterPill key={c} label={c} isActive={filters.classrooms.includes(c)} onClick={() => toggleArrayFilter('classrooms', c)} />)}
                                 </div>
@@ -223,15 +223,15 @@ const GlobalFilterPanel: React.FC<FilterPanelProps> = ({ isOpen, onClose, filter
                         </div>
                     </FilterSection>
                 </div>
-                <footer className="flex-shrink-0 p-4 border-t border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-panel space-y-2">
-                    <h4 className="font-semibold text-text-secondary dark:text-dark-text-secondary text-sm">Save Current Filter Set</h4>
+                <footer className="flex-shrink-0 p-4 border-t border-slate-200 bg-slate-50 space-y-2">
+                    <h4 className="font-semibold text-text-secondary text-sm">Save Current Filter Set</h4>
                     <div className="flex gap-2">
                         <input 
                             type="text" 
                             placeholder="Preset Name (e.g., Ceer Industrial)" 
                             value={newPresetName}
                             onChange={(e) => setNewPresetName(e.target.value)}
-                            className="flex-grow bg-white dark:bg-dark-body border border-slate-300 dark:border-dark-border rounded-lg py-2 px-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="flex-grow bg-white border border-slate-300 rounded-lg py-2 px-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
                         />
                         <button
                             onClick={handleSavePreset}

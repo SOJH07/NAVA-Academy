@@ -18,16 +18,16 @@ const SelectionSummary: React.FC<SelectionSummaryProps> = ({ students, totalStud
     const { clearFilters } = useAppStore();
 
     return (
-        <div className="bg-blue-100 dark:bg-blue-900/50 border-l-4 border-blue-500 text-blue-800 dark:text-blue-200 p-4 rounded-lg flex justify-between items-center animate-fade-in">
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-lg flex justify-between items-center animate-fade-in">
             <div className="flex items-center gap-3">
-                <InfoIcon className="h-6 w-6 text-blue-500" />
+                <InfoIcon className="h-6 w-6 text-green-500" />
                 <p className="font-semibold">
                     Showing data for {students.length} of {totalStudents} students based on active filters.
                 </p>
             </div>
             <button 
                 onClick={clearFilters}
-                className="font-bold text-sm bg-white/50 dark:bg-blue-900/60 text-blue-700 dark:text-blue-100 px-4 py-2 rounded-lg hover:bg-white/80 dark:hover:bg-blue-900/80 transition-colors"
+                className="font-bold text-sm bg-white/50 text-green-700 px-4 py-2 rounded-lg hover:bg-white/80 transition-colors"
             >
                 Clear Filters
             </button>

@@ -6,7 +6,7 @@ import { useLiveStatus } from '../hooks/useLiveStatus';
 const TechIcon: React.FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> );
 const ProfessionalIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg>;
 const CoffeeIcon: React.FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 11h16M4 11a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 01-2 2m-8 5v5m-4-5v5m8-5v5M4 16h16" /></svg> );
-const ClassIcon: React.FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-1.082.186l-6.5 5.5a1 1 0 00-.312.746V16a1 1 0 001 1h2.158a1 1 0 00.863-.486l1.842-3.223a1 1 0 011.71 0l1.842 3.223a1 1 0 00.863.486H15a1 1 0 001-1V8.512a1 1 0 00-.312-.746l-6.5-5.5a1 1 0 00-.794-.186zM12 10a2 2 0 10-4 0 2 2 0 004 0z" /></svg>);
+const ClassIcon: React.FC<{className?: string}> = ({className}) => ( <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-1.082.186l-6.5 5.5a1 1 0 00-.312.746V16a1 1 0 001 1h2.158a1 1 0 00.863-.486l1.842-3.223a1 1 0 011.71 0l1.842 3.223a1 1 0 00.863.486H15a1 1 0 001-1V8.512a1 1 0 00-.312-.746l-6.5-5.5a1 1 0 00-.794-.186zM12 10a2 2 0 10-4 0 2 2 0 004 0z" /></svg> );
 
 
 interface LiveStatusSidebarProps {
@@ -194,7 +194,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
         const offset = circ - (progress / 100) * circ;
 
         return (
-            <aside className={`bg-bg-panel border-l border-slate-200 p-4 flex flex-col items-center flex-shrink-0 h-full transition-all duration-300 ease-in-out w-20`}>
+            <aside className={`bg-panel border-l border-slate-200 p-4 flex flex-col items-center flex-shrink-0 h-full transition-all duration-300 ease-in-out w-20`}>
                 {tooltip && <Tooltip content={tooltip.content} position={tooltip.position} />}
                 <div className="flex-grow overflow-y-auto -mx-4 w-full flex flex-col items-center">
                     <div className="relative py-2">
@@ -216,7 +216,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
                                 const types = new Set(assignmentsForPeriod.map(a => a.type));
                                 
                                 IconToShow = ClassIcon;
-                                finalIconColor = isPast ? 'text-slate-400' : 'text-text-muted';
+                                finalIconColor = isPast ? 'text-text-muted' : 'text-text-secondary';
 
                                 if(types.size === 1) {
                                     if(types.has('Technical')) {
@@ -229,7 +229,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
                                 }
                             } else { // Break
                                 IconToShow = CoffeeIcon;
-                                finalIconColor = isPast ? 'text-slate-400' : 'text-status-break';
+                                finalIconColor = isPast ? 'text-text-muted' : 'text-status-break';
                             }
                             
                             const periodIconContent = <IconToShow className={`h-6 w-6 transition-colors duration-300 ${finalIconColor}`} />;
@@ -252,7 +252,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${isPast ? 'bg-slate-200' : 'bg-slate-100'}`}>
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${isPast ? 'bg-slate-50' : 'bg-slate-100'}`}>
                                             {periodIconContent}
                                         </div>
                                     )}
@@ -273,7 +273,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
 
 
     return (
-        <aside className={`bg-bg-panel border-l border-slate-200 p-4 flex flex-col flex-shrink-0 h-full transition-all duration-300 ease-in-out w-80`}>
+        <aside className={`bg-panel border-l border-slate-200 p-4 flex flex-col flex-shrink-0 h-full transition-all duration-300 ease-in-out w-80`}>
             {/* Header */}
             <div className="flex-shrink-0 pb-4">
                 <div className="flex justify-between items-center">
@@ -324,7 +324,7 @@ const LiveStatusSidebar: React.FC<LiveStatusSidebarProps> = ({ liveStatusData, d
                             return (
                                 <li key={period.name} className={`relative p-3 rounded-lg transition-all duration-300 ${isPast && !isLive ? 'opacity-50' : ''}`}>
                                     {/* Timeline Dot */}
-                                    <div className={`absolute top-1/2 -translate-y-1/2 left-[11px] w-4 h-4 rounded-full border-4 border-bg-panel z-10 ${isLive ? 'bg-brand-primary' : (isPast ? 'bg-slate-400' : 'bg-slate-300')}`}></div>
+                                    <div className={`absolute top-1/2 -translate-y-1/2 left-[11px] w-4 h-4 rounded-full border-4 border-panel z-10 ${isLive ? 'bg-brand-primary' : (isPast ? 'bg-text-muted' : 'bg-text-secondary')}`}></div>
                                     
                                     <div className={`pl-8 ${isLive ? 'pb-4' : ''}`}>
                                         <div className="flex items-center justify-between">

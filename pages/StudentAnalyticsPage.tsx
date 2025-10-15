@@ -15,8 +15,7 @@ import StudentDetailModal from '../components/StudentDetailModal';
 
 
 const NAVA_UNITS: (keyof FoundationGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
-const COLORS = ['#707F98', '#62B766', '#f59e0b', '#E77373', '#3b82f6'];
-// FIX: Added GRADE_COLORS constant, which is necessary for the new stacked bar chart.
+const COLORS = ['#707F98', '#62B766', '#f59e0b', '#E77373', '#1D4CB6'];
 const GRADE_COLORS: { [key: string]: string } = {
     'D': '#10b981', // Emerald-500
     'M': '#3b82f6', // Blue-500
@@ -30,8 +29,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         const reversedPayload = [...payload].reverse();
         return (
-            <div className="bg-bg-panel dark:bg-dark-panel p-2 border border-slate-300 dark:border-dark-border rounded-lg shadow-sm">
-                <p className="font-semibold text-text-primary dark:text-dark-text-primary">{`${label}`}</p>
+            <div className="bg-panel p-2 border border-slate-300 rounded-lg shadow-sm">
+                <p className="font-semibold text-text-primary">{`${label}`}</p>
                 {reversedPayload.map((pld: any) => (
                      <p key={pld.dataKey} style={{ color: pld.fill }}>{`${pld.name}: ${typeof pld.value === 'number' ? pld.value.toFixed(0) : pld.value}`}</p>
                 ))}
@@ -45,10 +44,10 @@ const CustomScatterTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-bg-panel dark:bg-dark-panel p-2 border border-slate-300 dark:border-dark-border rounded-lg shadow-sm text-sm">
-        <p className="font-bold text-text-primary dark:text-dark-text-primary">{data.name}</p>
-        <p className="text-text-secondary dark:text-dark-text-secondary">APTIS: {data.aptis}</p>
-        <p className="text-text-secondary dark:text-dark-text-secondary">NAVA Avg: {data.nava.toFixed(1)}</p>
+      <div className="bg-panel p-2 border border-slate-300 rounded-lg shadow-sm text-sm">
+        <p className="font-bold text-text-primary">{data.name}</p>
+        <p className="text-text-secondary">APTIS: {data.aptis}</p>
+        <p className="text-text-secondary">NAVA Avg: {data.nava.toFixed(1)}</p>
       </div>
     );
   }
@@ -56,25 +55,25 @@ const CustomScatterTooltip = ({ active, payload }: any) => {
 };
 
 const KpiCard: React.FC<{ title: string; value: string | number; }> = ({ title, value }) => (
-    <div className="bg-slate-100 dark:bg-dark-panel p-4 rounded-lg text-center shadow-sm border border-slate-200 dark:border-dark-border">
-        <p className="text-3xl font-extrabold text-brand-secondary dark:text-brand-primary">{value}</p>
-        <p className="text-sm font-semibold text-text-muted dark:text-dark-text-muted">{title}</p>
+    <div className="bg-slate-100 p-4 rounded-lg text-center shadow-sm border border-slate-200">
+        <p className="text-3xl font-extrabold text-brand-primary">{value}</p>
+        <p className="text-sm font-semibold text-text-muted">{title}</p>
     </div>
 );
 
 const StudentList: React.FC<{ title: string; students: AnalyzedStudent[]; }> = ({ title, students }) => (
-    <details className="bg-slate-50 dark:bg-dark-panel/50 p-3 rounded-lg">
-        <summary className="font-semibold cursor-pointer text-text-primary dark:text-dark-text-secondary">{title} ({students.length})</summary>
+    <details className="bg-slate-50 p-3 rounded-lg">
+        <summary className="font-semibold cursor-pointer text-text-primary">{title} ({students.length})</summary>
         <ul className="mt-2 pl-4 max-h-48 overflow-y-auto text-sm space-y-1">
-            {students.map(s => <li key={s.navaId} className="text-text-secondary dark:text-dark-text-muted">{s.fullName} ({s.navaId})</li>)}
+            {students.map(s => <li key={s.navaId} className="text-text-secondary">{s.fullName} ({s.navaId})</li>)}
         </ul>
     </details>
 );
 
 const SortIcon: React.FC<{ direction?: 'ascending' | 'descending' }> = ({ direction }) => {
     if (!direction) return <svg className="h-4 w-4 text-slate-400 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>;
-    if (direction === 'ascending') return <svg className="h-4 w-4 text-text-primary dark:text-dark-text-primary inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>;
-    return <svg className="h-4 w-4 text-text-primary dark:text-dark-text-primary inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
+    if (direction === 'ascending') return <svg className="h-4 w-4 text-text-primary inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>;
+    return <svg className="h-4 w-4 text-text-primary inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>;
 };
 
 // --- TAB COMPONENTS ---
@@ -102,8 +101,8 @@ const OverviewTab: React.FC<{ students: AnalyzedStudent[] }> = ({ students }) =>
 
     return (
         <div className="space-y-6 animate-fade-in">
-             <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm p-6">
-                 <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary mb-4">Performance Snapshot</h2>
+             <div className="bg-panel border border-slate-200 rounded-lg shadow-sm p-6">
+                 <h2 className="text-xl font-bold text-text-primary mb-4">Performance Snapshot</h2>
                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                     <KpiCard title="Filtered Students" value={overallMetrics.studentCount.toString()} />
                     <KpiCard title="Avg. NAVA Score" value={overallMetrics.navaAverage.toFixed(1)} />
@@ -112,7 +111,6 @@ const OverviewTab: React.FC<{ students: AnalyzedStudent[] }> = ({ students }) =>
                     <KpiCard title="Total 'UC' Grades" value={overallMetrics.totalUcCount.toString()} />
                  </div>
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                     {/* FIX: Replaced incorrect usage of GradeDistributionChart with a correctly configured stacked BarChart. */}
                      <ChartContainer title="NAVA Technical Grade Distribution by Unit">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={technicalGradeDistribution} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -132,10 +130,10 @@ const OverviewTab: React.FC<{ students: AnalyzedStudent[] }> = ({ students }) =>
                  </div>
             </div>
             <GradeDistributionChart data={overallGradeDistribution} />
-            <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm">
-                <div className="p-4 border-b border-slate-200 dark:border-dark-border">
-                    <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Deep Dive Analysis</h2>
-                    <div className="mt-2 flex items-center gap-2 flex-wrap"><button onClick={() => setActiveDeepDiveTab('companies')} className={`px-4 py-2 text-sm font-semibold rounded-md ${activeDeepDiveTab === 'companies' ? 'bg-brand-secondary text-white' : 'bg-slate-100 dark:bg-dark-panel-hover'}`}>Companies</button><button onClick={() => setActiveDeepDiveTab('segments')} className={`px-4 py-2 text-sm font-semibold rounded-md ${activeDeepDiveTab === 'segments' ? 'bg-brand-secondary text-white' : 'bg-slate-100 dark:bg-dark-panel-hover'}`}>Segments</button><button onClick={() => setActiveDeepDiveTab('correlation')} className={`px-4 py-2 text-sm font-semibold rounded-md ${activeDeepDiveTab === 'correlation' ? 'bg-brand-secondary text-white' : 'bg-slate-100 dark:bg-dark-panel-hover'}`}>Correlation</button></div>
+            <div className="bg-panel border border-slate-200 rounded-lg shadow-sm">
+                <div className="p-4 border-b border-slate-200">
+                    <h2 className="text-xl font-bold text-text-primary">Deep Dive Analysis</h2>
+                    <div className="mt-2 flex items-center gap-2 flex-wrap"><button onClick={() => setActiveDeepDiveTab('companies')} className={`px-4 py-2 text-sm font-semibold rounded-md ${activeDeepDiveTab === 'companies' ? 'bg-brand-secondary text-white' : 'bg-slate-100'}`}>Companies</button><button onClick={() => setActiveDeepDiveTab('segments')} className={`px-4 py-2 text-sm font-semibold rounded-md ${activeDeepDiveTab === 'segments' ? 'bg-brand-secondary text-white' : 'bg-slate-100'}`}>Segments</button><button onClick={() => setActiveDeepDiveTab('correlation')} className={`px-4 py-2 text-sm font-semibold rounded-md ${activeDeepDiveTab === 'correlation' ? 'bg-brand-secondary text-white' : 'bg-slate-100'}`}>Correlation</button></div>
                 </div>
                 <div className="p-6">
                     {activeDeepDiveTab === 'companies' && <ChartContainer title="Average Scores by Sponsoring Company"><BarChart data={[{name: 'Ceer', ...companyMetrics.Ceer}, {name: 'Lucid', ...companyMetrics.Lucid}]}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" /><YAxis domain={[0, 100]} /><Tooltip content={<CustomTooltip />} /><Legend /><Bar dataKey="nava" name="Avg. NAVA" fill={COLORS[0]} /><Bar dataKey="aptis" name="Avg. APTIS" fill={COLORS[1]} /></BarChart></ChartContainer>}
@@ -177,12 +175,12 @@ const GpaRankingsTab: React.FC<{ students: AnalyzedStudent[] }> = ({ students })
 
     const Row = ({ index, style }: { index: number, style: React.CSSProperties }) => {
         const student = sortedStudents[index];
-        return <div style={style} className={`flex items-center text-sm p-2 border-b border-slate-100 dark:border-dark-panel-hover ${index % 2 === 0 ? 'bg-slate-50 dark:bg-dark-panel/50' : ''}`}><div className="w-2/5 font-semibold text-text-primary dark:text-dark-text-primary">{student.fullName} ({student.navaId})</div><div className="w-1/5 text-text-secondary dark:text-dark-text-secondary">{student.techGroup}</div><div className="w-1/5 text-text-secondary dark:text-dark-text-secondary">{student.company}</div><div className="w-1/5 font-bold text-lg text-brand-primary dark:text-brand-primary">{student.gpa?.toFixed(2) ?? 'N/A'}</div></div>;
+        return <div style={style} className={`flex items-center text-sm p-2 border-b border-slate-100 ${index % 2 === 0 ? 'bg-slate-50' : ''}`}><div className="w-2/5 font-semibold text-text-primary">{student.fullName} ({student.navaId})</div><div className="w-1/5 text-text-secondary">{student.techGroup}</div><div className="w-1/5 text-text-secondary">{student.company}</div><div className="w-1/5 font-bold text-lg text-brand-primary">{student.gpa?.toFixed(2) ?? 'N/A'}</div></div>;
     };
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-            <div className="lg:col-span-2 flex flex-col gap-6"><ChartContainer title={`Student GPA Rankings (${sortedStudents.length})`}><div className="flex flex-col h-full"><div className="flex-shrink-0 flex p-2 bg-slate-100 dark:bg-dark-panel-hover font-semibold text-sm text-text-secondary dark:text-dark-text-secondary sticky top-0 z-10"><button className="w-2/5 text-left" onClick={() => handleSort('fullName')}>Student Name <SortIcon direction={sortConfig.key === 'fullName' ? sortConfig.direction : undefined} /></button><button className="w-1/5 text-left" onClick={() => handleSort('techGroup')}>Tech Group <SortIcon direction={sortConfig.key === 'techGroup' ? sortConfig.direction : undefined} /></button><button className="w-1/5 text-left" onClick={() => handleSort('company')}>Company <SortIcon direction={sortConfig.key === 'company' ? sortConfig.direction : undefined} /></button><button className="w-1/5 text-left" onClick={() => handleSort('gpa')}>GPA <SortIcon direction={sortConfig.key === 'gpa' ? sortConfig.direction : undefined} /></button></div><div className="flex-grow"><AutoSizer>{({ height, width }) => <List height={height} width={width} itemCount={sortedStudents.length} itemSize={50}>{Row}</List>}</AutoSizer></div></div></ChartContainer></div>
+            <div className="lg:col-span-2 flex flex-col gap-6"><ChartContainer title={`Student GPA Rankings (${sortedStudents.length})`}><div className="flex flex-col h-full"><div className="flex-shrink-0 flex p-2 bg-slate-100 font-semibold text-sm text-text-secondary sticky top-0 z-10"><button className="w-2/5 text-left" onClick={() => handleSort('fullName')}>Student Name <SortIcon direction={sortConfig.key === 'fullName' ? sortConfig.direction : undefined} /></button><button className="w-1/5 text-left" onClick={() => handleSort('techGroup')}>Tech Group <SortIcon direction={sortConfig.key === 'techGroup' ? sortConfig.direction : undefined} /></button><button className="w-1/5 text-left" onClick={() => handleSort('company')}>Company <SortIcon direction={sortConfig.key === 'company' ? sortConfig.direction : undefined} /></button><button className="w-1/5 text-left" onClick={() => handleSort('gpa')}>GPA <SortIcon direction={sortConfig.key === 'gpa' ? sortConfig.direction : undefined} /></button></div><div className="flex-grow"><AutoSizer>{({ height, width }) => <List height={height} width={width} itemCount={sortedStudents.length} itemSize={50}>{Row}</List>}</AutoSizer></div></div></ChartContainer></div>
             <div className="lg:col-span-1 space-y-6"><div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4"><KpiCard title="Average GPA" value={gpaStats.avg.toFixed(2)} /><KpiCard title="Highest GPA" value={gpaStats.max.toFixed(2)} /><KpiCard title="Lowest GPA" value={gpaStats.min.toFixed(2)} /></div><ChartContainer title="GPA Distribution"><ResponsiveContainer width="100%" height="100%"><BarChart data={gpaDistributionData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="range" /><YAxis allowDecimals={false} /><Tooltip content={<CustomTooltip />} /><Bar dataKey="count" name="Students">{gpaDistributionData.map((entry, index) => <Cell key={`cell-${index}`} fill={['#ef4444', '#f59e0b', '#62B766', '#10b981'][index]} />)}</Bar></BarChart></ResponsiveContainer></ChartContainer></div>
         </div>
     );
@@ -198,7 +196,7 @@ const StudentFinderTab: React.FC<{ students: AnalyzedStudent[], totalStudents: n
         const adjustedStyle = { ...style, top: `${(style.top as number) + 12}px`, height: `${(style.height as number) - 24}px` };
         return <div style={adjustedStyle} className="flex items-stretch justify-start gap-6 px-3">{row.map(student => <div key={student.navaId} className="w-full h-full"><StudentSummaryCard student={student} onClick={() => onStudentClick(student)} /></div>)}{Array.from({ length: columnCount - row.length }).map((_, i) => <div key={`ph-${i}`} className="w-full h-full" />)}</div>;
     };
-    return <div className="flex flex-col h-full animate-fade-in"><div className="flex-shrink-0 mb-4"><p className="text-text-muted dark:text-dark-text-muted">{`Showing ${students.length} of ${totalStudents} students.`}</p></div><div className="flex-grow min-h-0">{students.length > 0 ? <AutoSizer>{({ height, width }) => <List height={height} width={width} itemCount={studentRows.length} itemSize={160 + 24} itemKey={(index: number) => studentRows[index]?.map(s => s.navaId).join('-') || index}>{Row}</List>}</AutoSizer> : <div className="flex-grow text-center py-20 text-text-muted dark:text-dark-text-muted bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm flex items-center justify-center"><div><h3 className="text-xl font-bold">No Students Found</h3><p className="text-base mt-1">No students match the current search or filter criteria.</p></div></div>}</div></div>;
+    return <div className="flex flex-col h-full animate-fade-in"><div className="flex-shrink-0 mb-4"><p className="text-text-muted">{`Showing ${students.length} of ${totalStudents} students.`}</p></div><div className="flex-grow min-h-0">{students.length > 0 ? <AutoSizer>{({ height, width }) => <List height={height} width={width} itemCount={studentRows.length} itemSize={160 + 24} itemKey={(index: number) => studentRows[index]?.map(s => s.navaId).join('-') || index}>{Row}</List>}</AutoSizer> : <div className="flex-grow text-center py-20 text-text-muted bg-panel border border-slate-200 rounded-lg shadow-sm flex items-center justify-center"><div><h3 className="text-xl font-bold">No Students Found</h3><p className="text-base mt-1">No students match the current search or filter criteria.</p></div></div>}</div></div>;
 };
 
 
@@ -230,7 +228,7 @@ const StudentAnalyticsPage: React.FC<StudentAnalyticsPageProps> = ({ allStudents
     }, [allStudents, debouncedSearchTerm, filters]);
 
     const TabButton: React.FC<{tabId: string; label: string}> = ({ tabId, label }) => (
-        <button onClick={() => setActiveTab(tabId)} className={`px-4 py-3 font-semibold text-sm transition-colors ${activeTab === tabId ? 'text-brand-primary border-b-2 border-brand-primary' : 'text-text-muted hover:text-text-primary dark:hover:text-dark-text-primary'}`}>{label}</button>
+        <button onClick={() => setActiveTab(tabId)} className={`px-4 py-3 font-semibold text-sm transition-colors ${activeTab === tabId ? 'text-brand-primary border-b-2 border-brand-primary' : 'text-text-muted hover:text-text-primary'}`}>{label}</button>
     );
 
     return (
@@ -239,8 +237,8 @@ const StudentAnalyticsPage: React.FC<StudentAnalyticsPageProps> = ({ allStudents
             
             {isFiltered && <SelectionSummary students={filteredStudents} totalStudents={allStudents.length} />}
             
-            <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm">
-                 <div className="border-b border-slate-200 dark:border-dark-border flex items-center">
+            <div className="bg-panel border border-slate-200 rounded-lg shadow-sm">
+                 <div className="border-b border-slate-200 flex items-center">
                     <TabButton tabId="overview" label="Analytics Overview" />
                     <TabButton tabId="rankings" label="GPA Rankings" />
                     <TabButton tabId="finder" label="Student Finder" />

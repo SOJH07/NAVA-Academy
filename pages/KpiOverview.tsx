@@ -10,11 +10,11 @@ import SelectionSummary from '../components/SelectionSummary';
 import UpcomingEvents from '../components/UpcomingEvents';
 
 // --- ICONS ---
-const UserCheckIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.092 1.21-.138 2.43-.138 3.662" /></svg>;
-const RocketLaunchIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.82m5.84-2.56v4.82a6 6 0 01-1.332 3.935m-4.508-2.56a6 6 0 01-5.84-7.38v-4.82m5.84 2.56v-4.82a6 6 0 011.332-3.935m-4.508 2.56a6 6 0 015.84 7.38m-1.332-3.935a6 6 0 01-1.332-3.935" /></svg>;
+const UsersIcon: React.FC<{className?: string}> = ({className}) => (<svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>);
 const PresentationChartLineIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25a2.25 2.25 0 01-2.25 2.25h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg>;
 const ClipboardDocumentCheckIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const CalendarDaysIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" /></svg>;
+const ComputerDesktopIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h13.5A2.25 2.25 0 0121 5.25z" /></svg>
 
 // --- PROPS & MOCK DATA ---
 interface KpiOverviewPageProps {
@@ -28,8 +28,8 @@ const weeklyAttendanceData = [ { name: 'W1', value: 95 }, { name: 'W2', value: 9
 const studentEngagementData = [ { name: 'W1', value: 82 }, { name: 'W2', value: 85 }, { name: 'W3', value: 83 }, { name: 'W4', value: 88 }, { name: 'W5', value: 90 } ];
 const moduleCompletionData = [ { name: 'NAVA001', completion: 98 }, { name: 'NAVA002', completion: 95 }, { name: 'NAVA003', completion: 92 }, { name: 'NAVA004', completion: 88 }, { name: 'NAVA005', completion: 85 }, { name: 'NAVA006', completion: 78 } ];
 const weeklyImprovementData = [ { week: 43, gpa: 2.8, aptis: 110 }, { week: 44, gpa: 2.85, aptis: 112 }, { week: 45, gpa: 2.9, aptis: 115 }, { week: 46, gpa: 3.0, aptis: 118 }, { week: 47, gpa: 3.05, aptis: 121 } ];
-const COLORS = { ceer: '#707F98', lucid: '#E77373', gpa: '#3b82f6', aptis: '#10b981', nava: '#f59e0b' };
-const CEFR_COLORS: { [key: string]: string } = { 'A1': '#ef4444', 'A2': '#f97316', 'B1': '#f59e0b', 'B2': '#3b82f6', 'C': '#10b981', };
+const COLORS = { ceer: '#707F98', lucid: '#E77373', gpa: '#1D4CB6', aptis: '#10b981', nava: '#f59e0b' };
+const CEFR_COLORS: { [key: string]: string } = { 'A1': '#ef4444', 'A2': '#f97316', 'B1': '#f59e0b', 'B2': '#1D4CB6', 'C': '#10b981', };
 
 
 // --- LOCAL COMPONENTS ---
@@ -37,14 +37,14 @@ const CEFR_COLORS: { [key: string]: string } = { 'A1': '#ef4444', 'A2': '#f97316
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-bg-panel/80 dark:bg-dark-panel/80 backdrop-blur-sm p-3 border border-slate-300 dark:border-dark-border rounded-lg shadow-lg text-sm">
-                <p className="font-bold text-text-primary dark:text-dark-text-primary mb-2">{label}</p>
+            <div className="bg-panel/90 backdrop-blur-sm p-3 border border-slate-200 rounded-lg shadow-lg text-sm">
+                <p className="font-bold text-text-primary mb-2">{label}</p>
                 <ul className="space-y-1">
                     {payload.map((pld: any, index: number) => (
                         <li key={index} className="flex items-center gap-2">
                             <span style={{ backgroundColor: pld.color || pld.fill }} className="w-2.5 h-2.5 rounded-full" />
-                            <span className="text-text-secondary dark:text-dark-text-secondary">{`${pld.name}: `}</span>
-                            <span className="font-semibold text-text-primary dark:text-dark-text-primary">{pld.value}{pld.unit}</span>
+                            <span className="text-text-secondary">{`${pld.name}: `}</span>
+                            <span className="font-semibold text-text-primary">{pld.value}{pld.unit}</span>
                         </li>
                     ))}
                 </ul>
@@ -54,24 +54,26 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return null;
 };
 
-const MetricCard: React.FC<{ title: string, value: string, icon: React.ReactElement, trendData?: {name: string, value: number}[], color: 'indigo' | 'green' | 'amber' | 'sky' }> = ({ title, value, icon, trendData, color }) => {
+const MetricCard: React.FC<{ title: string, value: string, icon: React.ReactElement, color: 'industrial' | 'teal' | 'amber' | 'green' }> = ({ title, value, icon, color }) => {
     const colorClasses = {
-        indigo: { text: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-900/30', stroke: 'text-indigo-500' },
-        green: { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/30', stroke: 'text-green-500' },
-        amber: { text: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-100 dark:bg-amber-900/30', stroke: 'text-amber-500' },
-        sky: { text: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-100 dark:bg-sky-900/30', stroke: 'text-sky-500' },
+        industrial: { text: 'text-status-industrial', line: 'bg-status-industrial' },
+        teal: { text: 'text-teal-600', line: 'bg-teal-500' },
+        amber: { text: 'text-amber-600', line: 'bg-amber-500' },
+        green: { text: 'text-green-600', line: 'bg-green-500' },
     };
     const selectedColor = colorClasses[color];
 
     return (
-        <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl shadow-sm p-4 h-full flex flex-col justify-between">
-            <div className="flex items-start justify-between">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedColor.bg}`}>{icon}</div>
-                {trendData && <div className="w-20 h-8 -mr-2"><ResponsiveContainer width="100%" height="100%"><LineChart data={trendData}><Line type="monotone" dataKey="value" stroke="currentColor" strokeWidth={2.5} dot={false} className={selectedColor.stroke} /></LineChart></ResponsiveContainer></div>}
-            </div>
-            <div>
-                <p className={`text-4xl font-extrabold ${selectedColor.text}`}>{value}</p>
-                <p className="text-sm font-semibold text-text-muted dark:text-dark-text-muted">{title}</p>
+        <div className="bg-panel border border-slate-200 rounded-xl shadow-sm p-4 h-full relative">
+            <div className={`absolute top-4 right-4 h-1 w-12 rounded-full ${selectedColor.line}`}></div>
+            <div className="flex flex-col justify-between h-full">
+                <div>
+                    {React.cloneElement(icon, { className: `h-8 w-8 text-text-secondary` })}
+                </div>
+                <div className="mt-4">
+                     <p className={`text-5xl font-extrabold ${selectedColor.text}`}>{value}</p>
+                     <p className="text-base font-semibold text-text-secondary mt-1">{title}</p>
+                </div>
             </div>
         </div>
     );
@@ -80,12 +82,12 @@ const MetricCard: React.FC<{ title: string, value: string, icon: React.ReactElem
 const ListItem: React.FC<{ rank: number, name: string, value: string | number, maxValue: number, onNameClick: () => void }> = ({ rank, name, value, maxValue, onNameClick }) => (
     <li className="space-y-1">
         <div className="flex justify-between items-center text-sm">
-            <button onClick={onNameClick} className="font-semibold text-text-primary dark:text-dark-text-primary hover:underline truncate">
-                <span className="text-text-muted dark:text-dark-text-muted mr-2">{rank}.</span>{name}
+            <button onClick={onNameClick} className="font-semibold text-text-primary hover:underline truncate">
+                <span className="text-text-muted mr-2">{rank}.</span>{name}
             </button>
-            <span className="font-bold text-text-secondary dark:text-dark-text-secondary">{value}</span>
+            <span className="font-bold text-text-secondary">{value}</span>
         </div>
-        <div className="bg-slate-200 dark:bg-dark-panel-hover rounded-full h-1.5 w-full"><div className="bg-brand-secondary h-full rounded-full" style={{ width: `${(Number(value) / maxValue) * 100}%` }}></div></div>
+        <div className="bg-slate-100 rounded-full h-1.5 w-full"><div className="bg-slate-400 h-full rounded-full" style={{ width: `${(Number(value) / maxValue) * 100}%` }}></div></div>
     </li>
 );
 
@@ -172,15 +174,15 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, liveStat
             {isFiltered && <SelectionSummary students={allStudents} totalStudents={allStudents.length} />}
             
             <div className="pb-2">
-                <h2 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">Today's Briefing</h2>
-                <p className="text-base text-text-muted dark:text-dark-text-muted">{format(liveStatusData.now, 'EEEE, MMMM d, yyyy')}</p>
+                <h2 className="text-3xl font-bold text-text-primary">Today's Briefing</h2>
+                <p className="text-base text-text-secondary">{format(liveStatusData.now, 'EEEE, MMMM d, yyyy')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                <MetricCard title="Daily Attendance" value={kpiData.attendance} icon={<UserCheckIcon className="h-6 w-6"/>} trendData={weeklyAttendanceData} color="sky" />
-                <MetricCard title="Student Engagement" value={kpiData.engagement} icon={<RocketLaunchIcon className="h-6 w-6"/>} trendData={studentEngagementData} color="indigo" />
-                <MetricCard title="Active Sessions" value={kpiData.activeSessions.toString()} icon={<PresentationChartLineIcon className="h-6 w-6"/>} color="amber" />
-                <MetricCard title="Module Completion" value={kpiData.moduleCompletion} icon={<ClipboardDocumentCheckIcon className="h-6 w-6"/>} trendData={moduleCompletionData.map(m => ({name: m.name, value: m.completion}))} color="green" />
+                <MetricCard title="Daily Attendance" value={kpiData.attendance} icon={<UsersIcon />} color="industrial" />
+                <MetricCard title="Student Engagement" value={kpiData.engagement} icon={<PresentationChartLineIcon />} color="teal" />
+                <MetricCard title="Active Sessions" value={kpiData.activeSessions.toString()} icon={<ComputerDesktopIcon />} color="amber" />
+                <MetricCard title="Module Completion" value={kpiData.moduleCompletion} icon={<ClipboardDocumentCheckIcon />} color="green" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -188,11 +190,11 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, liveStat
                     <ChartContainer title="Company Performance Comparison">
                         <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={companyComparisonData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(220 13% 91% / 1)" />
-                                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: 'hsl(224 23% 55% / 1)' }} />
-                                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: 'hsl(224 23% 55% / 1)' }} />
-                                <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(100, 116, 139, 0.1)' }} />
-                                <Legend verticalAlign="top" wrapperStyle={{fontSize: '12px', top: -5}} iconSize={10} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0, 0.05)" />
+                                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                                <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0, 0.03)' }} />
+                                <Legend verticalAlign="top" wrapperStyle={{fontSize: '12px', top: -5, color: '#1F2937'}} iconSize={10} />
                                 <Bar dataKey="Ceer" fill={COLORS.ceer} radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="Lucid" fill={COLORS.lucid} radius={[4, 4, 0, 0]} />
                             </BarChart>
@@ -201,8 +203,8 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, liveStat
                     <ChartContainer title="Weekly Improvement Trends">
                         <ResponsiveContainer width="100%" height={300}>
                              <LineChart data={weeklyImprovementData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 91% / 1)" />
-                                <XAxis dataKey="week" tickFormatter={(tick) => `W${tick}`} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: 'hsl(224 23% 55% / 1)' }} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0, 0.05)" />
+                                <XAxis dataKey="week" tickFormatter={(tick) => `W${tick}`} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
                                 <YAxis yAxisId="left" orientation="left" stroke={COLORS.gpa} tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                                 <YAxis yAxisId="right" orientation="right" stroke={COLORS.aptis} tickLine={false} axisLine={false} tick={{ fontSize: 12 }}/>
                                 <RechartsTooltip content={<CustomTooltip />} />
@@ -214,7 +216,7 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, liveStat
                     </ChartContainer>
                 </div>
                 <div className="lg:col-span-1 space-y-6">
-                    <ChartContainer title="Upcoming Events" headerContent={<CalendarDaysIcon className="h-5 w-5 text-text-muted dark:text-dark-text-muted" />}>
+                    <ChartContainer title="Upcoming Events" headerContent={<CalendarDaysIcon className="h-5 w-5 text-text-muted" />}>
                         <UpcomingEvents />
                     </ChartContainer>
                     <ChartContainer title="Instructor Activity (Weekly)">
@@ -247,9 +249,9 @@ const KpiOverviewPage: React.FC<KpiOverviewPageProps> = ({ allStudents, liveStat
              <ChartContainer title="Module Completion Rate">
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={moduleCompletionData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(220 13% 91% / 1)" />
-                        <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 12, fill: 'hsl(224 23% 55% / 1)' }} axisLine={false} tickLine={false} />
-                        <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 12, fill: 'hsl(224 23% 55% / 1)' }} axisLine={false} tickLine={false} />
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(0,0,0, 0.05)" />
+                        <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
+                        <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 12, fill: '#64748B' }} axisLine={false} tickLine={false} />
                         <RechartsTooltip content={<CustomTooltip />} />
                         <Bar dataKey="completion" name="Completion Rate" barSize={20}>
                             {moduleCompletionData.map((entry) => (

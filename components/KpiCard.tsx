@@ -5,28 +5,28 @@ interface KpiCardProps {
     title: string;
     value: string | number;
     icon: React.ReactElement;
-    color: 'indigo' | 'teal' | 'amber';
+    color: 'industrial' | 'teal' | 'amber';
     trendData?: { day: string; value: number }[];
 }
 
 const KpiCard: React.FC<KpiCardProps> = ({ title, value, icon, color, trendData }) => {
     const colorClasses = {
-        indigo: {
-            text: 'text-indigo-600 dark:text-indigo-400',
-            iconBg: 'bg-indigo-100 dark:bg-indigo-500/20',
-            iconText: 'text-indigo-500 dark:text-indigo-400',
-            stroke: 'text-indigo-400'
+        industrial: {
+            text: 'text-status-industrial',
+            iconBg: 'bg-status-industrial-light',
+            iconText: 'text-status-industrial',
+            stroke: 'text-status-industrial'
         },
         teal: {
-            text: 'text-teal-600 dark:text-teal-400',
-            iconBg: 'bg-teal-100 dark:bg-teal-500/20',
-            iconText: 'text-teal-500 dark:text-teal-400',
+            text: 'text-teal-600',
+            iconBg: 'bg-teal-100',
+            iconText: 'text-teal-500',
             stroke: 'text-teal-400'
         },
         amber: {
-            text: 'text-amber-600 dark:text-amber-400',
-            iconBg: 'bg-amber-100 dark:bg-amber-500/20',
-            iconText: 'text-amber-500 dark:text-amber-400',
+            text: 'text-amber-600',
+            iconBg: 'bg-amber-100',
+            iconText: 'text-amber-500',
             stroke: 'text-amber-400'
         }
     };
@@ -34,12 +34,12 @@ const KpiCard: React.FC<KpiCardProps> = ({ title, value, icon, color, trendData 
     const selectedColor = colorClasses[color];
 
     return (
-        <div className="p-4 rounded-xl shadow-sm border border-slate-200 dark:border-dark-border bg-bg-panel dark:bg-dark-panel flex items-center gap-4 h-full">
+        <div className="p-4 rounded-xl shadow-sm border border-slate-200 bg-panel flex items-center gap-4 h-full">
             <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${selectedColor.iconBg}`}>
                 {React.cloneElement<React.SVGProps<SVGSVGElement>>(icon, { className: `h-6 w-6 ${selectedColor.iconText}` })}
             </div>
             <div className="flex-grow">
-                <p className="text-sm font-semibold text-text-muted dark:text-dark-text-muted">{title}</p>
+                <p className="text-sm font-semibold text-text-muted">{title}</p>
                 <p className={`text-3xl font-extrabold ${selectedColor.text}`}>{value}</p>
             </div>
             {trendData && (

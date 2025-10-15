@@ -13,7 +13,7 @@ const Sidebar: React.FC<SidebarProps> = ({ pages, activePage, setActivePage, onL
   const { isSidebarCollapsed, setIsSidebarCollapsed } = useUserPreferencesStore();
 
   return (
-    <aside className={`bg-slate-900 border-r border-slate-700/50 p-4 flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+    <aside className={`bg-panel border-r border-slate-200 p-4 flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
       {/* Header */}
       <div className={`mb-8 flex items-center gap-3 ${isSidebarCollapsed ? 'justify-center' : ''}`}>
          <div className="flex-shrink-0">
@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ pages, activePage, setActivePage, onL
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 18H15" />
             </svg>
          </div>
-         <h1 className={`text-xl font-bold text-white whitespace-nowrap transition-opacity ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100 delay-100'}`}>NAVA Academy</h1>
+         <h1 className={`text-xl font-bold text-text-primary whitespace-nowrap transition-opacity ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100 delay-100'}`}>NAVA Academy</h1>
       </div>
 
       {/* Navigation */}
@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ pages, activePage, setActivePage, onL
                 className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200 ${isSidebarCollapsed ? 'justify-center' : ''} ${
                   activePage === page.id
                     ? 'bg-brand-primary text-white font-semibold'
-                    : 'text-slate-400 hover:bg-slate-700 hover:text-white'
+                    : 'text-text-secondary hover:bg-bg-panel-hover hover:text-text-primary'
                 }`}
               >
                 <div className="flex-shrink-0">{page.icon}</div>
@@ -50,10 +50,10 @@ const Sidebar: React.FC<SidebarProps> = ({ pages, activePage, setActivePage, onL
       
       {/* Footer Area */}
       <div className="flex-shrink-0">
-        <div className="border-t border-slate-700/50 pt-2 space-y-1">
+        <div className="border-t border-slate-200 pt-2 space-y-1">
             <button 
                 onClick={onLogout}
-                className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200 text-slate-400 hover:bg-slate-700 hover:text-white ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200 text-text-secondary hover:bg-bg-panel-hover hover:text-text-primary ${isSidebarCollapsed ? 'justify-center' : ''}`}
                 title="Logout"
             >
                  <div className="flex-shrink-0">
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ pages, activePage, setActivePage, onL
             </button>
             <button 
                 onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200 text-slate-400 hover:bg-slate-700 hover:text-white ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200 text-text-secondary hover:bg-bg-panel-hover hover:text-text-primary ${isSidebarCollapsed ? 'justify-center' : ''}`}
                 title={isSidebarCollapsed ? 'Expand' : 'Collapse'}
             >
                  <div className="flex-shrink-0">
@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ pages, activePage, setActivePage, onL
                 <span className={`whitespace-nowrap transition-opacity ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100 delay-100'}`}>Collapse</span>
             </button>
         </div>
-        <div className={`mt-2 text-center text-xs text-slate-500 whitespace-nowrap transition-opacity ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
+        <div className={`mt-2 text-center text-xs text-text-muted whitespace-nowrap transition-opacity ${isSidebarCollapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
             <p>PDPL Compliance Notice</p>
             <p>Access is restricted to authorized users.</p>
         </div>

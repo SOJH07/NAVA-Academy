@@ -10,6 +10,8 @@ interface PreferencesState {
   setIsSidebarCollapsed: (isCollapsed: boolean) => void;
   isLiveStatusSidebarCollapsed: boolean;
   setIsLiveStatusSidebarCollapsed: (isCollapsed: boolean) => void;
+  hasSeenConstructionNotice: boolean;
+  setHasSeenConstructionNotice: (hasSeen: boolean) => void;
 }
 
 const useUserPreferencesStore = create<PreferencesState>()(
@@ -21,6 +23,8 @@ const useUserPreferencesStore = create<PreferencesState>()(
       setIsSidebarCollapsed: (isCollapsed) => set({ isSidebarCollapsed: isCollapsed }),
       isLiveStatusSidebarCollapsed: false,
       setIsLiveStatusSidebarCollapsed: (isCollapsed) => set({ isLiveStatusSidebarCollapsed: isCollapsed }),
+      hasSeenConstructionNotice: false,
+      setHasSeenConstructionNotice: (hasSeen) => set({ hasSeenConstructionNotice: hasSeen }),
     }),
     {
       name: 'nava-user-preferences',

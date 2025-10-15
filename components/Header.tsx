@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageIcon, onFilterButtonClic
         <header className="px-6 pt-6 pb-4 bg-bg-body z-10 flex justify-between items-center gap-4">
             <div className="flex items-center gap-4">
                 {pageIcon && (
-                     <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                     <div className="w-11 h-11 bg-brand-primary rounded-lg flex items-center justify-center shadow-md">
                         {React.cloneElement<React.SVGProps<SVGSVGElement>>(pageIcon, { className: "h-6 w-6 text-white" })}
                     </div>
                 )}
@@ -34,12 +34,12 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageIcon, onFilterButtonClic
                         placeholder="Search Students (Name, ID, Group)..."
                         value={globalSearchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="bg-bg-panel border border-slate-300 rounded-lg py-2 px-4 pl-10 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary w-full md:w-80 shadow-sm"
+                        className="bg-panel border border-slate-200 rounded-lg py-2 px-4 pl-10 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary w-full md:w-80 shadow-sm"
                     />
                 </div>
                 <button
                     onClick={onFilterButtonClick}
-                    className="flex items-center gap-2 px-4 py-2 bg-bg-panel border border-slate-300 rounded-lg shadow-sm text-text-primary font-semibold hover:bg-bg-panel-hover transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-panel border border-slate-200 rounded-lg shadow-sm text-text-primary font-semibold hover:bg-bg-panel-hover transition-colors"
                 >
                     <FilterIcon />
                     <span>Filters</span>

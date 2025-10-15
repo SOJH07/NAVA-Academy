@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Page } from '../types';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -15,6 +15,7 @@ import { useLiveStatus } from '../hooks/useLiveStatus';
 import useAppStore from '../hooks/useAppStore';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import CurriculumAndPacingPage from './CurriculumAndPacing';
+import useUserPreferencesStore from '../hooks/useUserPreferencesStore';
 
 const pages: Page[] = [
     { id: 'kpiOverview', label: 'KPI Overview', icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H5a2 2 0 01-2-2V7a2 2 0 012 2h14a2 2 0 012 2v10a2 2 0 01-2 2z" /></svg> },
@@ -28,7 +29,6 @@ const pages: Page[] = [
 ];
 
 const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
-    // FIX: Import 'useState' from React to resolve 'Cannot find name' error.
     const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
     const [isLiveStatusSidebarCollapsed, setIsLiveStatusSidebarCollapsed] = useState(false);
     
@@ -41,6 +41,33 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
        activeFilterCount,
        simulatedTime
     } = useAppStore();
+
+    const { hasSeenConstructionNotice, setHasSeenConstructionNotice } = useUserPreferencesStore();
+    const [isNoticeVisible, setIsNoticeVisible] = useState(false);
+
+    useEffect(() => {
+        if (!hasSeenConstructionNotice) {
+            const timer = setTimeout(() => setIsNoticeVisible(true), 500);
+            return () => clearTimeout(timer);
+        }
+    }, [hasSeenConstructionNotice]);
+
+    const handleDismissNotice = () => {
+        setIsNoticeVisible(false);
+        setHasSeenConstructionNotice(true);
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && isNoticeVisible) {
+                handleDismissNotice();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isNoticeVisible]);
 
     const dashboardData = useDashboardData();
     const { analyzedStudents } = useAnalyticsData(dashboardData.enhancedStudents);
@@ -137,7 +164,38 @@ const AdminDashboard: React.FC<{onLogout: () => void}> = ({ onLogout }) => {
     const currentPage = useMemo(() => pages.find(p => p.id === activePage), [activePage]);
 
     return (
-        <div className="h-screen flex bg-bg-body dark:bg-dark-body">
+        <div className="h-screen flex bg-bg-body">
+            {isNoticeVisible && (
+                <div 
+                    className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4 animate-fade-in"
+                    onClick={handleDismissNotice}
+                    role="alertdialog"
+                    aria-modal="true"
+                    aria-labelledby="notice-title"
+                    aria-describedby="notice-description"
+                >
+                    <div 
+                        className="bg-panel/10 border border-white/20 rounded-2xl shadow-2xl w-full max-w-md p-8 text-center flex flex-col items-center"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-9 w-9 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <h2 id="notice-title" className="text-2xl font-bold text-white">Dashboard Under Development</h2>
+                        <p id="notice-description" className="mt-2 text-base text-slate-200 text-wrap-balance">
+                            Welcome to the NAVA Academy Dashboard. Please note that this platform is currently under active development. While core features are available, some pages and functionalities are still being implemented. We appreciate your understanding.
+                        </p>
+                        <button
+                            onClick={handleDismissNotice}
+                            className="mt-6 w-full max-w-xs bg-brand-primary text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-brand-primary-dark transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary"
+                        >
+                            Acknowledge & Continue
+                        </button>
+                    </div>
+                </div>
+            )}
             <Sidebar pages={pages} activePage={activePage} setActivePage={setActivePage} onLogout={onLogout} />
              <GlobalFilterPanel 
                 isOpen={isFilterPanelOpen}

@@ -26,8 +26,8 @@ const FloorTab: React.FC<{ label: string; isActive: boolean; onClick: () => void
         onClick={onClick}
         className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
             isActive
-                ? 'bg-white dark:bg-dark-panel-hover text-brand-primary shadow-sm'
-                : 'text-text-muted hover:bg-slate-200 dark:hover:bg-dark-panel-hover/50'
+                ? 'bg-white text-brand-primary shadow-sm'
+                : 'text-text-muted hover:bg-slate-100'
         }`}
     >
         {label}
@@ -63,9 +63,9 @@ const TimelineScrubber: React.FC<{ dailySchedule: DailyPeriod[], simulatedTime: 
     }, [simulatedTime, totalMinutes, dayStart]);
 
     return (
-        <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl p-3">
+        <div className="bg-panel border border-slate-200 rounded-xl p-3">
             <div className="flex justify-between items-center mb-2">
-                 <h4 className="text-sm font-semibold text-text-secondary dark:text-dark-text-secondary">Time Simulation</h4>
+                 <h4 className="text-sm font-semibold text-text-secondary">Time Simulation</h4>
                  {simulatedTime !== null && (
                      <button onClick={() => setSimulatedTime(null)} className="text-xs font-bold text-red-500 hover:text-red-700">
                          Return to Live
@@ -98,13 +98,13 @@ const TimelineScrubber: React.FC<{ dailySchedule: DailyPeriod[], simulatedTime: 
 
 const HeatmapToggle: React.FC<{ isVisible: boolean, setIsVisible: (v: boolean) => void }> = ({ isVisible, setIsVisible }) => (
     <div className="flex items-center gap-2">
-        <label htmlFor="heatmap-toggle" className="text-sm font-semibold text-text-secondary dark:text-dark-text-secondary">Heatmap</label>
+        <label htmlFor="heatmap-toggle" className="text-sm font-semibold text-text-secondary">Heatmap</label>
         <button
             id="heatmap-toggle"
             role="switch"
             aria-checked={isVisible}
             onClick={() => setIsVisible(!isVisible)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isVisible ? 'bg-brand-primary' : 'bg-slate-300 dark:bg-dark-panel-hover'}`}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isVisible ? 'bg-brand-primary' : 'bg-slate-300'}`}
         >
             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isVisible ? 'translate-x-6' : 'translate-x-1'}`}/>
         </button>
@@ -250,12 +250,12 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                     <TimelineScrubber dailySchedule={dashboardData.dailySchedule} simulatedTime={simulatedTime} setSimulatedTime={setSimulatedTime} />
                 </div>
                 <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
-                    <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl shadow-sm flex flex-col p-4 h-full">
+                    <div className="bg-panel border border-slate-200 rounded-xl shadow-sm flex flex-col p-4 h-full">
                         <div className="flex justify-between items-center mb-4 flex-shrink-0">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Academy Floor Plan</h2>
+                            <h2 className="text-xl font-bold text-text-primary">Academy Floor Plan</h2>
                              <div className="flex items-center gap-4">
                                 <HeatmapToggle isVisible={isHeatmapVisible} setIsVisible={setIsHeatmapVisible} />
-                                <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-dark-panel rounded-lg flex-wrap">
+                                <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg flex-wrap">
                                     <FloorTab label="Incubator" isActive={activeFloor === 'incubator'} onClick={() => setActiveFloor('incubator')} />
                                     <FloorTab label="3rd" isActive={activeFloor === 'third'} onClick={() => setActiveFloor('third')} />
                                     <FloorTab label="2nd" isActive={activeFloor === 'second'} onClick={() => setActiveFloor('second')} />
@@ -288,8 +288,8 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                         <FloorPlanLegend language="en" />
                     </div>
 
-                     <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl shadow-sm flex flex-col p-4 h-full min-h-0">
-                        <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary mb-2 flex-shrink-0">
+                     <div className="bg-panel border border-slate-200 rounded-xl shadow-sm flex flex-col p-4 h-full min-h-0">
+                        <h2 className="text-xl font-bold text-text-primary mb-2 flex-shrink-0">
                             Live Roster ({filteredStudents.length})
                         </h2>
                         <div className="flex-grow min-h-0">
