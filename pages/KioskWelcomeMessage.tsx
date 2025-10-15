@@ -7,6 +7,7 @@ import { learningOutcomesData } from '../data/learningOutcomes';
 import { format, getISOWeek } from 'date-fns';
 import parse from 'date-fns/parse';
 import { pacingScheduleData } from '../data/pacingSchedule';
+import { dailyPeriodsData } from '../data/dailyPeriods';
 
 // Icons
 const BookIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-kiosk-primary" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg>;
@@ -17,6 +18,7 @@ const TheoreticalIcon: React.FC<{className?: string}> = ({className}) => <svg xm
 const PerformanceIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.972.03 2.287-.948 2.287-1.56.38-1.56 2.6 0 2.98.978.238 1.488 1.559.948 2.286-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.948c.38 1.56 2.6 1.56 2.98 0a1.532 1.532 0 012.287-.948c1.372.836 2.942-.734-2.106-2.106a1.532 1.532 0 01.948-2.287c1.56-.38 1.56-2.6 0-2.98a1.532 1.532 0 01-.948-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.948zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" /></svg>;
 const CheckCircleIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>;
 const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.75 3a.75.75 0 01.75.75V4h7V3.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V3.75A.75.75 0 015.75 3zM4.5 8.25a.75.75 0 000 1.5h11a.75.75 0 000-1.5h-11z" clipRule="evenodd" /></svg>;
+const CompletedIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
 
 
 const getCleanTopicName = (topic: string) => {
@@ -30,6 +32,22 @@ const getFullCleanTopicName = (topic: string) => {
         .replace('Unit-', 'U')
         .replace(/\s*\([^)]*\)$/, '')
         .trim();
+};
+
+const timeToMinutes = (time: string): number => {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+};
+
+const formatLocation = (classroom: string) => {
+    if (classroom.startsWith('WS-')) {
+        return classroom.replace('WS-0.', 'WS-');
+    }
+    if (classroom.match(/^\d\.\d+$/)) {
+        const prefix = classroom.startsWith('2.') ? 'C-' : 'L-';
+        return prefix + classroom.replace('.', '');
+    }
+    return classroom;
 };
 
 const parseLegacyDate = (dateStr: string) => {
@@ -94,74 +112,100 @@ interface KioskWelcomeMessageProps {
     groupInfo: GroupInfo;
 }
 
+type SubjectStatus = 'live' | 'completed' | 'upcoming';
+interface SubjectInfo {
+    code: string;
+    fullName: string;
+    instructor: string;
+    location: string;
+    status: SubjectStatus;
+    period: string;
+}
+
 const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liveStatusData, dailyAssignments, groupInfo }) => {
     const { overallStatus, currentPeriod, now } = liveStatusData;
     const dayOfWeek = now.getDay();
     const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
 
-    const [isFading, setIsFading] = useState(false);
-    const [isPaused, setIsPaused] = useState(false);
-    const [hoveredTopic, setHoveredTopic] = useState<string | null>(null);
-    const [activeTopicIndex, setActiveTopicIndex] = useState(0);
+    const [selectedSubjectCode, setSelectedSubjectCode] = useState<string | null>(null);
 
-    const { industrialTopics, serviceTopics, activeTopics, topicToFullNameMap } = useMemo(() => {
-        const industrial = new Map<string, string>();
-        const service = new Map<string, string>();
+    const { todaysSubjects, topicToFullNameMap } = useMemo(() => {
+        const industrial = new Map<string, SubjectInfo>();
+        const service = new Map<string, SubjectInfo>();
         const fullMap = new Map<string, string>();
 
-        dailyAssignments.forEach(a => {
-            const cleanName = getCleanTopicName(a.topic);
-            if (!fullMap.has(cleanName)) {
-                fullMap.set(cleanName, a.topic);
+        const currentPeriodNum = currentPeriod ? parseInt(currentPeriod.name.replace('P', '')) : -1;
+        const nowMinutes = timeToMinutes(`${now.getHours()}:${now.getMinutes()}`);
+
+        for (const assignment of dailyAssignments) {
+            const track = groupInfo[assignment.group]?.track_name;
+            const cleanName = getCleanTopicName(assignment.topic);
+             if (!fullMap.has(cleanName)) {
+                fullMap.set(cleanName, assignment.topic);
             }
-            if (groupInfo[a.group]?.track_name === 'Industrial Tech' && !industrial.has(cleanName)) {
-                industrial.set(cleanName, a.topic);
-            } else if (groupInfo[a.group]?.track_name === 'Service Tech' && !service.has(cleanName)) {
-                service.set(cleanName, a.topic);
+
+            const periodDetails = dailyPeriodsData.find(p => p.name === assignment.period);
+            const periodEndMinutes = periodDetails ? timeToMinutes(periodDetails.end) : 0;
+            
+            let status: SubjectStatus = 'upcoming';
+            if (currentPeriod?.name === assignment.period) {
+                status = 'live';
+            } else if (nowMinutes > periodEndMinutes) {
+                status = 'completed';
             }
-        });
-        
-        let active;
-        if (currentPeriod?.type === 'class') {
-            active = Array.from(new Set(liveStatusData.liveClasses.map(lc => getCleanTopicName(lc.topic))));
-        } else {
-            active = Array.from(industrial.keys()).concat(Array.from(service.keys()));
+            
+            const subjectInfo = {
+                code: cleanName,
+                fullName: assignment.topic,
+                instructor: assignment.instructors.join(', '),
+                location: assignment.classroom,
+                status: status,
+                period: assignment.period
+            };
+
+            if (track === 'Industrial Tech' && !industrial.has(cleanName)) {
+                industrial.set(cleanName, subjectInfo);
+            } else if (track === 'Service Tech' && !service.has(cleanName)) {
+                service.set(cleanName, subjectInfo);
+            }
         }
         
         return { 
-            industrialTopics: Array.from(industrial.keys()).sort(), 
-            serviceTopics: Array.from(service.keys()).sort(), 
-            activeTopics: active.length > 0 ? active.sort() : Array.from(fullMap.keys()).sort(),
-            topicToFullNameMap: fullMap,
+            todaysSubjects: {
+                industrial: Array.from(industrial.values()),
+                service: Array.from(service.values())
+            },
+            topicToFullNameMap: fullMap
         };
-    }, [dailyAssignments, groupInfo, currentPeriod, liveStatusData.liveClasses]);
-
-    const displayTopic = hoveredTopic || (activeTopics.length > 0 ? activeTopics[activeTopicIndex % activeTopics.length] : null);
-    
-    const outcomesForTopic = displayTopic ? (learningOutcomesData[getCleanTopicName(topicToFullNameMap.get(displayTopic) || displayTopic)] || []) : [];
-    
-    // Ensure every topic has 3 outcomes for consistent UI
-    const displayOutcomes = outcomesForTopic.length > 0
-        ? [...outcomesForTopic, "Adhere to safety protocols.", "Collaborate effectively with team members.", "Apply problem-solving skills."].slice(0, 3)
-        : [];
-
+    }, [dailyAssignments, groupInfo, currentPeriod, now]);
 
     useEffect(() => {
-        if (isPaused || activeTopics.length <= 1) return;
-        const timer = setInterval(() => {
-            if (document.hasFocus()) {
-                setIsFading(true);
-                setTimeout(() => {
-                    setActiveTopicIndex(prev => prev + 1);
-                    setHoveredTopic(null);
-                    setIsFading(false);
-                }, 300);
-            }
-        }, 10000);
-        return () => clearInterval(timer);
-    }, [isPaused, activeTopics.length]);
-    
-    const handleMouseLeaveContainer = () => { setIsPaused(false); setHoveredTopic(null); };
+        const allSubjects = [...todaysSubjects.industrial, ...todaysSubjects.service];
+        const liveSubject = allSubjects.find(s => s.status === 'live');
+        if (liveSubject) {
+            setSelectedSubjectCode(liveSubject.code);
+            return;
+        }
+
+        const nowMinutes = timeToMinutes(`${now.getHours()}:${now.getMinutes()}`);
+        const upcomingSubjects = allSubjects
+            .filter(s => s.status === 'upcoming')
+            .sort((a,b) => {
+                const periodA = dailyPeriodsData.find(p => p.name === a.period)!;
+                const periodB = dailyPeriodsData.find(p => p.name === b.period)!;
+                return timeToMinutes(periodA.start) - timeToMinutes(periodB.start);
+            });
+        
+        if (upcomingSubjects.length > 0) {
+            setSelectedSubjectCode(upcomingSubjects[0].code);
+            return;
+        }
+
+        if (allSubjects.length > 0) {
+            setSelectedSubjectCode(allSubjects[0].code);
+        }
+
+    }, [todaysSubjects, currentPeriod, now]);
 
     const week42Assessments = useMemo(() => {
         const allAssessments = [];
@@ -196,6 +240,47 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
         }
         return Object.values(grouped).sort((a, b) => a.date.getTime() - b.date.getTime());
     }, [week42Assessments]);
+    
+    const outcomesForTopic = selectedSubjectCode ? (learningOutcomesData[getCleanTopicName(topicToFullNameMap.get(selectedSubjectCode) || selectedSubjectCode)] || []) : [];
+    const displayOutcomes = outcomesForTopic.length > 0
+        ? [...outcomesForTopic, "Adhere to safety protocols.", "Collaborate effectively with team members.", "Apply problem-solving skills."].slice(0, 3)
+        : [];
+    
+    const renderSubjectList = (subjects: SubjectInfo[]) => (
+        <ul className="space-y-1">
+            {subjects.map(subject => {
+                const isSelected = selectedSubjectCode === subject.code;
+                const trackColor = subject.fullName.toLowerCase().includes('industrial') ? 'status-industrial' : 'status-tech';
+
+                let StatusIcon: React.ReactNode;
+                switch(subject.status) {
+                    case 'live': StatusIcon = <div className={`w-2 h-2 rounded-full mr-2.5 mt-1.5 flex-shrink-0 bg-green-500 animate-pulse`}></div>; break;
+                    case 'completed': StatusIcon = <CompletedIcon />; break;
+                    default: StatusIcon = <div className={`w-2 h-2 rounded-full mr-2.5 mt-1.5 flex-shrink-0 bg-${trackColor}`}></div>;
+                }
+
+                return (
+                    <li key={`${subject.code}-${subject.period}`}>
+                        <button
+                            onClick={() => setSelectedSubjectCode(subject.code)}
+                            className={`w-full text-left p-2 rounded-lg transition-colors ${isSelected ? 'bg-yellow-200' : 'hover:bg-slate-50'} ${subject.status === 'completed' ? 'opacity-60' : ''}`}
+                        >
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 mr-2.5 mt-1">{StatusIcon}</div>
+                                <div>
+                                    <p className={`text-kiosk-text-body ${isSelected || subject.status === 'live' ? 'font-bold' : 'font-medium'}`}>{subject.code}</p>
+                                    <p className="text-xs text-kiosk-text-muted mt-0.5">
+                                        {subject.instructor} | {formatLocation(subject.location)}
+                                    </p>
+                                </div>
+                            </div>
+                        </button>
+                    </li>
+                );
+            })}
+        </ul>
+    );
+
 
     if (isWeekend || (overallStatus === 'Finished' && !isWeekend)) {
         const message = isWeekend
@@ -212,78 +297,42 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
     }
 
     return (
-        <div 
-            className="h-full flex flex-col gap-4"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={handleMouseLeaveContainer}
-        >
+        <div className="h-full flex flex-col gap-4">
              <div className="flex-shrink-0">
                 <AnnouncementsMarquee language={language} />
             </div>
 
             <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
                 <InfoCard 
-                    title={language === 'ar' ? "مواضيع اليوم" : "TODAY'S SUBJECTS"}
+                    title={language === 'ar' ? "رحلة التعلم اليوم" : "TODAY'S LEARNING JOURNEY"}
                     icon={<BookIcon />}
                     bodyClassName="flex flex-col"
                 >
                     <div className="flex-grow grid grid-cols-2 gap-x-4 overflow-y-auto pr-2">
                         <div>
                             <p className="flex items-center gap-2 font-bold text-sm text-status-industrial uppercase tracking-wider mb-2"><GearIcon /><span>{language === 'ar' ? "تقنية صناعية" : "INDUSTRIAL TECH"}</span></p>
-                            <ul className="space-y-1">
-                                {industrialTopics.map(topic => {
-                                    const isActive = displayTopic === topic;
-                                    return (
-                                        <li 
-                                            key={`ind-${topic}`} 
-                                            onMouseEnter={() => setHoveredTopic(topic)} 
-                                            className={`p-2 rounded-lg text-sm cursor-pointer transition-colors ${isActive ? 'bg-yellow-200' : 'bg-transparent'}`}
-                                        >
-                                            <div className="flex items-start">
-                                                <span className="w-2 h-2 rounded-full mr-2.5 mt-1.5 flex-shrink-0 bg-status-industrial"></span>
-                                                <span className={`text-kiosk-text-body ${isActive ? 'font-bold' : 'font-medium'}`}>{topic}</span>
-                                            </div>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
+                            {renderSubjectList(todaysSubjects.industrial)}
                         </div>
                         <div>
                             <p className="flex items-center gap-2 font-bold text-sm text-status-tech uppercase tracking-wider mb-2"><WrenchIcon/><span>{language === 'ar' ? "تقنية خدمات" : "SERVICE TECH"}</span></p>
-                            <ul className="space-y-1">
-                                {serviceTopics.map(topic => {
-                                    const isActive = displayTopic === topic;
-                                    return (
-                                        <li 
-                                            key={`ser-${topic}`} 
-                                            onMouseEnter={() => setHoveredTopic(topic)} 
-                                            className={`p-2 rounded-lg text-sm cursor-pointer transition-colors ${isActive ? 'bg-yellow-200' : 'bg-transparent'}`}
-                                        >
-                                            <div className="flex items-start">
-                                                <span className="w-2 h-2 rounded-full mr-2.5 mt-1.5 flex-shrink-0 bg-status-tech"></span>
-                                                <span className={`text-kiosk-text-body ${isActive ? 'font-bold' : 'font-medium'}`}>{topic}</span>
-                                            </div>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
+                            {renderSubjectList(todaysSubjects.service)}
                         </div>
                     </div>
                     <div className="flex-shrink-0 border-t border-slate-200 mt-3 pt-3">
                         <h4 className="flex items-center gap-2 font-bold text-xl text-kiosk-primary mb-2">
                             <LearningIcon /> <span>{language === 'ar' ? "مخرجات التعلم" : "Learning Outcomes"}</span>
                         </h4>
-                        <div className={`transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'} min-h-[100px]`}>
-                            {displayTopic ? (
+                        <div className="min-h-[100px]">
+                            {selectedSubjectCode ? (
                                 <>
-                                    <h5 className="font-bold text-lg text-kiosk-text-title mb-2">{getFullCleanTopicName(topicToFullNameMap.get(displayTopic) || displayTopic)}</h5>
+                                    <h5 className="font-bold text-lg text-kiosk-text-title mb-2">{getFullCleanTopicName(topicToFullNameMap.get(selectedSubjectCode) || selectedSubjectCode)}</h5>
                                     {displayOutcomes.length > 0 ? (
                                         <ul className="space-y-1.5 text-kiosk-text-body font-medium text-base">
                                             {displayOutcomes.map((outcome, index) => <li key={index} className="flex items-start gap-2"><CheckCircleIcon className="h-6 w-6 text-brand-primary flex-shrink-0" /><span>{outcome}</span></li>)}
                                         </ul>
                                     ) : <p className="text-sm text-kiosk-text-muted italic">Focus on practical application and safety procedures.</p>}
                                 </>
-                            ) : <p className="text-sm text-kiosk-text-muted italic">Hover over a subject to see its learning outcomes.</p>}
+                            ) : <p className="text-sm text-kiosk-text-muted italic">Select a subject to see its learning outcomes.</p>}
                         </div>
                     </div>
                 </InfoCard>

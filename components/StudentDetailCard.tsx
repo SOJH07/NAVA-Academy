@@ -146,7 +146,7 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
         <div 
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className={`relative bg-white text-kiosk-text-title border rounded-xl shadow-md p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-glow-sm hover:border-kiosk-primary overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+            className={`relative bg-bg-panel text-text-primary border rounded-xl shadow-sm p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-md hover:ring-2 hover:ring-brand-primary overflow-hidden ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
         >
              {isHovered && (
                 <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center gap-4 animate-fade-in z-10">
@@ -165,15 +165,15 @@ const StudentDetailCard: React.FC<StudentDetailCardProps> = ({ student, isDimmed
                 <div className="flex justify-between items-start mb-2">
                     <div>
                         <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-lg leading-tight text-kiosk-text-title">{student.fullName}</h3>
+                            <h3 className="font-bold text-lg leading-tight text-text-primary">{student.fullName}</h3>
                         </div>
-                         <p className="text-xs text-kiosk-text-muted">ID: {student.navaId}</p>
+                         <p className="text-xs text-text-muted">ID: {student.navaId}</p>
                     </div>
                     {statusIconAndText}
                 </div>
 
-                <div className="mt-2 text-sm text-kiosk-text-muted border-t border-kiosk-border/50 pt-2">
-                    <span className="font-semibold text-kiosk-text-body">{student.trackName}</span>
+                <div className="mt-2 text-sm text-text-muted border-t border-slate-200 pt-2">
+                    <span className="font-semibold text-text-secondary">{student.trackName}</span>
                     <span className="mx-1.5">&bull;</span>
                     <span>{student.techGroup}</span>
                 </div>

@@ -63,7 +63,6 @@ const Countdown: React.FC<{ seconds: number }> = ({ seconds }) => {
 
 
 const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
-    // FIX: Changed language from a hardcoded const to a state to enable language switching, resolving the comparison error.
     const [language, setLanguage] = useState<'en' | 'ar'>('en');
 
     const dashboardData = useDashboardData();
@@ -73,6 +72,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const { selectedGroup, setSelectedGroup, clearSelection, setRoomStatuses } = useKioskStore();
     
     const [traineeSort, setTraineeSort] = useState<'asc' | 'desc'>('asc');
+    const [isBreakfastScreenDismissed, setIsBreakfastScreenDismissed] = useState(false);
     const [isBreakScreenDismissed, setIsBreakScreenDismissed] = useState(false);
     const [isEndOfDayDismissed, setIsEndOfDayDismissed] = useState(false);
     const [isFocusMode, setIsFocusMode] = useState(false);
@@ -80,7 +80,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const [activeTab, setActiveTab] = useState<'schedule' | 'trainees'>('schedule');
 
     useEffect(() => {
-        // FIX: Update document language and direction based on the language state.
         document.documentElement.lang = language;
         document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     }, [language]);
@@ -141,11 +140,14 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const dayOfWeek = now.getDay();
     const isBreak = overallStatus.toLowerCase().includes('break');
     const isFinished = overallStatus === 'Finished' || dayOfWeek === 5 || dayOfWeek === 6;
+    const currentHour = now.getHours();
+    const isBreakfastTime = currentHour >= 7 && currentHour < 8;
 
     useEffect(() => {
         if (!isBreak) setIsBreakScreenDismissed(false);
         if (!isFinished) setIsEndOfDayDismissed(false);
-    }, [isBreak, isFinished]);
+        if (!isBreakfastTime) setIsBreakfastScreenDismissed(false);
+    }, [isBreak, isFinished, isBreakfastTime]);
     
     const traineesForSelection = useMemo(() => {
         if (!selectedGroup) return [];
@@ -159,6 +161,7 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
         return students;
     }, [selectedGroup, liveStatusData.liveStudents, traineeSort]);
     
+    const shouldShowImmersiveBreakfast = isBreakfastTime && !isBreakfastScreenDismissed;
     const shouldShowImmersiveBreak = isBreak && currentPeriod && !isBreakScreenDismissed;
     const shouldShowImmersiveEndOfDay = isFinished && !isEndOfDayDismissed;
 
@@ -175,8 +178,19 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                 currentPeriod={liveStatusData.currentPeriod}
             />
             
-             <main className={`flex-grow flex gap-4 min-h-0 mt-4 ${shouldShowImmersiveBreak || shouldShowImmersiveEndOfDay ? 'items-center justify-center' : ''}`}>
-                {shouldShowImmersiveBreak ? (
+             <main className={`flex-grow flex gap-4 min-h-0 mt-4 ${shouldShowImmersiveBreakfast || shouldShowImmersiveBreak || shouldShowImmersiveEndOfDay ? 'items-center justify-center' : ''}`}>
+                {shouldShowImmersiveBreakfast ? (
+                    <div className="w-full h-full">
+                        <BreakTimeDisplay
+                            breakName="Breakfast"
+                            endTime="08:00"
+                            countdownTarget="08:00"
+                            now={now}
+                            language={language}
+                            onDismiss={() => setIsBreakfastScreenDismissed(true)}
+                        />
+                    </div>
+                ) : shouldShowImmersiveBreak ? (
                     <div className="w-full h-full">
                         <BreakTimeDisplay 
                             breakName={overallStatus}

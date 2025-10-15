@@ -9,7 +9,7 @@ interface ChartContainerProps {
 }
 
 const ChartContainer: React.FC<ChartContainerProps> = ({ title, children, className, headerContent }) => (
-    <div className={`bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border p-4 md:p-6 rounded-lg shadow-sm h-full flex flex-col ${className}`}>
+    <div className={`bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border p-4 md:p-6 rounded-xl shadow-sm h-full flex flex-col ${className}`}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg md:text-xl font-semibold text-text-primary dark:text-dark-text-primary">{title}</h3>
         {headerContent}

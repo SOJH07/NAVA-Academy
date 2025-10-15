@@ -3,15 +3,15 @@ import { format, getDay, addDays, isAfter } from 'date-fns';
 import { calendarEventsData } from '../data/calendarEvents';
 
 // Cleaner, more modern solid-style icons
-const MapIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m1 2v5h5V5h-5m7 0v5h5V5h-5m-7 7v5h5v-5h-5m7 0v5h5v-5h-5Z"/></svg>;
-const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>;
-const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-primary-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.57 4.23l.27.28v.79l5 4.99L20.49 19l-4.99-5v-.79l-.27-.28A6.516 6.516 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5Z"/></svg>;
+const MapIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-kiosk-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m1 2v5h5V5h-5m7 0v5h5V5h-5m-7 7v5h5v-5h-5m7 0v5h5v-5h-5Z"/></svg>;
+const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-kiosk-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>;
+const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-kiosk-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.57 4.23l.27.28v.79l5 4.99L20.49 19l-4.99-5v-.79l-.27-.28A6.516 6.516 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5Z"/></svg>;
 
 
 // More compact feature card with enhanced hover effect
 const FeatureCard: React.FC<{icon: React.ReactElement; title: string; description: string}> = ({ icon, title, description }) => (
     <div className="bg-white/60 backdrop-blur-xl p-6 rounded-3xl text-center border border-white/30 shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2">
-        <div className="inline-block p-4 bg-brand-primary-light rounded-2xl mb-4">
+        <div className="inline-block p-4 bg-kiosk-primary/10 rounded-2xl mb-4">
             {icon}
         </div>
         <h3 className="text-xl font-bold text-kiosk-text-title mb-1">{title}</h3>
@@ -76,7 +76,7 @@ const KioskWelcomeScreen: React.FC<KioskWelcomeScreenProps> = ({ onEnter, now })
 
                 <button 
                     onClick={onEnter} 
-                    className="bg-gradient-to-br from-brand-primary to-brand-primary-dark text-white font-bold text-xl px-16 py-4 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-glow-md"
+                    className="bg-kiosk-primary text-white font-bold text-xl px-16 py-4 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:brightness-110"
                 >
                     Start Your Day
                 </button>

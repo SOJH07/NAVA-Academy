@@ -210,8 +210,8 @@ const KioskSummaryPanel: React.FC<KioskSummaryPanelProps> = ({ liveClasses, allG
     return (
         <div className="border border-slate-200 rounded-2xl shadow-sm bg-white flex flex-col h-full min-h-0">
             <div className="flex items-center gap-3 p-4 md:p-5 rounded-t-2xl bg-white flex-shrink-0 border-b border-slate-200">
-                <div className="bg-brand-primary-light p-2 rounded-lg">
-                    <ScheduleIcon className="h-6 w-6 text-brand-primary" />
+                <div className="bg-kiosk-primary/10 p-2 rounded-lg">
+                    <ScheduleIcon className="h-6 w-6 text-kiosk-primary" />
                 </div>
                 <h2 className={`font-bold text-lg text-black`}>
                     {language === 'ar' ? 'الجدول المباشر' : 'Live Schedule'}

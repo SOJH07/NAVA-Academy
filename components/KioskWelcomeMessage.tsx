@@ -75,12 +75,12 @@ interface InfoCardProps {
 }
 
 const InfoCard: React.FC<InfoCardProps> = ({ title, icon, children, bodyClassName = "", containerClassName = "" }) => (
-    <div className={`border border-slate-200 rounded-2xl shadow-sm bg-white flex flex-col h-full min-h-0 ${containerClassName}`}>
-        <h3 className="flex items-center gap-3 font-bold text-base text-black p-4 md:p-5 flex-shrink-0 bg-brand-primary-light rounded-t-2xl border-b border-kiosk-border">
-            {React.cloneElement(icon, { className: "h-5 w-5" })}
+    <div className={`bg-white rounded-xl border border-kiosk-border shadow-md flex flex-col h-full min-h-0 ${containerClassName}`}>
+        <h3 className="flex items-center gap-3 font-bold text-base text-kiosk-primary p-3 flex-shrink-0 bg-kiosk-primary/10 rounded-t-xl border-b border-kiosk-border">
+            {React.cloneElement(icon, { className: "h-5 w-5 text-kiosk-primary" })}
             <span className="uppercase tracking-wider">{title}</span>
         </h3>
-        <div className={`flex-grow p-4 md:p-5 min-h-0 ${bodyClassName}`}>
+        <div className={`flex-grow p-4 min-h-0 ${bodyClassName}`}>
             {children}
         </div>
     </div>

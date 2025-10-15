@@ -37,8 +37,8 @@ const getStatusInfo = (status?: RoomStatus) => {
     switch (status.status) {
         case 'inClass': return { dot: 'bg-blue-500 animate-pulse-slow', tooltip: `In Class • ${status.group} • ${status.period}` };
         case 'break': return { dot: 'bg-amber-400 animate-pulse-slow', tooltip: 'On Break' };
-        case 'maintenance': return { dot: 'bg-red-500', tooltip: 'Maintenance' };
-        case 'staffOnly': return { dot: 'bg-slate-500', tooltip: 'Staff Only' };
+        case 'maintenance': return { dot: 'bg-rose-500', tag: 'Maint.', tooltip: 'Maintenance' };
+        case 'staffOnly': return { dot: 'bg-violet-500', tag: 'Staff', tooltip: 'Staff Only' };
         default: return { dot: 'bg-green-400 shadow-glow-sm animate-glow', tooltip: 'Available' };
     }
 };
@@ -241,8 +241,8 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
     return (
         <div className="border border-slate-200 rounded-2xl shadow-sm bg-white flex flex-col h-full min-h-0">
              <div className="flex items-center gap-3 p-4 md:p-5 rounded-t-2xl bg-white flex-shrink-0 border-b border-slate-200">
-                <div className="bg-brand-primary-light p-2 rounded-lg">
-                    <MapPinIcon className="h-6 w-6 text-brand-primary" />
+                <div className="bg-kiosk-primary/10 p-2 rounded-lg">
+                    <MapPinIcon className="h-6 w-6 text-kiosk-primary" />
                 </div>
                 <h2 className={`font-bold text-lg text-black`}>
                     {language === 'ar' ? 'مستكشف الحرم الجامعي' : 'Campus Navigator'}

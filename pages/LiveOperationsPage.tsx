@@ -63,7 +63,7 @@ const TimelineScrubber: React.FC<{ dailySchedule: DailyPeriod[], simulatedTime: 
     }, [simulatedTime, totalMinutes, dayStart]);
 
     return (
-        <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg p-3">
+        <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl p-3">
             <div className="flex justify-between items-center mb-2">
                  <h4 className="text-sm font-semibold text-text-secondary dark:text-dark-text-secondary">Time Simulation</h4>
                  {simulatedTime !== null && (
@@ -250,7 +250,7 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                     <TimelineScrubber dailySchedule={dashboardData.dailySchedule} simulatedTime={simulatedTime} setSimulatedTime={setSimulatedTime} />
                 </div>
                 <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 min-h-0">
-                    <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm flex flex-col p-4 h-full">
+                    <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl shadow-sm flex flex-col p-4 h-full">
                         <div className="flex justify-between items-center mb-4 flex-shrink-0">
                             <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Academy Floor Plan</h2>
                              <div className="flex items-center gap-4">
@@ -288,7 +288,7 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                         <FloorPlanLegend language="en" />
                     </div>
 
-                     <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-lg shadow-sm flex flex-col p-4 h-full min-h-0">
+                     <div className="bg-bg-panel dark:bg-dark-panel border border-slate-200 dark:border-dark-border rounded-xl shadow-sm flex flex-col p-4 h-full min-h-0">
                         <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary mb-2 flex-shrink-0">
                             Live Roster ({filteredStudents.length})
                         </h2>

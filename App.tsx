@@ -15,24 +15,32 @@ const App: React.FC = () => {
     }, []);
     
     const handleLogout = useCallback(() => {
-        setView('kioskWelcome');
+        setView('login');
     }, []);
 
     const handleSwitchToKiosk = useCallback(() => {
-        setView('kioskWelcome');
+        setView('kiosk');
     }, []);
 
     const handleEnterKiosk = useCallback(() => {
         setView('kiosk');
     }, []);
 
+    const handleGoToLogin = useCallback(() => {
+        setView('login');
+    }, []);
+
+    const handleExitKiosk = useCallback(() => {
+        setView('kioskWelcome');
+    }, []);
+
     switch (view) {
         case 'admin':
             return <AdminDashboard onLogout={handleLogout} />;
         case 'kioskWelcome':
-            return <KioskWelcomePage onEnter={handleEnterKiosk} />;
+            return <KioskWelcomePage onEnter={handleEnterKiosk} onAdminLogin={handleGoToLogin} />;
         case 'kiosk':
-            return <KioskPage onExitKiosk={handleLogout} />;
+            return <KioskPage onExitKiosk={handleExitKiosk} />;
         case 'login':
         default:
             return <LoginPage onLoginSuccess={handleLoginSuccess} onSwitchToKiosk={handleSwitchToKiosk} />;

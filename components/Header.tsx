@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageIcon, onFilterButtonClic
         <header className="px-6 pt-6 pb-4 bg-bg-body z-10 flex justify-between items-center gap-4">
             <div className="flex items-center gap-4">
                 {pageIcon && (
-                     <div className="w-11 h-11 bg-gradient-to-br from-brand-secondary to-brand-primary rounded-lg flex items-center justify-center shadow-md">
+                     <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
                         {React.cloneElement<React.SVGProps<SVGSVGElement>>(pageIcon, { className: "h-6 w-6 text-white" })}
                     </div>
                 )}
@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, pageIcon, onFilterButtonClic
                     <FilterIcon />
                     <span>Filters</span>
                     {activeFilterCount > 0 && (
-                        <span className="bg-brand-primary text-black text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                        <span className="bg-brand-primary text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
                             {activeFilterCount}
                         </span>
                     )}
