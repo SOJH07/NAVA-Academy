@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import AnnouncementsMarquee from './AnnouncementsMarquee';
 import UpcomingEventsCard from './UpcomingEventsCard';
 import type { Assignment, GroupInfo } from '../types';
@@ -90,12 +90,18 @@ interface InfoCardProps {
     children: React.ReactNode;
     bodyClassName?: string;
     containerClassName?: string;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ title, icon, children, bodyClassName = "", containerClassName = "" }) => (
-    <div className={`bg-white rounded-xl border border-kiosk-border shadow-md flex flex-col h-full min-h-0 ${containerClassName}`}>
-        <h3 className="flex items-center gap-3 font-bold text-base text-text-primary p-3 flex-shrink-0 bg-brand-primary-light rounded-t-xl border-b border-kiosk-border">
-            {React.cloneElement(icon, { className: "h-5 w-5 text-text-primary" })}
+const InfoCard: React.FC<InfoCardProps> = ({ title, icon, children, bodyClassName = "", containerClassName = "", onMouseEnter, onMouseLeave }) => (
+    <div 
+        className={`bg-white rounded-xl border border-kiosk-border shadow-md flex flex-col h-full min-h-0 ${containerClassName}`}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+    >
+        <h3 className="flex items-center gap-3 font-bold text-base text-black p-3 flex-shrink-0 bg-brand-primary-light rounded-t-xl border-b border-kiosk-border">
+            {React.cloneElement(icon, { className: "h-5 w-5" })}
             <span className="uppercase tracking-wider">{title}</span>
         </h3>
         <div className={`flex-grow p-4 min-h-0 ${bodyClassName}`}>
@@ -127,89 +133,159 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
     const dayOfWeek = now.getDay();
     const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
 
+    const [activeSubjectIndex, setActiveSubjectIndex] = useState(0);
     const [isFading, setIsFading] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
-    const [hoveredTopic, setHoveredTopic] = useState<string | null>(null);
-    const [activeTopicIndex, setActiveTopicIndex] = useState(0);
+    const rotationTimerRef = useRef<number | null>(null);
 
-    const { todaysSubjects, topicToFullNameMap } = useMemo(() => {
-        const industrial = new Map<string, SubjectInfo>();
-        const service = new Map<string, SubjectInfo>();
-        const fullMap = new Map<string, string>();
-
-        const currentPeriodNum = currentPeriod ? parseInt(currentPeriod.name.replace('P', '')) : -1;
-        const nowMinutes = timeToMinutes(`${now.getHours()}:${now.getMinutes()}`);
-
+    const todaysUniqueSubjects = useMemo(() => {
+        const subjectsMap = new Map<string, Omit<SubjectInfo, 'status'>>();
         for (const assignment of dailyAssignments) {
-            const track = groupInfo[assignment.group]?.track_name;
             const cleanName = getCleanTopicName(assignment.topic);
-             if (!fullMap.has(cleanName)) {
+            if (!subjectsMap.has(cleanName)) {
+                subjectsMap.set(cleanName, {
+                    code: cleanName,
+                    fullName: assignment.topic,
+                    instructor: assignment.instructors.join(', '),
+                    location: assignment.classroom,
+                    period: assignment.period
+                });
+            }
+        }
+        return Array.from(subjectsMap.values()).sort((a, b) => {
+            const periodA = dailyPeriodsData.find(p => p.name === a.period)!;
+            const periodB = dailyPeriodsData.find(p => p.name === b.period)!;
+            if (!periodA || !periodB) return 0;
+            return timeToMinutes(periodA.start) - timeToMinutes(periodB.start);
+        });
+    }, [dailyAssignments]);
+
+    const topicToFullNameMap = useMemo(() => {
+        const fullMap = new Map<string, string>();
+        for (const assignment of dailyAssignments) {
+             const cleanName = getCleanTopicName(assignment.topic);
+            if (!fullMap.has(cleanName)) {
                 fullMap.set(cleanName, assignment.topic);
             }
+        }
+        return fullMap;
+    }, [dailyAssignments]);
 
-            const periodDetails = dailyPeriodsData.find(p => p.name === assignment.period);
+    const getTargetIndex = useCallback(() => {
+        if (todaysUniqueSubjects.length === 0) return 0;
+        const nowMinutes = timeToMinutes(`${now.getHours()}:${now.getMinutes()}`);
+        let liveIndex = -1;
+        let firstUpcomingIndex = -1;
+        
+        for (const [index, subject] of todaysUniqueSubjects.entries()) {
+            const period = dailyPeriodsData.find(p => p.name === subject.period);
+            if (!period) continue;
+            const startMinutes = timeToMinutes(period.start);
+            const endMinutes = timeToMinutes(period.end);
+
+            if (nowMinutes >= startMinutes && nowMinutes < endMinutes) {
+                liveIndex = index;
+                break;
+            }
+            if (nowMinutes < startMinutes && firstUpcomingIndex === -1) {
+                firstUpcomingIndex = index;
+            }
+        }
+        
+        if (liveIndex !== -1) return liveIndex;
+        if (firstUpcomingIndex !== -1) return firstUpcomingIndex;
+        if (todaysUniqueSubjects.length > 0) return todaysUniqueSubjects.length - 1;
+        return 0;
+
+    }, [now, todaysUniqueSubjects]);
+    
+    useEffect(() => {
+        setActiveSubjectIndex(getTargetIndex());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const startRotation = useCallback(() => {
+        if (rotationTimerRef.current) clearInterval(rotationTimerRef.current);
+        if (todaysUniqueSubjects.length <= 1) return;
+        rotationTimerRef.current = window.setInterval(() => {
+            setIsFading(true);
+            setTimeout(() => {
+                setActiveSubjectIndex(prevIndex => (prevIndex + 1) % todaysUniqueSubjects.length);
+                setIsFading(false);
+            }, 300);
+        }, 10000);
+    }, [todaysUniqueSubjects.length]);
+
+    useEffect(() => {
+        if (!isPaused) {
+            startRotation();
+        } else if (rotationTimerRef.current) {
+            clearInterval(rotationTimerRef.current);
+        }
+        return () => {
+            if (rotationTimerRef.current) clearInterval(rotationTimerRef.current);
+        };
+    }, [isPaused, startRotation]);
+    
+    useEffect(() => {
+        if (isPaused) return;
+        const targetIndex = getTargetIndex();
+        if (targetIndex !== activeSubjectIndex) {
+            setIsFading(true);
+            setTimeout(() => {
+                setActiveSubjectIndex(targetIndex);
+                startRotation();
+                setIsFading(false);
+            }, 300);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPeriod, getTargetIndex, isPaused]);
+
+    const handleSubjectClick = (code: string) => {
+        const newIndex = todaysUniqueSubjects.findIndex(s => s.code === code);
+        if (newIndex !== -1 && newIndex !== activeSubjectIndex) {
+            setIsFading(true);
+            setTimeout(() => {
+                setActiveSubjectIndex(newIndex);
+                startRotation(); // Restart timer
+                setIsFading(false);
+            }, 300);
+        }
+    };
+    
+    const allTodaysSubjectsWithStatus = useMemo(() => {
+        const nowMinutes = timeToMinutes(`${now.getHours()}:${now.getMinutes()}`);
+        return todaysUniqueSubjects.map(s => {
+            const periodDetails = dailyPeriodsData.find(p => p.name === s.period);
             const periodEndMinutes = periodDetails ? timeToMinutes(periodDetails.end) : 0;
             
             let status: SubjectStatus = 'upcoming';
-            if (currentPeriod?.name === assignment.period) {
+            if (currentPeriod?.name === s.period) {
                 status = 'live';
             } else if (nowMinutes > periodEndMinutes) {
                 status = 'completed';
             }
-            
-            const subjectInfo = {
-                code: cleanName,
-                fullName: assignment.topic,
-                instructor: assignment.instructors.join(', '),
-                location: assignment.classroom,
-                status: status,
-                period: assignment.period
-            };
+            return {...s, status};
+        });
+    }, [todaysUniqueSubjects, now, currentPeriod]);
 
-            if (track === 'Industrial Tech' && !industrial.has(cleanName)) {
-                industrial.set(cleanName, subjectInfo);
-            } else if (track === 'Service Tech' && !service.has(cleanName)) {
-                service.set(cleanName, subjectInfo);
+    const todaysSubjectsLists = useMemo(() => {
+        const industrial: SubjectInfo[] = [];
+        const service: SubjectInfo[] = [];
+        allTodaysSubjectsWithStatus.forEach(s => {
+            const assignment = dailyAssignments.find(a => getCleanTopicName(a.topic) === s.code && a.period === s.period);
+            const track = assignment ? groupInfo[assignment.group]?.track_name : undefined;
+            if (track === 'Industrial Tech') {
+                industrial.push(s);
+            } else if (track === 'Service Tech') {
+                service.push(s);
             }
-        }
-        
-        return { 
-            todaysSubjects: {
-                industrial: Array.from(industrial.values()),
-                service: Array.from(service.values())
-            },
-            topicToFullNameMap: fullMap
-        };
-    }, [dailyAssignments, groupInfo, currentPeriod, now]);
+        });
+        return { industrial, service };
+    }, [allTodaysSubjectsWithStatus, groupInfo, dailyAssignments]);
 
-    useEffect(() => {
-        const allSubjects = [...todaysSubjects.industrial, ...todaysSubjects.service];
-        const liveSubject = allSubjects.find(s => s.status === 'live');
-        if (liveSubject) {
-            setSelectedSubjectCode(liveSubject.code);
-            return;
-        }
-
-        const nowMinutes = timeToMinutes(`${now.getHours()}:${now.getMinutes()}`);
-        const upcomingSubjects = allSubjects
-            .filter(s => s.status === 'upcoming')
-            .sort((a,b) => {
-                const periodA = dailyPeriodsData.find(p => p.name === a.period)!;
-                const periodB = dailyPeriodsData.find(p => p.name === b.period)!;
-                return timeToMinutes(periodA.start) - timeToMinutes(periodB.start);
-            });
-        
-        if (upcomingSubjects.length > 0) {
-            setSelectedSubjectCode(upcomingSubjects[0].code);
-            return;
-        }
-
-        if (allSubjects.length > 0) {
-            setSelectedSubjectCode(allSubjects[0].code);
-        }
-
-    }, [todaysSubjects, currentPeriod, now]);
-
+    const selectedSubjectCode = todaysUniqueSubjects[activeSubjectIndex]?.code;
+    
     const week42Assessments = useMemo(() => {
         const allAssessments = [];
         for (const event of pacingScheduleData) {
@@ -243,12 +319,8 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
         }
         return Object.values(grouped).sort((a, b) => a.date.getTime() - b.date.getTime());
     }, [week42Assessments]);
-
-    const [selectedSubjectCode, setSelectedSubjectCode] = useState<string | null>(null);
-
-    const displayTopic = hoveredTopic || selectedSubjectCode;
     
-    const outcomesForTopic = displayTopic ? (learningOutcomesData[getCleanTopicName(topicToFullNameMap.get(displayTopic) || displayTopic)] || []) : [];
+    const outcomesForTopic = selectedSubjectCode ? (learningOutcomesData[getCleanTopicName(topicToFullNameMap.get(selectedSubjectCode) || selectedSubjectCode)] || []) : [];
     const displayOutcomes = outcomesForTopic.length > 0
         ? [...outcomesForTopic, "Adhere to safety protocols.", "Collaborate effectively with team members.", "Apply problem-solving skills."].slice(0, 3)
         : [];
@@ -257,11 +329,12 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
         <ul className="space-y-1">
             {subjects.map(subject => {
                 const isSelected = selectedSubjectCode === subject.code;
-                const trackColor = subject.fullName.toLowerCase().includes('industrial') ? 'status-industrial' : 'status-tech';
+                const track = groupInfo[dailyAssignments.find(a => getCleanTopicName(a.topic) === subject.code)?.group || '']?.track_name;
+                const trackColor = track === 'Industrial Tech' ? 'status-industrial' : 'status-tech';
 
                 let StatusIcon: React.ReactNode;
                 switch(subject.status) {
-                    case 'live': StatusIcon = <div className={`w-2 h-2 rounded-full mr-2.5 mt-1.5 flex-shrink-0 bg-green-500 animate-pulse`}></div>; break;
+                    case 'live': StatusIcon = <div className={'w-2 h-2 rounded-full mr-2.5 mt-1.5 flex-shrink-0 bg-green-500 animate-pulse'}></div>; break;
                     case 'completed': StatusIcon = <CompletedIcon />; break;
                     default: StatusIcon = <div className={`w-2 h-2 rounded-full mr-2.5 mt-1.5 flex-shrink-0 bg-${trackColor}`}></div>;
                 }
@@ -269,15 +342,14 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
                 return (
                     <li key={`${subject.code}-${subject.period}`}>
                         <button
-                            onClick={() => setSelectedSubjectCode(subject.code)}
-                            className={`w-full text-left p-2 rounded-lg transition-colors ${isSelected ? 'bg-yellow-200' : 'hover:bg-slate-50'} ${subject.status === 'completed' ? 'opacity-60' : ''}`}
+                            onClick={() => handleSubjectClick(subject.code)}
+                            className={`w-full text-left p-2 rounded-lg transition-colors ${isSelected ? 'bg-yellow-100' : 'hover:bg-slate-50'}`}
                         >
                             <div className="flex items-start">
                                 <div className="flex-shrink-0 mr-2.5 mt-1">{StatusIcon}</div>
                                 <div>
-                                    <p className={`text-kiosk-text-body ${isSelected || subject.status === 'live' ? 'font-bold' : 'font-medium'}`}>{subject.code}</p>
-                                    <p className="text-xs text-kiosk-text-muted mt-0.5">
-                                        {subject.instructor} | {formatLocation(subject.location)}
+                                    <p className={`text-black ${isSelected ? 'font-bold' : 'font-semibold'} ${subject.status === 'completed' ? 'text-slate-600' : ''}`}>
+                                        {getCleanTopicName(subject.fullName)}
                                     </p>
                                 </div>
                             </div>
@@ -304,9 +376,7 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
     }
 
     return (
-        <div 
-            className="h-full flex flex-col gap-4"
-        >
+        <div className="h-full flex flex-col gap-4">
              <div className="flex-shrink-0">
                 <AnnouncementsMarquee language={language} />
             </div>
@@ -316,18 +386,20 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
                     title={language === 'ar' ? "مواضيع اليوم" : "TODAY'S SUBJECTS"}
                     icon={<BookIcon />}
                     bodyClassName="flex flex-col"
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
                 >
                     <div className="flex-grow grid grid-cols-2 gap-x-4 overflow-y-auto pr-2">
                         <div>
                             <p className="flex items-center gap-2 font-bold text-sm text-status-industrial uppercase tracking-wider mb-2"><GearIcon /><span>{language === 'ar' ? "تقنية صناعية" : "INDUSTRIAL TECH"}</span></p>
-                            {renderSubjectList(todaysSubjects.industrial)}
+                            {renderSubjectList(todaysSubjectsLists.industrial)}
                         </div>
                         <div>
                             <p className="flex items-center gap-2 font-bold text-sm text-status-tech uppercase tracking-wider mb-2"><WrenchIcon/><span>{language === 'ar' ? "تقنية خدمات" : "SERVICE TECH"}</span></p>
-                            {renderSubjectList(todaysSubjects.service)}
+                            {renderSubjectList(todaysSubjectsLists.service)}
                         </div>
                     </div>
-                    <div className="flex-shrink-0 border-t border-slate-200 mt-3 pt-3">
+                    <div className={`flex-shrink-0 border-t border-slate-200 mt-3 pt-3 transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
                         <h4 className="flex items-center gap-2 font-bold text-xl text-kiosk-primary mb-2">
                             <LearningIcon /> <span>{language === 'ar' ? "مخرجات التعلم" : "Learning Outcomes"}</span>
                         </h4>
@@ -348,7 +420,7 @@ const KioskWelcomeMessage: React.FC<KioskWelcomeMessageProps> = ({ language, liv
 
                 <div className="flex flex-col gap-4 min-h-0">
                     <InfoCard 
-                        title={language === 'ar' ? 'الأحداث الأكاديمية' : 'ACADEMY EVENTS'}
+                        title={language === 'ar' ? 'الأحداث الأكاديمية' : 'Academy Events'}
                         icon={<CalendarIcon />}
                         bodyClassName="overflow-hidden p-0"
                     >
