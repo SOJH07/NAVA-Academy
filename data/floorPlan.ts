@@ -32,8 +32,8 @@ export const FLOOR_ROOMS: Record<typeof FLOOR_ORDER[number], CampusRoom[]> = {
     { code: "MD Office", type: "Facility" }, { code: "Staff", type: "Facility" },
     { code: "LAP-109", type: "Lab" }, { code: "Staff", type: "Facility" },
     { code: "LAP-110", type: "Lab" }, { code: "L-115", type: "Lab" },
-    { code: "LAP-111", type: "Lab" }, { code: "L-116", type: "Lab" },
-    { code: "LAP 112 Computer Lab-1", type: "Lab" }, { code: "L-117", type: "Lab" }
+    { code: "LAP-111", type: "Lab" }, { code: "L-114", type: "Lab" },
+    { code: "LAP 112 Computer Lab-1", type: "Lab" }, { code: "L-113", type: "Lab" }
   ],
   "2nd (Classrooms)": [
     { code: "C-206", type: "Classroom" }, { code: "C-205", type: "Classroom" },

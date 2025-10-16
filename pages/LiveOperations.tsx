@@ -21,18 +21,35 @@ interface LiveOperationsPageProps {
   liveStatusData: ReturnType<typeof useLiveStatus>;
 }
 
-const FloorTab: React.FC<{ label: string; isActive: boolean; onClick: () => void; }> = ({ label, isActive, onClick }) => (
-    <button
-        onClick={onClick}
-        className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${
-            isActive
-                ? 'bg-white dark:bg-dark-panel-hover text-brand-primary shadow-sm'
-                : 'text-text-muted hover:bg-slate-200 dark:hover:bg-dark-panel-hover/50'
-        }`}
-    >
-        {label}
+// --- ICONS for Tabs ---
+const WorkshopIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+const LabIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>;
+const ClassroomIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>;
+
+const FloorTab: React.FC<{
+  label: string;
+  description: string;
+  icon: React.ReactElement;
+  isActive: boolean;
+  onClick: () => void;
+  activeClasses: string;
+}> = ({ label, description, icon, isActive, onClick, activeClasses }) => {
+  const baseClasses = "flex flex-col items-center justify-center p-1.5 w-full rounded-lg border-2 transition-all duration-300 transform";
+  const stateClasses = isActive
+    ? `${activeClasses} shadow-md`
+    : 'bg-slate-100 dark:bg-dark-panel border-transparent text-slate-500 dark:text-dark-text-muted';
+
+  return (
+    <button onClick={onClick} className={`${baseClasses} ${stateClasses}`}>
+      <div className={isActive ? 'font-black' : 'opacity-70'}>
+        {React.cloneElement(icon, { className: 'h-4 w-4' })}
+      </div>
+      <span className={`font-extrabold text-sm leading-tight mt-1 ${isActive ? '' : 'font-semibold'}`}>{label}</span>
+      <span className="text-[8px] font-bold uppercase tracking-wider">{description}</span>
     </button>
-);
+  );
+};
+
 
 const NAVA_UNITS: (keyof FoundationGrades)[] = ['nava001', 'nava002', 'nava003', 'nava004', 'nava005', 'nava006', 'nava007', 'nava008'];
 
@@ -132,6 +149,26 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
     
     const today: Assignment['day'] = useMemo(() => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][liveStatusData.now.getDay()] as Assignment['day'], [liveStatusData.now]);
     const dailyAssignments = useMemo(() => dashboardData.processedScheduleData.filter(a => a.day === today), [dashboardData.processedScheduleData, today]);
+
+    const classroomToFloorMap = useMemo(() => {
+        const map = new Map<string, FloorId>();
+        for (const floorId in dashboardData.allFloorLayouts) {
+            if (floorId === 'incubator') continue;
+            const items = dashboardData.allFloorLayouts[floorId as FloorId];
+            items.forEach(item => {
+                map.set(item.name, floorId as FloorId);
+            });
+        }
+        return map;
+    }, [dashboardData.allFloorLayouts]);
+
+    const floorOfSelectedClassroom = selectedClassroom ? classroomToFloorMap.get(selectedClassroom) : null;
+
+    const handleFloorChange = (floor: FloorId) => {
+        setActiveFloor(floor);
+        setSelectedClassroom(null);
+        setPopoverTarget(null);
+    };
 
     const roomUsage = useMemo(() => {
         const counts: {[key: string]: number} = {};
@@ -255,12 +292,35 @@ const LiveOperationsPage: React.FC<LiveOperationsPageProps> = ({ liveStatusData 
                             <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary">Academy Floor Plan</h2>
                              <div className="flex items-center gap-4">
                                 <HeatmapToggle isVisible={isHeatmapVisible} setIsVisible={setIsHeatmapVisible} />
-                                <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-dark-panel rounded-lg flex-wrap">
-                                    <FloorTab label="Incubator" isActive={activeFloor === 'incubator'} onClick={() => setActiveFloor('incubator')} />
-                                    <FloorTab label="3rd" isActive={activeFloor === 'third'} onClick={() => setActiveFloor('third')} />
-                                    <FloorTab label="2nd" isActive={activeFloor === 'second'} onClick={() => setActiveFloor('second')} />
-                                    <FloorTab label="1st" isActive={activeFloor === 'first'} onClick={() => setActiveFloor('first')} />
-                                    <FloorTab label="Ground" isActive={activeFloor === 'ground'} onClick={() => setActiveFloor('ground')} />
+                                <div className="grid grid-cols-4 gap-2 w-64">
+                                    <FloorTab
+                                        label="Ground" description="WORKSHOPS"
+                                        icon={<WorkshopIcon />}
+                                        isActive={floorOfSelectedClassroom === 'ground'}
+                                        onClick={() => handleFloorChange('ground')}
+                                        activeClasses="bg-status-break-light border-amber-300 text-amber-900"
+                                      />
+                                    <FloorTab
+                                        label="1st" description="LABS"
+                                        icon={<LabIcon />}
+                                        isActive={floorOfSelectedClassroom === 'first'}
+                                        onClick={() => handleFloorChange('first')}
+                                        activeClasses="bg-[#EDE9FE] border-violet-300 text-violet-900"
+                                      />
+                                    <FloorTab
+                                        label="2nd" description="CLASSROOMS"
+                                        icon={<ClassroomIcon />}
+                                        isActive={floorOfSelectedClassroom === 'second'}
+                                        onClick={() => handleFloorChange('second')}
+                                        activeClasses="bg-status-professional-light border-emerald-300 text-emerald-900"
+                                      />
+                                    <FloorTab
+                                        label="3rd" description="LABS"
+                                        icon={<LabIcon />}
+                                        isActive={floorOfSelectedClassroom === 'third'}
+                                        onClick={() => handleFloorChange('third')}
+                                        activeClasses="bg-[#EDE9FE] border-violet-300 text-violet-900"
+                                      />
                                 </div>
                             </div>
                         </div>

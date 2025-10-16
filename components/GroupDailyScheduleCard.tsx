@@ -37,59 +37,62 @@ const schematicNameToId = (name: string): string => {
     return number;
 };
 
+const formatLocation = (classroom: string) => {
+    if (classroom.startsWith('WS-')) {
+        return classroom.replace('WS-0.', 'WS-');
+    }
+    if (classroom.match(/^\d\.\d+$/)) {
+        // Labs are on floor 1 and 3, classrooms on 2.
+        const prefix = classroom.startsWith('2.') ? 'C-' : 'L-';
+        return prefix + classroom.replace('.', '');
+    }
+    return classroom;
+};
+
 const SessionCard: React.FC<{ assignment: Assignment, isLive: boolean, viewType: 'group' | 'room' }> = ({ assignment, isLive, viewType }) => {
-    const isPractical = assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('WS-') || assignment.classroom.startsWith('0.');
-    const locationName = assignment.classroom.startsWith('WS-') ? assignment.classroom.replace('WS-0.','WS-') : `C-${assignment.classroom.replace('.', '')}`;
+    const isLab = assignment.classroom.startsWith('1.') || assignment.classroom.startsWith('3.');
+    const isWorkshop = assignment.classroom.startsWith('WS-') || assignment.classroom.startsWith('0.');
     
+    const locationName = formatLocation(assignment.classroom);
+    
+    // Default to classroom styles (2nd floor)
     let borderColorClass = 'border-emerald-400';
     let locationColorClass = 'bg-emerald-100 text-emerald-800';
     let LocationIconComponent = <ClassroomIcon className="h-4 w-4" />;
-    
-    if (isPractical) {
-        if (locationName.startsWith('WS')) {
-            borderColorClass = 'border-amber-400';
-            locationColorClass = 'bg-amber-100 text-amber-800';
-            LocationIconComponent = <WorkshopIcon className="h-4 w-4" />;
-        } else {
-            borderColorClass = 'border-violet-400';
-            locationColorClass = 'bg-violet-100 text-violet-800';
-            LocationIconComponent = <LabIcon className="h-4 w-4" />;
-        }
+
+    if (isWorkshop) { // Ground floor
+        borderColorClass = 'border-amber-400';
+        locationColorClass = 'bg-amber-100 text-amber-800';
+        LocationIconComponent = <WorkshopIcon className="h-4 w-4" />;
+    } else if (isLab) { // 1st and 3rd floor
+        borderColorClass = 'border-violet-400';
+        locationColorClass = 'bg-[#EDE9FE] text-violet-800';
+        LocationIconComponent = <LabIcon className="h-4 w-4" />;
     }
 
     const mainText = viewType === 'group' ? locationName : assignment.group;
+    const subText = viewType === 'group' ? assignment.topic : assignment.instructors.join(', ');
+
 
     return (
         <div className={`relative p-2 rounded-xl h-full flex flex-col justify-between transition-all bg-white border-l-4 ${borderColorClass} ${isLive ? 'ring-2 ring-nava-gold shadow-lg z-10 bg-nava-gold/5' : 'shadow'}`}>
-            {isLive && (
-                <div
-                    className="absolute top-1.5 right-1.5 w-3 h-3 rounded-full bg-white ring-2 ring-nava-gold"
-                    role="status"
-                    aria-label="Live session"
-                >
-                    <div className="absolute inset-0.5 w-2 h-2 rounded-full bg-nava-gold animate-pulse" />
-                </div>
-            )}
-            <div className="flex-shrink-0">
-                <div className={`inline-flex items-center gap-1.5 text-xs font-bold px-2 py-1 rounded-full ${locationColorClass}`}>
+            <div>
+                 <div className={`inline-flex items-center gap-1.5 text-xs font-bold px-2 py-1 rounded-full ${locationColorClass}`}>
                     {LocationIconComponent}
                     <span>{mainText}</span>
                 </div>
             </div>
 
             <div className="flex-grow my-1 flex items-center">
-                 <p className="font-bold text-sm text-text-primary leading-tight line-clamp-2">
-                    {assignment.topic}
-                 </p>
+                 <p className="font-semibold text-xs text-text-primary line-clamp-3">{subText}</p>
             </div>
+            
+            <p className="text-[11px] text-text-muted truncate">{viewType === 'group' ? assignment.instructors.join(', ') : assignment.topic}</p>
 
-            <div className="flex-shrink-0 mt-auto flex items-center gap-1.5 text-xs text-text-muted">
-                <UserIcon className="h-4 w-4 flex-shrink-0" />
-                <span className="truncate font-medium">{assignment.instructors.join(', ')}</span>
-            </div>
         </div>
     );
 };
+
 const DayHeader: React.FC<{ day: Assignment['day'], date: Date, isToday: boolean, language: 'en' | 'ar' }> = ({ day, date, isToday, language }) => {
     const dayAbbreviation = format(date, 'EEE');
     const shortDate = format(date, 'd MMM');

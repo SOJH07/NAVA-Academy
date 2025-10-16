@@ -37,8 +37,8 @@ export const FLOOR_PLANS: FloorMatrix[] = [
       [{ code: "MD Office", type: "Facility" }, { code: "Staff", type: "Facility" }],
       [{ code: "LAP-109", type: "Lab" }, { code: "Staff", type: "Facility" }],
       [{ code: "LAP-110", type: "Lab" }, { code: "L-115", type: "Lab" }],
-      [{ code: "LAP-111", type: "Lab" }, { code: "L-116", type: "Lab" }],
-      [{ code: "LAP 112 Computer Lab-1", type: "Lab" }, { code: "L-117", type: "Lab" }]
+      [{ code: "LAP-111", type: "Lab" }, { code: "L-114", type: "Lab" }],
+      [{ code: "LAP 112 Computer Lab-1", type: "Lab" }, { code: "L-113", type: "Lab" }]
     ]
   },
   {

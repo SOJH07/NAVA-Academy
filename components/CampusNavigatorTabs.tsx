@@ -17,11 +17,41 @@ const getFloorFromClassroomCode = (code: string): FloorMatrix['name'] | null => 
 }
 
 const MapPinIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>;
-const ClassroomIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3.5a1 1 0 00.028 1.84l7 3.5a1 1 0 00.764 0l7-3.5a1 1 0 00.028-1.84l-7-3.5z" /><path d="M3 9.332V14a1 1 0 00.553.894l6 3a1 1 0 00.894 0l6-3A1 1 0 0017 14v-4.668-2.45l-7 3.5-7-3.5v2.45z" /></svg>;
-const LabIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.5 3a.5.5 0 00-.5.5v2.5a.5.5 0 00.5.5h.5a.5.5 0 00.5-.5V5.5a.5.5 0 00-.5-.5h-.5z" clipRule="evenodd" /></svg>;
-const WorkshopIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.972.03 2.287-.948 2.287-1.56.38-1.56 2.6 0 2.98.978.238 1.488 1.559.948 2.286-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.948c.38 1.56 2.6 1.56 2.98 0a1.532 1.532 0 012.287-.948c1.372.836 2.942-.734-2.106-2.106a1.532 1.532 0 01.948-2.287c1.56-.38 1.56-2.6 0-2.98a1.532 1.532 0 01-.948-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.948zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" /></svg>;
+const ClassroomIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-6 w-6"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>;
+const LabIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-6 w-6"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v13.5A2.5 2.5 0 006.5 20h11a2.5 2.5 0 002.5-2.5V4" /><path strokeLinecap="round" strokeLinejoin="round" d="M8 4h8" /><path strokeLinecap="round" strokeLinejoin="round" d="M10 12h4" /></svg>;
+const WorkshopIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-6 w-6"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 3.35a1.724 1.724 0 001.066-2.573c.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
 const FacilityIcon: React.FC<{className?: string}> = ({className}) => <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 2a2 2 0 00-2 2v2H7a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2v-8a2 2 0 00-2-2h-1V4a2 2 0 00-2-2zm-1 4V4a1 1 0 112 0v2H9z" clipRule="evenodd" /></svg>;
 const ClockIconSearch = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clipRule="evenodd" /></svg>;
+
+const floors = [
+    { name: 'Ground', label: 'Ground', description: 'WORKSHOPS', icon: <WorkshopIcon />, activeClasses: 'bg-[#FEF3C7] border-amber-300 text-amber-900' },
+    { name: '1st', label: '1st', description: 'LABS', icon: <LabIcon />, activeClasses: 'bg-[#EDE9FE] border-purple-300 text-purple-900' },
+    { name: '2nd', label: '2nd', description: 'CLASSROOMS', icon: <ClassroomIcon />, activeClasses: 'bg-[#D1FAE5] border-emerald-300 text-emerald-900' },
+    { name: '3rd', label: '3rd', description: 'LABS', icon: <LabIcon />, activeClasses: 'bg-[#EDE9FE] border-purple-300 text-purple-900' },
+] as const;
+
+type FloorInfo = typeof floors[number];
+
+const FloorTab: React.FC<{ floor: FloorInfo; isActive: boolean; onClick: () => void; }> = ({ floor, isActive, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`
+      flex flex-col items-center justify-center p-1.5
+      w-full rounded-lg border-2 transition-all duration-300 transform
+      ${isActive
+        ? `${floor.activeClasses} shadow-md scale-105`
+        : 'bg-slate-100 border-transparent text-slate-500'
+      }
+    `}
+  >
+    <div className={isActive ? 'font-black' : 'opacity-70'}>
+      {React.cloneElement(floor.icon, { className: 'h-4 w-4' })}
+    </div>
+    <span className={`font-bold text-xs leading-tight mt-1 ${isActive ? 'font-extrabold' : 'font-semibold'}`}>{floor.label}</span>
+    <span className="text-[7px] font-bold uppercase tracking-wider">{floor.description}</span>
+  </button>
+);
+
 
 const getRoomIcon = (type: RoomType) => {
     switch (type) {
@@ -251,15 +281,14 @@ const CampusNavigatorTabs: React.FC<CampusNavigatorTabsProps> = ({ liveClasses, 
 
             <div className="p-4 md:p-5 flex-grow flex flex-col min-h-0">
                 {!showResults && (
-                    <div className="flex-shrink-0 bg-slate-100 p-1 rounded-xl flex items-center justify-center gap-1 mb-4">
-                        {(["Ground", "1st", "2nd", "3rd"] as const).map((floorName) => (
-                            <button 
-                                key={floorName} 
-                                onClick={() => setSelectedFloor(floorName)} 
-                                className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-colors w-full ${selectedFloor === floorName ? 'bg-white text-kiosk-primary shadow' : 'text-kiosk-text-muted hover:bg-white/60'}`}
-                            >
-                                {floorName}
-                            </button>
+                    <div className="flex-shrink-0 grid grid-cols-4 gap-2 mb-4">
+                        {floors.map((floor) => (
+                            <FloorTab 
+                                key={floor.name} 
+                                floor={floor}
+                                isActive={selectedFloor === floor.name} 
+                                onClick={() => setSelectedFloor(floor.name as "Ground" | "1st" | "2nd" | "3rd")} 
+                            />
                         ))}
                     </div>
                 )}
