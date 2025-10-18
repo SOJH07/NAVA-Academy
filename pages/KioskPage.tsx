@@ -72,9 +72,9 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const { selectedGroup, setSelectedGroup, clearSelection, setRoomStatuses } = useKioskStore();
     
     const [traineeSort, setTraineeSort] = useState<'asc' | 'desc'>('asc');
-    const [isBreakfastScreenDismissed, setIsBreakfastScreenDismissed] = useState(false);
-    const [isBreakScreenDismissed, setIsBreakScreenDismissed] = useState(false);
-    const [isEndOfDayDismissed, setIsEndOfDayDismissed] = useState(false);
+    const [isBreakfastScreenDismissed, setIsBreakfastScreenDismissed] = useState(true);
+    const [isBreakScreenDismissed, setIsBreakScreenDismissed] = useState(true);
+    const [isEndOfDayDismissed, setIsEndOfDayDismissed] = useState(true);
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<AnalyzedStudent | null>(null);
     const [activeTab, setActiveTab] = useState<'schedule' | 'trainees'>('schedule');
@@ -143,12 +143,6 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
     const currentHour = now.getHours();
     const isBreakfastTime = currentHour >= 7 && currentHour < 8;
 
-    useEffect(() => {
-        if (!isBreak) setIsBreakScreenDismissed(false);
-        if (!isFinished) setIsEndOfDayDismissed(false);
-        if (!isBreakfastTime) setIsBreakfastScreenDismissed(false);
-    }, [isBreak, isFinished, isBreakfastTime]);
-    
     const traineesForSelection = useMemo(() => {
         if (!selectedGroup) return [];
         let students = liveStatusData.liveStudents.filter(s => s.techGroup === selectedGroup);
@@ -229,6 +223,15 @@ const KioskPage: React.FC<KioskPageProps> = ({ onExitKiosk }) => {
                             <div className="absolute top-3 right-3 z-20">
                                 <FocusModeToggle isFocusMode={isFocusMode} onToggle={() => setIsFocusMode(!isFocusMode)} language={language}/>
                             </div>
+                            {isBreakfastTime && !isBreak && isBreakfastScreenDismissed && (
+                                <BreakBanner 
+                                    breakName="Breakfast"
+                                    endTime="08:00"
+                                    now={now}
+                                    language={language}
+                                    onRestore={() => setIsBreakfastScreenDismissed(false)} 
+                                />
+                            )}
                             {isBreak && isBreakScreenDismissed && currentPeriod && (<BreakBanner breakName={overallStatus} endTime={currentPeriod.end} now={now} language={language} onRestore={() => setIsBreakScreenDismissed(false)} />)}
                             {isFinished && isEndOfDayDismissed && (<EndOfDayBanner language={language} onRestore={() => setIsEndOfDayDismissed(false)} />)}
                             
